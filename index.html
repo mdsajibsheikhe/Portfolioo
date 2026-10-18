@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Md Sajib Sheikh — Full-Stack Developer portfolio. Building fast, modern, and accessible web experiences." />
+  <title>Md Sajib Sheikh | Portfolio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+  <!-- ===== Loader ===== -->
+  <div class="loader" id="loader">
+    <span class="loader-text">MS</span>
+  </div>
+
+  <!-- ===== Cursor ===== -->
+  <div class="cursor" id="cursor"></div>
+
+  <!-- ===== Navbar ===== -->
+  <header class="header" id="header">
+    <nav class="nav container">
+      <a href="#home" class="nav-logo">
+        <span class="logo-bracket">&lt;</span>MdSajib<span class="logo-slash">/</span><span class="logo-bracket">/&gt;</span>
+      </a>
+
+      <div class="nav-menu" id="nav-menu">
+        <ul class="nav-list">
+          <li><a href="#home" class="nav-link active-link">Home</a></li>
+          <li><a href="#about" class="nav-link">About</a></li>
+          <li><a href="#skills" class="nav-link">Skills</a></li>
+          <li><a href="#projects" class="nav-link">Projects</a></li>
+          <li><a href="#experience" class="nav-link">Experience</a></li>
+          <li><a href="#contact" class="nav-link">Contact</a></li>
+        </ul>
+        <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark / light theme">
+          <span class="theme-icon-sun">☀️</span>
+          <span class="theme-icon-moon">🌙</span>
+        </button>
+        <div class="nav-close" id="nav-close">✕</div>
+      </div>
+
+      <div class="nav-toggle" id="nav-toggle">
+        <span></span><span></span><span></span>
+      </div>
+    </nav>
+  </header>
+
+  <main class="main">
+
+    <!-- ===== Home / Hero ===== -->
+    <section class="hero section" id="home">
+      <div class="hero-container container grid">
+        <div class="hero-content">
+          <span class="hero-subtitle">👋 Hello, I'm</span>
+          <h1 class="hero-title">Md Sajib Sheikh</h1>
+          <h2 class="hero-profession">Full-Stack <span class="typed" id="typed"></span></h2>
+          <p class="hero-description">
+            I build fast, modern, and accessible web applications.
+            Passionate about clean code, great design, and solving real-world problems.
+          </p>
+
+          <div class="hero-buttons">
+            <a href="#contact" class="btn btn-primary">Hire Me</a>
+            <a href="#projects" class="btn btn-outline">View Work</a>
+          </div>
+
+          <div class="hero-social">
+            <a href="https://github.com/mdsajibsheikhe" class="social-link" target="_blank" rel="noopener" aria-label="GitHub">GitHub</a>
+            <a href="https://linkedin.com" class="social-link" target="_blank" rel="noopener" aria-label="LinkedIn">LinkedIn</a>
+            <a href="https://twitter.com" class="social-link" target="_blank" rel="noopener" aria-label="X / Twitter">Twitter</a>
+          </div>
+        </div>
+
+        <div class="hero-image">
+          <div class="hero-blob"></div>
+          <div class="hero-card">
+            <span class="hero-card-emoji">💻</span>
+            <p class="hero-card-text">Available for freelance &amp; full-time opportunities</p>
+          </div>
+        </div>
+      </div>
+
+      <a href="#about" class="scroll-down" aria-label="Scroll down">▼</a>
+    </section>
+
+    <!-- ===== About ===== -->
+    <section class="about section" id="about">
+      <div class="container">
+        <h2 class="section-title">About <span>Me</span></h2>
+        <div class="about-container grid">
+          <div class="about-image">
+            <div class="about-avatar">MS</div>
+          </div>
+          <div class="about-content">
+            <h3>A passionate developer from 🇧🇩 Bangladesh</h3>
+            <p>
+              I'm a full-stack developer who loves turning ideas into beautiful, functional products.
+              With a strong foundation in modern web technologies, I focus on writing clean,
+              maintainable code and delivering seamless user experiences.
+            </p>
+            <p>
+              When I'm not coding, you'll find me exploring new technologies,
+              contributing to open source, or enjoying a good cup of chai.
+            </p>
+
+            <div class="about-info">
+              <div class="about-box"><span class="about-label">Name</span><p>Md Sajib Sheikh</p></div>
+              <div class="about-box"><span class="about-label">Email</span><p>hello@example.com</p></div>
+              <div class="about-box"><span class="about-label">Location</span><p>Bangladesh</p></div>
+              <div class="about-box"><span class="about-label">Status</span><p>Open to work</p></div>
+            </div>
+
+            <a href="#" class="btn btn-primary about-btn">Download CV</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Skills ===== -->
+    <section class="skills section" id="skills">
+      <div class="container">
+        <h2 class="section-title">My <span>Skills</span></h2>
+
+        <div class="skills-container grid">
+          <div class="skills-group">
+            <h3>Frontend</h3>
+            <div class="skills-list">
+              <span class="skill-tag">HTML5</span>
+              <span class="skill-tag">CSS3 / Sass</span>
+              <span class="skill-tag">JavaScript (ES6+)</span>
+              <span class="skill-tag">React</span>
+              <span class="skill-tag">Next.js</span>
+              <span class="skill-tag">Tailwind CSS</span>
+              <span class="skill-tag">TypeScript</span>
+            </div>
+          </div>
+
+          <div class="skills-group">
+            <h3>Backend</h3>
+            <div class="skills-list">
+              <span class="skill-tag">Node.js</span>
+              <span class="skill-tag">Express.js</span>
+              <span class="skill-tag">Python</span>
+              <span class="skill-tag">Django</span>
+              <span class="skill-tag">REST APIs</span>
+              <span class="skill-tag">GraphQL</span>
+            </div>
+          </div>
+
+          <div class="skills-group">
+            <h3>Database &amp; Tools</h3>
+            <div class="skills-list">
+              <span class="skill-tag">MongoDB</span>
+              <span class="skill-tag">PostgreSQL</span>
+              <span class="skill-tag">MySQL</span>
+              <span class="skill-tag">Git / GitHub</span>
+              <span class="skill-tag">Docker</span>
+              <span class="skill-tag">Figma</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Projects ===== -->
+    <section class="projects section" id="projects">
+      <div class="container">
+        <h2 class="section-title">Featured <span>Projects</span></h2>
+
+        <div class="projects-container grid">
+          <article class="project-card">
+            <div class="project-image">
+              <span class="project-emoji">🛒</span>
+            </div>
+            <div class="project-content">
+              <h3>E-Commerce Store</h3>
+              <p>Full-stack e-commerce app with cart, payments, and admin dashboard.</p>
+              <div class="project-tags">
+                <span>React</span><span>Node.js</span><span>MongoDB</span>
+              </div>
+              <div class="project-links">
+                <a href="#" class="btn btn-small">Live Demo</a>
+                <a href="#" class="btn btn-small btn-outline">Source</a>
+              </div>
+            </div>
+          </article>
+
+          <article class="project-card">
+            <div class="project-image">
+              <span class="project-emoji">📝</span>
+            </div>
+            <div class="project-content">
+              <h3>Task Manager</h3>
+              <p>Productivity app with drag-and-drop boards, auth, and real-time sync.</p>
+              <div class="project-tags">
+                <span>Next.js</span><span>TypeScript</span><span>PostgreSQL</span>
+              </div>
+              <div class="project-links">
+                <a href="#" class="btn btn-small">Live Demo</a>
+                <a href="#" class="btn btn-small btn-outline">Source</a>
+              </div>
+            </div>
+          </article>
+
+          <article class="project-card">
+            <div class="project-image">
+              <span class="project-emoji">🌤️</span>
+            </div>
+            <div class="project-content">
+              <h3>Weather Dashboard</h3>
+              <p>Beautiful weather app with geolocation, forecasts, and charts.</p>
+              <div class="project-tags">
+                <span>Vue</span><span>Chart.js</span><span>REST API</span>
+              </div>
+              <div class="project-links">
+                <a href="#" class="btn btn-small">Live Demo</a>
+                <a href="#" class="btn btn-small btn-outline">Source</a>
+              </div>
+            </div>
+          </article>
+
+          <article class="project-card">
+            <div class="project-image">
+              <span class="project-emoji">💬</span>
+            </div>
+            <div class="project-content">
+              <h3>Real-Time Chat</h3>
+              <p>Chat application with rooms, typing indicators, and image sharing.</p>
+              <div class="project-tags">
+                <span>Socket.io</span><span>Express</span><span>React</span>
+              </div>
+              <div class="project-links">
+                <a href="#" class="btn btn-small">Live Demo</a>
+                <a href="#" class="btn btn-small btn-outline">Source</a>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Experience / Timeline ===== -->
+    <section class="experience section" id="experience">
+      <div class="container">
+        <h2 class="section-title">Experience &amp; <span>Education</span></h2>
+
+        <div class="timeline">
+          <div class="timeline-item">
+            <div class="timeline-dot"></div>
+            <div class="timeline-content">
+              <span class="timeline-date">2024 — Present</span>
+              <h3>Full-Stack Developer · Freelance</h3>
+              <p>Building custom web applications and websites for clients worldwide.</p>
+            </div>
+          </div>
+
+          <div class="timeline-item">
+            <div class="timeline-dot"></div>
+            <div class="timeline-content">
+              <span class="timeline-date">2022 — 2024</span>
+              <h3>Frontend Developer · Tech Company</h3>
+              <p>Developed responsive UIs, improved performance, and mentored juniors.</p>
+            </div>
+          </div>
+
+          <div class="timeline-item">
+            <div class="timeline-dot"></div>
+            <div class="timeline-content">
+              <span class="timeline-date">2018 — 2022</span>
+              <h3>B.Sc. in Computer Science</h3>
+              <p>University of Dhaka — focused on software engineering &amp; algorithms.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== Contact ===== -->
+    <section class="contact section" id="contact">
+      <div class="container">
+        <h2 class="section-title">Get In <span>Touch</span></h2>
+
+        <div class="contact-container grid">
+          <div class="contact-info">
+            <h3>Let's talk about your project</h3>
+            <p>I'm always open to new opportunities and interesting projects.</p>
+
+            <div class="contact-details">
+              <div class="contact-item">
+                <span class="contact-icon">📧</span>
+                <div>
+                  <h4>Email</h4>
+                  <p>hello@example.com</p>
+                </div>
+              </div>
+              <div class="contact-item">
+                <span class="contact-icon">📍</span>
+                <div>
+                  <h4>Location</h4>
+                  <p>Dhaka, Bangladesh</p>
+                </div>
+              </div>
+              <div class="contact-item">
+                <span class="contact-icon">🔗</span>
+                <div>
+                  <h4>Socials</h4>
+                  <p>GitHub · LinkedIn · Twitter</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <form class="contact-form" id="contact-form">
+            <div class="form-group">
+              <label for="name">Name</label>
+              <input type="text" id="name" name="name" placeholder="Your name" required />
+            </div>
+            <div class="form-group">
+              <label for="email">Email</label>
+              <input type="email" id="email" name="email" placeholder="your@email.com" required />
+            </div>
+            <div class="form-group">
+              <label for="subject">Subject</label>
+              <input type="text" id="subject" name="subject" placeholder="Project inquiry" />
+            </div>
+            <div class="form-group">
+              <label for="message">Message</label>
+              <textarea id="message" name="message" rows="5" placeholder="Tell me about your project..." required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Send Message ✉️</button>
+            <p class="form-status" id="form-status"></p>
+          </form>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- ===== Footer ===== -->
+  <footer class="footer">
+    <div class="container footer-container">
+      <p>© <span id="year"></span> Md Sajib Sheikh. All rights reserved.</p>
+      <p>Made with ❤️ using HTML, CSS &amp; JavaScript</p>
+    </div>
+  </footer>
+
+  <!-- ===== Back to top ===== -->
+  <button class="scroll-top" id="scroll-top" aria-label="Back to top">↑</button>
+
+  <script src="js/script.js"></script>
+</body>
+</html>
