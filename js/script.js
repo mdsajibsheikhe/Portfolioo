@@ -27,14 +27,30 @@ themeToggle.addEventListener("click", () => {
 const navMenu = document.getElementById("nav-menu");
 const navToggle = document.getElementById("nav-toggle");
 const navClose = document.getElementById("nav-close");
+const navOverlay = document.getElementById("nav-overlay");
 const navLinks = document.querySelectorAll(".nav-link");
 
-navToggle.addEventListener("click", () => navMenu.classList.add("show"));
-navClose.addEventListener("click", () => navMenu.classList.remove("show"));
+function openMenu() {
+  navMenu.classList.add("show");
+  navOverlay.classList.add("show");
+  document.body.style.overflow = "hidden";
+}
 
-navLinks.forEach((link) =>
-  link.addEventListener("click", () => navMenu.classList.remove("show"))
-);
+function closeMenu() {
+  navMenu.classList.remove("show");
+  navOverlay.classList.remove("show");
+  document.body.style.overflow = "";
+}
+
+navToggle.addEventListener("click", openMenu);
+navClose.addEventListener("click", closeMenu);
+navOverlay.addEventListener("click", closeMenu);
+navLinks.forEach((link) => link.addEventListener("click", closeMenu));
+
+// Close menu with Escape key
+document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") closeMenu();
+});
 
 // ---------- Header scroll effect ----------
 const header = document.getElementById("header");
@@ -142,6 +158,38 @@ document.querySelectorAll("a, button, input, textarea").forEach((el) => {
     cursor.style.background = "transparent";
   });
 });
+
+// ---------- Stats counter ----------
+const stats = document.querySelectorAll(".stat-num");
+let statsStarted = false;
+
+const statsObserver = new IntersectionObserver(
+  (entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting && !statsStarted) {
+        statsStarted = true;
+        stats.forEach((stat) => {
+          const target = +stat.dataset.count;
+          let current = 0;
+          const increment = target / 60;
+          const counter = setInterval(() => {
+            current += increment;
+            if (current >= target) {
+              stat.textContent = target + "+";
+              clearInterval(counter);
+            } else {
+              stat.textContent = Math.floor(current);
+            }
+          }, 25);
+        });
+        statsObserver.disconnect();
+      }
+    });
+  },
+  { threshold: 0.5 }
+);
+
+if (stats.length) statsObserver.observe(stats[0].closest(".about-stats"));
 
 // ---------- Contact form ----------
 const contactForm = document.getElementById("contact-form");

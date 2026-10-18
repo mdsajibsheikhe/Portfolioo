@@ -7,14 +7,24 @@
   <title>Md Sajib Sheikh | Portfolio</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
 
+  <!-- ===== Background orbs ===== -->
+  <div class="bg-orbs" aria-hidden="true">
+    <span class="orb orb-1"></span>
+    <span class="orb orb-2"></span>
+    <span class="orb orb-3"></span>
+  </div>
+
   <!-- ===== Loader ===== -->
   <div class="loader" id="loader">
-    <span class="loader-text">MS</span>
+    <div class="loader-box">
+      <span class="loader-text">MS</span>
+      <span class="loader-bar"></span>
+    </div>
   </div>
 
   <!-- ===== Cursor ===== -->
@@ -24,7 +34,7 @@
   <header class="header" id="header">
     <nav class="nav container">
       <a href="#home" class="nav-logo">
-        <span class="logo-bracket">&lt;</span>MdSajib<span class="logo-slash">/</span><span class="logo-bracket">/&gt;</span>
+        <span class="logo-bracket">&lt;</span>Sajib<span class="logo-slash">/</span><span class="logo-bracket">/&gt;</span>
       </a>
 
       <div class="nav-menu" id="nav-menu">
@@ -40,14 +50,19 @@
           <span class="theme-icon-sun">☀️</span>
           <span class="theme-icon-moon">🌙</span>
         </button>
-        <div class="nav-close" id="nav-close">✕</div>
       </div>
 
-      <div class="nav-toggle" id="nav-toggle">
-        <span></span><span></span><span></span>
+      <div class="nav-actions">
+        <div class="nav-toggle" id="nav-toggle" aria-label="Open menu">
+          <span></span><span></span><span></span>
+        </div>
       </div>
     </nav>
+    <div class="nav-overlay" id="nav-overlay"></div>
   </header>
+
+  <!-- ===== Mobile close button (fixed inside menu) ===== -->
+  <div class="nav-close" id="nav-close" aria-label="Close menu">✕</div>
 
   <main class="main">
 
@@ -56,11 +71,11 @@
       <div class="hero-container container grid">
         <div class="hero-content">
           <span class="hero-subtitle">👋 Hello, I'm</span>
-          <h1 class="hero-title">Md Sajib Sheikh</h1>
+          <h1 class="hero-title">Md Sajib <span class="gradient-text">Sheikh</span></h1>
           <h2 class="hero-profession">Full-Stack <span class="typed" id="typed"></span></h2>
           <p class="hero-description">
             I build fast, modern, and accessible web applications.
-            Passionate about clean code, great design, and solving real-world problems.
+            Passionate about clean code, beautiful design, and solving real-world problems.
           </p>
 
           <div class="hero-buttons">
@@ -69,32 +84,60 @@
           </div>
 
           <div class="hero-social">
-            <a href="https://github.com/mdsajibsheikhe" class="social-link" target="_blank" rel="noopener" aria-label="GitHub">GitHub</a>
-            <a href="https://linkedin.com" class="social-link" target="_blank" rel="noopener" aria-label="LinkedIn">LinkedIn</a>
-            <a href="https://twitter.com" class="social-link" target="_blank" rel="noopener" aria-label="X / Twitter">Twitter</a>
+            <a href="https://github.com/mdsajibsheikhe" class="social-link" target="_blank" rel="noopener" aria-label="GitHub">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 .5A11.5 11.5 0 0 0 .5 12a11.5 11.5 0 0 0 7.86 10.92c.58.1.79-.25.79-.56v-2c-3.2.7-3.88-1.54-3.88-1.54-.53-1.34-1.29-1.7-1.29-1.7-1.06-.72.08-.7.08-.7 1.17.08 1.78 1.2 1.78 1.2 1.04 1.78 2.73 1.27 3.4.97.1-.76.4-1.27.73-1.56-2.55-.3-5.23-1.28-5.23-5.68 0-1.26.45-2.29 1.19-3.1-.12-.29-.52-1.46.11-3.05 0 0 .97-.31 3.18 1.18a11 11 0 0 1 5.8 0c2.2-1.49 3.17-1.18 3.17-1.18.63 1.59.23 2.76.11 3.05.74.81 1.19 1.84 1.19 3.1 0 4.41-2.69 5.38-5.25 5.67.41.36.78 1.06.78 2.14v3.17c0 .31.21.67.8.56A11.5 11.5 0 0 0 23.5 12 11.5 11.5 0 0 0 12 .5Z"/></svg>
+            </a>
+            <a href="https://linkedin.com" class="social-link" target="_blank" rel="noopener" aria-label="LinkedIn">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M4.98 3.5A2.5 2.5 0 1 1 0 3.5a2.5 2.5 0 0 1 4.98 0ZM.5 8.5h4V24h-4V8.5Zm7 0h3.83v2.1h.05c.53-1 1.84-2.1 3.79-2.1 4.05 0 4.8 2.67 4.8 6.14V24h-4v-7.7c0-1.83-.03-4.2-2.56-4.2-2.56 0-2.95 2-2.95 4.07V24h-4V8.5Z"/></svg>
+            </a>
+            <a href="https://twitter.com" class="social-link" target="_blank" rel="noopener" aria-label="X / Twitter">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.9 1.15h3.68l-8.04 9.19L24 22.85h-7.4l-5.8-7.58-6.63 7.58H.48l8.6-9.83L0 1.15h7.59l5.24 6.93 6.07-6.93Zm-1.29 19.5h2.04L6.49 3.24H4.3l13.31 17.41Z"/></svg>
+            </a>
           </div>
         </div>
 
         <div class="hero-image">
-          <div class="hero-blob"></div>
+          <div class="hero-avatar-wrap">
+            <span class="hero-ring ring-1"></span>
+            <span class="hero-ring ring-2"></span>
+            <span class="hero-ring ring-3"></span>
+            <div class="hero-avatar">MS</div>
+
+            <span class="float-badge badge-1">⚛️ React</span>
+            <span class="float-badge badge-2">🧩 Node.js</span>
+            <span class="float-badge badge-3">🎨 UI/UX</span>
+            <span class="float-badge badge-4">⚡ JS</span>
+          </div>
+
           <div class="hero-card">
-            <span class="hero-card-emoji">💻</span>
-            <p class="hero-card-text">Available for freelance &amp; full-time opportunities</p>
+            <span class="hero-card-dot"></span>
+            <p class="hero-card-text">Available for freelance &amp; full-time</p>
           </div>
         </div>
       </div>
 
-      <a href="#about" class="scroll-down" aria-label="Scroll down">▼</a>
+      <a href="#about" class="scroll-down" aria-label="Scroll down">
+        <span class="mouse"><span class="wheel"></span></span>
+      </a>
     </section>
 
     <!-- ===== About ===== -->
     <section class="about section" id="about">
       <div class="container">
-        <h2 class="section-title">About <span>Me</span></h2>
+        <span class="section-eyebrow">Get to know me</span>
+        <h2 class="section-title">About <span class="gradient-text">Me</span></h2>
+
         <div class="about-container grid">
           <div class="about-image">
-            <div class="about-avatar">MS</div>
+            <div class="about-frame">
+              <div class="about-avatar">MS</div>
+            </div>
+            <div class="about-experience-badge">
+              <strong>3+</strong>
+              <span>Years<br/>Experience</span>
+            </div>
           </div>
+
           <div class="about-content">
             <h3>A passionate developer from 🇧🇩 Bangladesh</h3>
             <p>
@@ -114,6 +157,12 @@
               <div class="about-box"><span class="about-label">Status</span><p>Open to work</p></div>
             </div>
 
+            <div class="about-stats">
+              <div class="stat"><strong class="stat-num" data-count="50">0</strong><span>Projects</span></div>
+              <div class="stat"><strong class="stat-num" data-count="30">0</strong><span>Clients</span></div>
+              <div class="stat"><strong class="stat-num" data-count="15">0</strong><span>Awards</span></div>
+            </div>
+
             <a href="#" class="btn btn-primary about-btn">Download CV</a>
           </div>
         </div>
@@ -123,11 +172,15 @@
     <!-- ===== Skills ===== -->
     <section class="skills section" id="skills">
       <div class="container">
-        <h2 class="section-title">My <span>Skills</span></h2>
+        <span class="section-eyebrow">What I know</span>
+        <h2 class="section-title">My <span class="gradient-text">Skills</span></h2>
 
         <div class="skills-container grid">
           <div class="skills-group">
-            <h3>Frontend</h3>
+            <div class="skills-group-head">
+              <span class="skills-group-icon">🎨</span>
+              <h3>Frontend</h3>
+            </div>
             <div class="skills-list">
               <span class="skill-tag">HTML5</span>
               <span class="skill-tag">CSS3 / Sass</span>
@@ -140,7 +193,10 @@
           </div>
 
           <div class="skills-group">
-            <h3>Backend</h3>
+            <div class="skills-group-head">
+              <span class="skills-group-icon">⚙️</span>
+              <h3>Backend</h3>
+            </div>
             <div class="skills-list">
               <span class="skill-tag">Node.js</span>
               <span class="skill-tag">Express.js</span>
@@ -152,7 +208,10 @@
           </div>
 
           <div class="skills-group">
-            <h3>Database &amp; Tools</h3>
+            <div class="skills-group-head">
+              <span class="skills-group-icon">🗄️</span>
+              <h3>Database &amp; Tools</h3>
+            </div>
             <div class="skills-list">
               <span class="skill-tag">MongoDB</span>
               <span class="skill-tag">PostgreSQL</span>
@@ -169,7 +228,8 @@
     <!-- ===== Projects ===== -->
     <section class="projects section" id="projects">
       <div class="container">
-        <h2 class="section-title">Featured <span>Projects</span></h2>
+        <span class="section-eyebrow">My recent work</span>
+        <h2 class="section-title">Featured <span class="gradient-text">Projects</span></h2>
 
         <div class="projects-container grid">
           <article class="project-card">
@@ -190,7 +250,7 @@
           </article>
 
           <article class="project-card">
-            <div class="project-image">
+            <div class="project-image alt-1">
               <span class="project-emoji">📝</span>
             </div>
             <div class="project-content">
@@ -207,7 +267,7 @@
           </article>
 
           <article class="project-card">
-            <div class="project-image">
+            <div class="project-image alt-2">
               <span class="project-emoji">🌤️</span>
             </div>
             <div class="project-content">
@@ -224,7 +284,7 @@
           </article>
 
           <article class="project-card">
-            <div class="project-image">
+            <div class="project-image alt-3">
               <span class="project-emoji">💬</span>
             </div>
             <div class="project-content">
@@ -246,7 +306,8 @@
     <!-- ===== Experience / Timeline ===== -->
     <section class="experience section" id="experience">
       <div class="container">
-        <h2 class="section-title">Experience &amp; <span>Education</span></h2>
+        <span class="section-eyebrow">My journey</span>
+        <h2 class="section-title">Experience &amp; <span class="gradient-text">Education</span></h2>
 
         <div class="timeline">
           <div class="timeline-item">
@@ -282,7 +343,8 @@
     <!-- ===== Contact ===== -->
     <section class="contact section" id="contact">
       <div class="container">
-        <h2 class="section-title">Get In <span>Touch</span></h2>
+        <span class="section-eyebrow">Say hello</span>
+        <h2 class="section-title">Get In <span class="gradient-text">Touch</span></h2>
 
         <div class="contact-container grid">
           <div class="contact-info">
