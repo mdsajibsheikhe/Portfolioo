@@ -345,6 +345,18 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 }
 .skill-tag:hover { background: var(--gradient); color: #fff; border-color: transparent; transform: translateY(-3px); box-shadow: 0 10px 20px rgba(108, 92, 231, 0.35); }
 
+/* ---------- Tools row ---------- */
+.tools-row { margin-top: 3rem; text-align: center; }
+.tools-label { display: block; font-weight: 600; color: var(--text-light); margin-bottom: 1.1rem; font-size: 0.95rem; }
+.tools-list { display: flex; flex-wrap: wrap; justify-content: center; gap: 0.7rem; }
+.tool-chip {
+  background: var(--bg-alt); border: 1px solid var(--border);
+  padding: 0.55rem 1.2rem; border-radius: 50px; font-size: 0.88rem; font-weight: 500;
+  color: var(--text-light); box-shadow: var(--shadow-sm);
+  transition: all var(--transition);
+}
+.tool-chip:hover { background: var(--gradient); color: #fff; border-color: transparent; transform: translateY(-3px) scale(1.05); box-shadow: 0 10px 22px rgba(108, 92, 231, 0.35); }
+
 /* ---------- Projects ---------- */
 .projects-container { grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
 .project-card {

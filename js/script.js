@@ -85,7 +85,7 @@ window.addEventListener("scroll", () => {
 
 // ---------- Typing effect ----------
 const typedElement = document.getElementById("typed");
-const words = ["Developer", "Designer", "Problem Solver", "Freelancer"];
+const words = ["Designer", "Thumbnail Expert", "Packaging Pro", "Brand Creator"];
 let wordIndex = 0;
 let charIndex = 0;
 let isDeleting = false;
