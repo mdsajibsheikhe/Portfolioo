@@ -91,6 +91,7 @@ let charIndex = 0;
 let isDeleting = false;
 
 function type() {
+  if (!typedElement) return;
   const currentWord = words[wordIndex];
 
   if (isDeleting) {
@@ -150,7 +151,7 @@ document.querySelectorAll("a, button, input, textarea").forEach((el) => {
   el.addEventListener("mouseenter", () => {
     cursor.style.width = "40px";
     cursor.style.height = "40px";
-    cursor.style.background = "rgba(108, 99, 255, 0.2)";
+    cursor.style.background = "rgba(59, 91, 253, 0.2)";
   });
   el.addEventListener("mouseleave", () => {
     cursor.style.width = "24px";
