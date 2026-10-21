@@ -232,10 +232,12 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   font-size: 1.05rem; transition: all var(--transition);
 }
 .theme-toggle:hover { transform: rotate(20deg) scale(1.1); box-shadow: var(--shadow-sm); }
-[data-theme="dark"] .theme-icon-sun { display: inline-flex; }
-[data-theme="dark"] .theme-icon-moon { display: none; }
-.theme-icon-sun { display: none; }
-.theme-icon-moon { display: inline-flex; }
+/* [data-ico] { display:inline-flex } পরে আসায় .theme-icon-* কে override করত —
+   তাই .theme-toggle scope দিয়ে specificity বাড়ানো হয়েছে */
+[data-theme="dark"] .theme-toggle .theme-icon-sun { display: inline-flex; }
+[data-theme="dark"] .theme-toggle .theme-icon-moon { display: none; }
+.theme-toggle .theme-icon-sun { display: none; }
+.theme-toggle .theme-icon-moon { display: inline-flex; }
 
 .nav-cv { padding: 0.55rem 1.4rem; font-size: 0.9rem; box-shadow: 0 8px 20px rgba(var(--primary-rgb), 0.28); }
 .nav-cv:hover { box-shadow: 0 12px 26px rgba(var(--primary-rgb), 0.4); }
@@ -794,3 +796,15 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   .popup-actions { flex-direction: column; }
   .popup-actions .btn { width: 100%; justify-content: center; display: flex; align-items: center; }
 }
+
+/* ============================================================
+   Project icon (premium SVG instead of emoji)
+   ============================================================ */
+.project-image { display: flex; align-items: center; justify-content: center; }
+.project-emoji { display: inline-flex; align-items: center; justify-content: center; }
+.project-emoji svg { width: 54px; height: 54px; }
+
+/* ============================================================
+   CV button hidden when no CV url
+   ============================================================ */
+.nav-cv[hidden], .about-btn[hidden] { display: none !important; }

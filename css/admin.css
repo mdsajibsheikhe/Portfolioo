@@ -33,15 +33,15 @@
 
 /* ---- 10 color themes (same ids as frontend) ---- */
 [data-color="emerald"] { --t1:#059669; --t2:#10b981; --t3:#34d399; --primary-rgb:5,150,105; }
-[data-color="ocean"]   { --t1:#0369a1; --t2:#0284c7; --t3:#38bdf8; --primary-rgb:3,105,161; }
-[data-color="indigo"]  { --t1:#4338ca; --t2:#4f46e5; --t3:#818cf8; --primary-rgb:67,56,202; }
-[data-color="violet"]  { --t1:#7c3aed; --t2:#8b5cf6; --t3:#a78bfa; --primary-rgb:124,58,237; }
-[data-color="rose"]    { --t1:#be123c; --t2:#e11d48; --t3:#fb7185; --primary-rgb:190,18,60; }
-[data-color="sunset"]  { --t1:#c2410c; --t2:#ea580c; --t3:#fb923c; --primary-rgb:194,65,12; }
-[data-color="amber"]   { --t1:#b45309; --t2:#d97706; --t3:#fbbf24; --primary-rgb:180,83,9; }
-[data-color="teal"]    { --t1:#0f766e; --t2:#0d9488; --t3:#2dd4bf; --primary-rgb:15,118,110; }
-[data-color="lime"]    { --t1:#4d7c0f; --t2:#65a30d; --t3:#a3e635; --primary-rgb:77,124,15; }
-[data-color="slate"]   { --t1:#475569; --t2:#64748b; --t3:#94a3b8; --primary-rgb:71,85,105; }
+[data-color="autumn"]     { --t1:#8e5c63; --t2:#a8757c; --t3:#c9a0a5; --primary-rgb:142,92,99; }
+[data-color="sage"]       { --t1:#6f8a76; --t2:#8fa794; --t3:#b6c8ba; --primary-rgb:111,138,118; }
+[data-color="terracotta"] { --t1:#b85434; --t2:#d96846; --t3:#eda588; --primary-rgb:184,84,52; }
+[data-color="olive"]      { --t1:#4f5729; --t2:#6b7540; --t3:#9aa76d; --primary-rgb:79,87,41; }
+[data-color="coral"]      { --t1:#dd4f2b; --t2:#ef6b3c; --t3:#f5a06a; --primary-rgb:221,79,43; }
+[data-color="slateblue"]  { --t1:#34495e; --t2:#4a627a; --t3:#8fa3b3; --primary-rgb:52,73,94; }
+[data-color="coastal"]    { --t1:#2e4052; --t2:#46627a; --t3:#a5c9ca; --primary-rgb:46,64,82; }
+[data-color="mustard"]    { --t1:#a8862f; --t2:#d0b264; --t3:#e6d4a0; --primary-rgb:168,134,47; }
+[data-color="clay"]       { --t1:#b8432a; --t2:#c84b31; --t3:#de8a72; --primary-rgb:184,67,42; }
 [data-color="custom"]  { --t1:var(--c1,#059669); --t2:var(--c2,#10b981); --t3:var(--c3,#34d399); }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }

@@ -51,7 +51,7 @@
 
     /* ---- color theme (১০টা palette theme + custom) ---- */
     var THEMES = ["emerald","autumn","sage","terracotta","olive","coral","slateblue","coastal","mustard","clay","custom"];
-    var LEGACY = { ocean:"slateblue", indigo:"slateblue", violet:"clay", rose:"clay", sunset:"coral", amber:"mustard", teal:"sage", lime:"sage", slate:"slateblue" };
+    var LEGACY = { ocean:"coastal", indigo:"slateblue", violet:"clay", rose:"clay", sunset:"coral", amber:"mustard", teal:"sage", lime:"sage", slate:"slateblue" };
     var th = SET.theme || "emerald";
     if (THEMES.indexOf(th) === -1) th = LEGACY[th] || "emerald";
     document.documentElement.setAttribute("data-color", th);
@@ -95,13 +95,24 @@
       setMeta('meta[name="twitter:image"]', "content", SET.avatar_image);
     }
 
-    /* ---- site logo image ---- */
+    /* ---- site logo image ----
+       logo_image তে "MD SAJIB SHEIKH" মতো লেখা থাকলে সেটা URL নয়,
+       সেক্ষেত্রে image বসানো হয় না (নাহলে /MD%20SAJIB%20SHEIKH 404 হতো)। */
     var logoImg = D.querySelector(".nav-logo-img");
     var logoTxt = D.querySelector(".nav-logo-text");
-    if (logoImg && SET.logo_image) {
-      logoImg.src = SET.logo_image;
-      logoImg.hidden = false;
-      if (logoTxt) logoTxt.hidden = true;
+    var logoVal = String(SET.logo_image || "").trim();
+    var logoIsImg = /^(https?:|\/|\.\/|data:image)/i.test(logoVal) ||
+                    /\.(png|jpe?g|svg|webp|gif|avif)$/i.test(logoVal);
+    if (logoImg) {
+      if (logoIsImg) {
+        logoImg.src = logoVal;
+        logoImg.hidden = false;
+        if (logoTxt) logoTxt.hidden = true;
+      } else {
+        logoImg.hidden = true;
+        logoImg.removeAttribute("src");
+        if (logoTxt) logoTxt.hidden = false;
+      }
     }
 
     /* ---- avatar image (hero + about) ---- */
@@ -177,10 +188,12 @@
       }
     }
 
-    // CV links
-    if (p.cv_url) {
-      D.querySelectorAll(".nav-cv, .about-btn").forEach(function (a) { a.href = p.cv_url; });
-    }
+    // CV links — cv_url খালি/ "#" হলে button লুকিয়ে দাও (dead link থাকবে না)
+    var cv = String(p.cv_url || "").trim();
+    D.querySelectorAll(".nav-cv, .about-btn").forEach(function (a) {
+      if (cv && cv !== "#") { a.href = cv; a.hidden = false; a.removeAttribute("aria-hidden"); }
+      else { a.href = "#"; a.hidden = true; a.setAttribute("aria-hidden", "true"); }
+    });
 
     D.querySelectorAll("[data-c]").forEach(function (el) {
       var key = el.getAttribute("data-c");
@@ -246,23 +259,42 @@
     if (!wrap || !list.length) return;
     var btnView = SET.project_btn_view || "View Samples";
     var btnCase = SET.project_btn_case || "Case Study";
+    /* admin যদি emoji লিখে রাখে, তবু premium icon দেখাও (emoji দেখাবে না) */
+    var EMOJI_ICO = {
+      "▶️": "video", "▶": "video", "📱": "image", "📦": "package",
+      "🎯": "target", "🎨": "palette", "⚡": "zap", "🖨️": "printer",
+      "✏️": "pen", "🖼️": "image", "🎬": "video", "🧩": "layers",
+      "📄": "file", "🚀": "rocket", "💡": "bulb", "🤖": "settings",
+      "🖌️": "pen", "🎞️": "video", "🗂️": "folder", "⭐": "star"
+    };
+    var live = function (v) {
+      v = String(v || "").trim();
+      return v && v !== "#" && v.toLowerCase().indexOf("javascript:") !== 0;
+    };
     wrap.innerHTML = list.map(function (p) {
       var v = Number(p.variant) || 0;
       var tags = (p.tags || []).map(function (t) { return "<span>" + esc(t) + "</span>"; }).join("");
+      var raw = String(p.emoji || "").trim();
+      var ico = EMOJI_ICO[raw] || (/^[a-zA-Z][a-zA-Z0-9_]*$/.test(raw) ? raw : "");
       var media = p.image
         ? '<img class="project-img" src="' + esc(p.image) + '" alt="' + esc(p.title) + '" loading="lazy" />'
-        : '<span class="project-emoji">' + esc(p.emoji || "🎨") + "</span>";
+        : '<span class="project-emoji">' + (window.ICONS && ico ? ICONS.resolve(ico, "layers", 54) : (raw ? esc(raw) : "")) + "</span>";
       var boxCls = p.image
         ? "project-image has-img"
         : "project-image" + (v > 0 ? " alt-" + v : "");
+      var links = "";
+      if (live(p.view_url)) {
+        links += '<a href="' + esc(p.view_url) + '" class="btn btn-small" target="_blank" rel="noopener">' + esc(btnView) + "</a>";
+      }
+      if (live(p.case_url)) {
+        links += '<a href="' + esc(p.case_url) + '" class="btn btn-small btn-outline" target="_blank" rel="noopener">' + esc(btnCase) + "</a>";
+      }
+      var linksRow = links ? '<div class="project-links">' + links + "</div>" : "";
       return '<article class="project-card">' +
         '<div class="' + boxCls + '">' + media + "</div>" +
         '<div class="project-content"><h3>' + esc(p.title) + "</h3><p>" + esc(p.description) + "</p>" +
         '<div class="project-tags">' + tags + "</div>" +
-        '<div class="project-links">' +
-        '<a href="' + esc(p.view_url || "#") + '" class="btn btn-small">' + esc(btnView) + "</a>" +
-        '<a href="' + esc(p.case_url || "#") + '" class="btn btn-small btn-outline">' + esc(btnCase) + "</a>" +
-        "</div></div></article>";
+        linksRow + "</div></article>";
     }).join("");
   }
 

@@ -422,20 +422,31 @@
     { id: "custom",     n: "Custom",      c: null }
   ];
 
+  /* পুরনো theme id থাকলে নতুন নামে বদলাও (admin.css ও style.css-তে নতুন list আছে) */
+  var LEGACY = { ocean: "coastal", indigo: "slateblue", violet: "clay", rose: "clay",
+                 sunset: "coral", amber: "mustard", teal: "sage", lime: "sage", slate: "slateblue" };
+
   function applyAdminTheme(id) {
-    document.documentElement.setAttribute("data-color", id || "emerald");
-    if (id === "custom") {
+    var cur = id || "emerald";
+    if (LEGACY[cur]) cur = LEGACY[cur];
+    var known = THEMES.some(function (t) { return t.id === cur; });
+    if (!known) cur = "emerald";
+    document.documentElement.setAttribute("data-color", cur);
+    if (cur === "custom") {
       var rs = document.documentElement.style;
       rs.setProperty("--c1", state.settings.custom_c1 || "#059669");
       rs.setProperty("--c2", state.settings.custom_c2 || "#10b981");
       rs.setProperty("--c3", state.settings.custom_c3 || "#34d399");
     }
+    return cur;
   }
 
   function renderThemePicker() {
     var g = $("#theme-grid");
     if (!g) return;
     var cur = state.settings.theme || "emerald";
+    if (LEGACY[cur]) cur = LEGACY[cur];
+    if (!THEMES.some(function (t) { return t.id === cur; })) cur = "emerald";
 
     g.innerHTML = THEMES.map(function (t) {
       var cols = t.c || [
