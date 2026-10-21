@@ -125,6 +125,7 @@
     profile: "Profile & Hero",
     about: "About",
     contact: "Contact & Footer",
+    labels: "Text & Labels",
     stats: "Stats",
     services: "Services",
     tools: "Tools",
@@ -133,9 +134,77 @@
     messages: "Messages"
   };
 
+  /* ============ SETTINGS (text & labels) ============ */
+  var SETTINGS_GROUPS = [
+    { group: "Navigation & Logo", keys: [
+      { k: "nav_logo", l: "Logo text" },
+      { k: "nav_home", l: "Menu: Home" },
+      { k: "nav_about", l: "Menu: About" },
+      { k: "nav_services", l: "Menu: Services" },
+      { k: "nav_work", l: "Menu: Work" },
+      { k: "nav_experience", l: "Menu: Experience" },
+      { k: "nav_contact", l: "Menu: Contact" },
+      { k: "nav_cv", l: "Button: Download CV" },
+      { k: "loader_text", l: "Loader text" }
+    ]},
+    { group: "Hero", keys: [
+      { k: "site_title", l: "Browser tab title" },
+      { k: "hero_btn_about", l: "Button: About Me" }
+    ]},
+    { group: "About section", keys: [
+      { k: "about_eyebrow", l: "Eyebrow (small text)" },
+      { k: "about_title", l: "Title — main word" },
+      { k: "about_title_accent", l: "Title — green word" },
+      { k: "badge_years_label", l: "Experience badge label", t: "textarea" },
+      { k: "about_cv", l: "Button: Download CV" },
+      { k: "info_label_name", l: "Info label: Name" },
+      { k: "info_label_email", l: "Info label: Email" },
+      { k: "info_label_location", l: "Info label: Location" },
+      { k: "info_label_status", l: "Info label: Status" }
+    ]},
+    { group: "Services section", keys: [
+      { k: "services_eyebrow", l: "Eyebrow" },
+      { k: "services_title", l: "Title — main word" },
+      { k: "services_title_accent", l: "Title — green word" },
+      { k: "tools_label", l: "Tools label" }
+    ]},
+    { group: "Work section", keys: [
+      { k: "work_eyebrow", l: "Eyebrow" },
+      { k: "work_title", l: "Title — main word" },
+      { k: "work_title_accent", l: "Title — green word" },
+      { k: "project_btn_view", l: "Card button 1" },
+      { k: "project_btn_case", l: "Card button 2" }
+    ]},
+    { group: "Experience section", keys: [
+      { k: "exp_eyebrow", l: "Eyebrow" },
+      { k: "exp_title", l: "Title — main word" },
+      { k: "exp_title_accent", l: "Title — green word" }
+    ]},
+    { group: "Contact section", keys: [
+      { k: "contact_eyebrow", l: "Eyebrow" },
+      { k: "contact_title", l: "Title — main word" },
+      { k: "contact_title_accent", l: "Title — green word" },
+      { k: "contact_item_email", l: "Item label: Email" },
+      { k: "contact_item_location", l: "Item label: Location" },
+      { k: "contact_item_socials", l: "Item label: Socials" }
+    ]},
+    { group: "Contact form", keys: [
+      { k: "form_name_label", l: "Label: Name" },
+      { k: "form_name_ph", l: "Placeholder: Name" },
+      { k: "form_email_label", l: "Label: Email" },
+      { k: "form_email_ph", l: "Placeholder: Email" },
+      { k: "form_subject_label", l: "Label: Subject" },
+      { k: "form_subject_ph", l: "Placeholder: Subject" },
+      { k: "form_message_label", l: "Label: Message" },
+      { k: "form_message_ph", l: "Placeholder: Message" },
+      { k: "form_submit", l: "Submit button" }
+    ]}
+  ];
+
   /* ============ STATE ============ */
   var state = {
     profile: {},
+    settings: {},
     stats: [],
     services: [],
     tools: [],
@@ -307,6 +376,55 @@
   $("#save-profile").addEventListener("click", function () { saveForm("profile"); });
   $("#save-about").addEventListener("click", function () { saveForm("about"); });
   $("#save-contact").addEventListener("click", function () { saveForm("contact"); });
+
+  /* ============ RENDER: settings / labels ============ */
+  function renderLabels() {
+    var host = $("#form-labels");
+    host.innerHTML = SETTINGS_GROUPS.map(function (g) {
+      return (
+        '<div class="panel-group"><h3 class="group-title">' + esc(g.group) + "</h3>" +
+        '<div class="form-grid">' +
+          g.keys.map(function (f) {
+            var v = state.settings[f.k];
+            v = v === null || v === undefined ? "" : v;
+            var wide = f.t === "textarea" ? " wide" : "";
+            var input = f.t === "textarea"
+              ? '<textarea data-sk="' + f.k + '" rows="2">' + esc(v) + "</textarea>"
+              : '<input type="text" data-sk="' + f.k + '" value="' + esc(v) + '" />';
+            return '<div class="field' + wide + '"><label>' + esc(f.l) + "</label>" + input + "</div>";
+          }).join("") +
+        "</div></div>"
+      );
+    }).join("");
+
+    host.oninput = function (e) {
+      var k = e.target.dataset.sk;
+      if (k) state.settings[k] = e.target.value;
+    };
+  }
+
+  async function saveLabels() {
+    var st = "#status-labels";
+    setStatus(st, "Saving…", true);
+    try {
+      var payload = Object.keys(state.settings).map(function (k) {
+        return { key: k, value: state.settings[k] === null || state.settings[k] === undefined ? "" : String(state.settings[k]) };
+      });
+      if (payload.length) {
+        await SB.table("settings?on_conflict=key", {
+          method: "POST",
+          body: payload,
+          prefer: "resolution=merge-duplicates"
+        });
+      }
+      setStatus(st, "✅ " + payload.length + " label(s) saved — live site reload করলেই দেখা যাবে।", true);
+      showAlert("Text & labels updated. Reload the live site to see changes.", "info");
+    } catch (err) {
+      setStatus(st, "❌ " + err.message, false);
+    }
+  }
+
+  $("#save-labels").addEventListener("click", saveLabels);
 
   /* ============ RENDER: lists ============ */
   function fieldHtml2(f, val, idx) {
@@ -522,6 +640,7 @@
     showApp();
 
     var profileP = SB.table("profile?select=*").catch(function () { return []; });
+    var settingsP = SB.table("settings?select=*").catch(function () { return []; });
     var statsP = SB.table("stats?select=*&order=sort.asc").catch(function (e) { throw e; });
     var servicesP = SB.table("services?select=*&order=sort.asc");
     var toolsP = SB.table("tools?select=*&order=sort.asc");
@@ -530,15 +649,16 @@
     var msgP = SB.table("messages?select=*&order=created_at.desc").catch(function () { return []; });
 
     try {
-      var res = await Promise.all([profileP, statsP, servicesP, toolsP, projectsP, expP, msgP]);
+      var res = await Promise.all([profileP, settingsP, statsP, servicesP, toolsP, projectsP, expP, msgP]);
 
       state.profile = res[0] && res[0][0] ? res[0][0] : { id: 1 };
-      state.stats = res[1] || [];
-      state.services = res[2] || [];
-      state.tools = res[3] || [];
-      state.projects = res[4] || [];
-      state.experience = res[5] || [];
-      state.messages = res[6] || [];
+      (res[1] || []).forEach(function (s) { state.settings[s.key] = s.value; });
+      state.stats = res[2] || [];
+      state.services = res[3] || [];
+      state.tools = res[4] || [];
+      state.projects = res[5] || [];
+      state.experience = res[6] || [];
+      state.messages = res[7] || [];
 
       ["stats", "services", "tools", "projects", "experience"].forEach(function (k) {
         state[k] = state[k].map(function (it) {
@@ -552,6 +672,7 @@
       renderForm("profile");
       renderForm("about");
       renderForm("contact");
+      renderLabels();
       Object.keys(LISTS).forEach(renderList);
       refreshCounts();
 
@@ -566,6 +687,7 @@
       renderForm("profile");
       renderForm("about");
       renderForm("contact");
+      renderLabels();
       Object.keys(LISTS).forEach(renderList);
     }
   }

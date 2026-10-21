@@ -551,6 +551,19 @@ a { color: inherit; }
 .save-status.ok { color: var(--primary-dark); font-weight: 600; }
 .save-status.err { color: var(--red); font-weight: 600; }
 
+/* ---- Settings groups (Text & Labels) ---- */
+.panel-group { border-top: 1px solid var(--line); }
+.panel-group:first-child { border-top: none; }
+
+.group-title {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--primary-dark);
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+  padding: 16px 20px 0;
+}
+
 /* ============ LIST ITEMS ============ */
 .list-wrap { padding: 18px 20px; display: flex; flex-direction: column; gap: 14px; }
 
