@@ -356,9 +356,13 @@
   /* ============ ADMIN THEME ============ */
   $("#admin-theme").addEventListener("click", function () {
     var dark = document.documentElement.getAttribute("data-theme") === "dark";
-    document.documentElement.setAttribute("data-theme", dark ? "light" : "dark");
+    var next = dark ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", next);
     var icon = this.querySelector("span");
-    if (icon) icon.textContent = dark ? "🌙" : "☀️";
+    if (icon && window.ICONS) {
+      icon.innerHTML = window.ICONS.svg(next === "dark" ? "sun" : "moon", 18);
+      icon.dataset.sicoDone = "1";
+    }
   });
 
   $("#alert-x").addEventListener("click", function () { alertBox.hidden = true; });
@@ -873,6 +877,11 @@
     var badge = $("#msg-side-badge");
     badge.textContent = n;
     badge.hidden = n === 0;
+    /* topbar bell */
+    var bell = $("#bell-badge");
+    if (bell) { bell.textContent = n; bell.hidden = n === 0; }
+    var gm = $("#greet-msg");
+    if (gm) gm.textContent = n;
   }
 
   /* ============ COUNTS + SITE STATUS ============ */
@@ -963,6 +972,7 @@
       .filter(function (k) { return String(s[k] || "").trim(); }).length;
     if ($("#seo-count")) $("#seo-count").textContent = seoDone + "/4";
     var imgDone = ["logo_image", "avatar_image"].filter(function (k) { return String(s[k] || "").trim(); }).length +
+      LOGO_SLOTS.filter(function (k) { return String(s[k] || "").trim(); }).length +
       state.projects.filter(function (p) { return p.image; }).length +
       state.services.filter(function (x) { return x.image; }).length +
       state.testimonials.filter(function (x) { return x.avatar; }).length;
@@ -1007,6 +1017,105 @@
         '<a class="ss-link" href="https://mdsajibsheikh.vercel.app/admin.html" target="_blank" rel="noopener">🔐 This admin panel <span>↗</span></a>' +
       "</div>";
   }
+
+  /* ============ PANEL ICONS (SVG — emoji নয়) ============ */
+  function applyPanelIcons(root) {
+    if (!window.ICONS) return;
+    (root || document).querySelectorAll("[data-sico]").forEach(function (el) {
+      if (el.dataset.sicoDone === "1") return;
+      var svg = window.ICONS.svg(el.getAttribute("data-sico"), el.dataset.sicoSize || 18);
+      if (!svg) return;
+      el.innerHTML = svg;
+      el.dataset.sicoDone = "1";
+    });
+  }
+
+  /* ============ GREETING (দিন + সময়) ============ */
+  function initGreeting() {
+    var k = $("#greet-kicker"), d = $("#greet-date");
+    if (!k || !d) return;
+    function tick() {
+      var now = new Date(), h = now.getHours();
+      k.textContent = h < 12 ? "GOOD MORNING" : h < 17 ? "GOOD AFTERNOON" : "GOOD EVENING";
+      d.textContent =
+        now.toLocaleDateString(undefined, { weekday: "long", year: "numeric", month: "long", day: "numeric" }) +
+        "  •  " + now.toLocaleTimeString(undefined, { hour: "2-digit", minute: "2-digit" });
+    }
+    tick();
+    setInterval(tick, 30000);
+  }
+
+  /* ============ LOGO MANAGER (২/৩টা logo — upload + delete) ============ */
+  var LOGO_SLOTS = ["logo_1", "logo_2", "logo_3"];
+
+  function renderLogoManager() {
+    var host = $("#logo-manager");
+    if (!host) return;
+    host.innerHTML = LOGO_SLOTS.map(function (k, i) {
+      var url = String(state.settings[k] || "").trim();
+      return '<div class="logo-slot' + (url ? " filled" : "") + '">' +
+        '<span class="slot-tag">Logo ' + (i + 1) + "</span>" +
+        (url
+          ? '<img class="slot-img" src="' + esc(url) + '" alt="Logo ' + (i + 1) + '" />'
+          : '<div class="slot-empty">' + (window.ICONS ? window.ICONS.svg("image", 26) : "") + "<span>Empty</span></div>") +
+        '<div class="slot-acts">' +
+          '<button class="btn-mini" data-logoup="' + k + '">' + (url ? "Replace" : "Upload") + "</button>" +
+          (url ? '<button class="btn-mini danger" data-logodel="' + k + '">Delete</button>' : "") +
+        "</div>" +
+        '<input type="file" accept="image/*" hidden data-logofile="' + k + '" />' +
+      "</div>";
+    }).join("");
+  }
+
+  function saveLogoKeys() {
+    return SB.table("settings?on_conflict=key", {
+      method: "POST",
+      prefer: "resolution=merge-duplicates",
+      body: LOGO_SLOTS.map(function (k) { return { key: k, value: String(state.settings[k] || "") }; })
+    });
+  }
+
+  document.addEventListener("click", function (e) {
+    var up = e.target.closest("[data-logoup]");
+    if (up) {
+      var fi = document.querySelector('[data-logofile="' + up.getAttribute("data-logoup") + '"]');
+      if (fi) { fi.value = ""; fi.click(); }
+      return;
+    }
+    var del = e.target.closest("[data-logodel]");
+    if (!del) return;
+    var key = del.getAttribute("data-logodel");
+    state.settings[key] = "";
+    renderLogoManager();
+    saveLogoKeys().then(function () {
+      setStatus("#status-logos", "✅ Logo deleted — live site reload করলেই দেখা যাবে।", true);
+      showAlert("Logo removed.", "info");
+      refreshCounts();
+    }).catch(function (err) {
+      setStatus("#status-logos", "❌ " + err.message, false);
+    });
+  });
+
+  document.addEventListener("change", function (e) {
+    var fi = e.target.closest("[data-logofile]");
+    if (!fi || !fi.files || !fi.files[0]) return;
+    var key = fi.getAttribute("data-logofile"), file = fi.files[0];
+    if (file.type && file.type.indexOf("image/") !== 0) { showAlert("Image file নির্বাচন করুন।", "info"); return; }
+    if (file.size > 5 * 1024 * 1024) { showAlert("সর্বোচ্চ ৫ MB ছবি হবে।", "info"); return; }
+    setStatus("#status-logos", "Uploading…", true);
+    var clean = String(file.name || "logo").replace(/[^a-z0-9.\-_]/gi, "_").toLowerCase();
+    SB.upload("assets/logo/" + Date.now() + "_" + clean, file).then(function (url) {
+      state.settings[key] = url;
+      renderLogoManager();
+      return saveLogoKeys();
+    }).then(function () {
+      setStatus("#status-logos", "✅ Logo uploaded — live site reload করলেই দেখা যাবে।", true);
+      showAlert("Logo uploaded.", "info");
+      refreshCounts();
+    }).catch(function (err) {
+      setStatus("#status-logos", "❌ " + err.message, false);
+    });
+  });
 
   document.addEventListener("click", function (e) {
     var r = e.target.closest(".ss-row[data-tab]");
@@ -1061,6 +1170,9 @@
       renderImgSettings();
       Object.keys(LISTS).forEach(renderList);
       refreshCounts();
+      renderLogoManager();
+      initGreeting();
+      applyPanelIcons();
 
       showAlert("Panel loaded. Changes you save will appear on the live site after reload.");
     } catch (err) {

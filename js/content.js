@@ -115,6 +115,23 @@
       }
     }
 
+    /* ---- brand logo strip (admin থেকে upload করা ২/৩টা logo) ---- */
+    var strip = D.getElementById("logo-strip");
+    if (strip) {
+      var logos = ["logo_1", "logo_2", "logo_3"]
+        .map(function (k) { return String(SET[k] || "").trim(); })
+        .filter(function (v) { return /^(https?:|\/|\.\/|data:image)/i.test(v); });
+      if (logos.length) {
+        strip.innerHTML = logos.map(function (u) {
+          return '<img src="' + u.replace(/"/g, "&quot;") + '" alt="Brand logo" loading="lazy" />';
+        }).join("");
+        strip.hidden = false;
+      } else {
+        strip.innerHTML = "";
+        strip.hidden = true;
+      }
+    }
+
     /* ---- avatar image (hero + about) ---- */
     if (SET.avatar_image) {
       D.querySelectorAll(".hero-avatar, .about-avatar").forEach(function (el) {

@@ -44,33 +44,36 @@
         </div>
       </div>
 
-      <nav class="sidebar-nav">
-        <span class="nav-label">Overview</span>
+      <nav class="sidebar-nav" id="sidebar-nav">
+        <!-- গুরুত্ব অনুযায়ী সাজানো: MAIN → PAGES → CONTENT → INBOX → SETTINGS -->
+        <span class="nav-label">Main</span>
         <button class="side-link active" data-tab="dashboard">
-          <span class="side-ico">▦</span> Dashboard
+          <span class="side-ico" data-sico="zap"></span> Dashboard
         </button>
 
-        <span class="nav-label">Content</span>
-        <button class="side-link" data-tab="profile"><span class="side-ico">🏠</span> Home</button>
-        <button class="side-link" data-tab="about"><span class="side-ico">📝</span> About</button>
-        <button class="side-link" data-tab="contact"><span class="side-ico">✉️</span> Contact &amp; Footer</button>
-        <button class="side-link" data-tab="theme"><span class="side-ico">🎨</span> Theme &amp; Images</button>
-        <button class="side-link" data-tab="labels"><span class="side-ico">🔤</span> Text &amp; Labels</button>
-        <button class="side-link" data-tab="seo"><span class="side-ico">🔍</span> SEO</button>
+        <span class="nav-label">Pages</span>
+        <button class="side-link" data-tab="profile"><span class="side-ico" data-sico="home"></span> Home / Hero</button>
+        <button class="side-link" data-tab="about"><span class="side-ico" data-sico="user"></span> About</button>
+        <button class="side-link" data-tab="contact"><span class="side-ico" data-sico="mail"></span> Contact &amp; Footer</button>
 
-        <span class="nav-label">Portfolio</span>
-        <button class="side-link" data-tab="stats"><span class="side-ico">📊</span> Stats</button>
-        <button class="side-link" data-tab="services"><span class="side-ico">🧩</span> Services</button>
-        <button class="side-link" data-tab="tools"><span class="side-ico">🛠️</span> Tools</button>
-        <button class="side-link" data-tab="projects"><span class="side-ico">🎨</span> Work / Projects</button>
-        <button class="side-link" data-tab="experience"><span class="side-ico">📅</span> Experience</button>
-        <button class="side-link" data-tab="testimonials"><span class="side-ico">⭐</span> Client Reviews</button>
+        <span class="nav-label">Content</span>
+        <button class="side-link" data-tab="projects"><span class="side-ico" data-sico="folder"></span> Work / Projects</button>
+        <button class="side-link" data-tab="services"><span class="side-ico" data-sico="briefcase"></span> Services</button>
+        <button class="side-link" data-tab="testimonials"><span class="side-ico" data-sico="quote"></span> Client Reviews</button>
+        <button class="side-link" data-tab="experience"><span class="side-ico" data-sico="calendar"></span> Experience</button>
+        <button class="side-link" data-tab="stats"><span class="side-ico" data-sico="trending"></span> Stats</button>
+        <button class="side-link" data-tab="tools"><span class="side-ico" data-sico="brush"></span> Tools</button>
 
         <span class="nav-label">Inbox</span>
         <button class="side-link" data-tab="messages">
-          <span class="side-ico">📥</span> Messages
+          <span class="side-ico" data-sico="message"></span> Messages
           <span class="side-badge" id="msg-side-badge" hidden>0</span>
         </button>
+
+        <span class="nav-label">Settings</span>
+        <button class="side-link" data-tab="theme"><span class="side-ico" data-sico="palette"></span> Theme &amp; Images</button>
+        <button class="side-link" data-tab="labels"><span class="side-ico" data-sico="type"></span> Text &amp; Labels</button>
+        <button class="side-link" data-tab="seo"><span class="side-ico" data-sico="target"></span> SEO</button>
       </nav>
 
       <div class="sidebar-foot">
@@ -86,25 +89,35 @@
       <header class="topbar">
         <button class="hamburger" id="hamburger" aria-label="Toggle sidebar"><span></span><span></span><span></span></button>
 
+        <div class="crumb-top">
+          <span class="crumb-root">Admin</span>
+          <span class="crumb-sep">/</span>
+          <span class="crumb-now" id="crumb-current">Dashboard</span>
+        </div>
+
         <div class="top-search">
-          <input type="text" id="top-search" placeholder="Search sections…" />
+          <span class="top-search-ico" data-sico="target"></span>
+          <input type="text" id="top-search" placeholder="Quick search sections…" />
         </div>
 
         <div class="top-right">
-          <button class="top-ico" id="admin-theme" title="Toggle theme"><span>🌙</span></button>
-          <button class="top-ico has-dot" title="Messages" data-tab-jump="messages"><span>🔔</span></button>
+          <button class="top-ico" id="admin-theme" title="Toggle theme"><span data-sico="moon"></span></button>
+          <a class="top-ico" href="index.html" target="_blank" rel="noopener" title="View live site"><span data-sico="globe"></span></a>
+          <button class="top-ico has-dot" id="bell-btn" title="Messages" data-tab-jump="messages">
+            <span data-sico="message"></span><i class="dot-badge" id="bell-badge" hidden>0</i>
+          </button>
           <div class="top-user">
             <span class="user-ava" id="user-ava">MS</span>
-            <span class="user-name" id="user-name">Admin</span>
-            <button class="logout-btn" id="logout-btn">Logout</button>
+            <span class="user-meta"><b id="user-name">Admin</b><small>Portfolio CMS</small></span>
           </div>
+          <button class="logout-btn" id="logout-btn">Logout</button>
         </div>
       </header>
 
       <!-- Page header -->
       <div class="page-head">
         <h1 id="page-title">Dashboard</h1>
-        <div class="crumbs"><a href="index.html" target="_blank">Home</a> <span>/</span> <span id="crumb-current">Dashboard</span></div>
+        <p class="page-sub">Everything on your live site — edit it here, then reload the site.</p>
       </div>
 
       <!-- Content -->
@@ -118,26 +131,35 @@
 
         <!-- ===== Dashboard ===== -->
         <section class="tab-panel" id="tab-dashboard">
+          <!-- Greeting -->
+          <div class="greet-card">
+            <div class="greet-txt">
+              <span class="greet-kicker" id="greet-kicker">GOOD DAY</span>
+              <h2 id="greet-name">Md Sajib!</h2>
+              <p id="greet-date">—</p>
+            </div>
+            <div class="greet-actions">
+              <button class="quick-btn" data-tab="projects"><span data-sico="folder"></span> Manage work</button>
+              <button class="quick-btn" data-tab="theme"><span data-sico="palette"></span> Theme &amp; images</button>
+            </div>
+          </div>
+
           <div class="cards-4">
             <div class="stat-card sc-cyan">
-              <div class="sc-head"><strong id="cnt-projects">—</strong><span class="sc-gear">⚙</span></div>
-              <span class="sc-label">Projects</span>
-              <svg class="sc-spark" viewBox="0 0 120 40" preserveAspectRatio="none"><path d="M0,30 C15,10 25,34 40,20 C55,8 65,32 80,16 C95,4 105,24 120,10" /></svg>
+              <div class="sc-ico" data-sico="folder"></div>
+              <div class="sc-body"><strong id="cnt-projects">—</strong><span class="sc-label">Projects</span></div>
             </div>
             <div class="stat-card sc-red">
-              <div class="sc-head"><strong id="cnt-messages">—</strong><span class="sc-gear">⚙</span></div>
-              <span class="sc-label">Messages</span>
-              <svg class="sc-spark" viewBox="0 0 120 40" preserveAspectRatio="none"><path d="M0,20 C10,34 22,6 34,26 C46,36 54,10 68,28 C82,38 92,8 104,22 C112,30 116,26 120,18" /></svg>
+              <div class="sc-ico" data-sico="message"></div>
+              <div class="sc-body"><strong id="cnt-messages">—</strong><span class="sc-label">Messages</span></div>
             </div>
             <div class="stat-card sc-amber">
-              <div class="sc-head"><strong id="cnt-services">—</strong><span class="sc-gear">⚙</span></div>
-              <span class="sc-label">Services</span>
-              <svg class="sc-spark" viewBox="0 0 120 40" preserveAspectRatio="none"><path d="M0,34 C14,26 24,8 38,14 C52,20 60,36 74,24 C88,12 98,6 112,16 L120,20" /></svg>
+              <div class="sc-ico" data-sico="briefcase"></div>
+              <div class="sc-body"><strong id="cnt-services">—</strong><span class="sc-label">Services</span></div>
             </div>
             <div class="stat-card sc-green">
-              <div class="sc-head"><strong id="cnt-experience">—</strong><span class="sc-gear">⚙</span></div>
-              <span class="sc-label">Experience</span>
-              <svg class="sc-spark" viewBox="0 0 120 40" preserveAspectRatio="none"><path d="M0,26 C16,12 26,30 42,18 C58,6 66,28 82,20 C98,12 108,4 120,14" /></svg>
+              <div class="sc-ico" data-sico="calendar"></div>
+              <div class="sc-body"><strong id="cnt-experience">—</strong><span class="sc-label">Experience</span></div>
             </div>
           </div>
 
@@ -164,12 +186,12 @@
             <div class="panel-head"><h2>Site status &amp; quick links</h2></div>
             <div class="site-status" id="site-status"></div>
             <div class="quick-grid" id="quick-grid">
-              <button class="quick-btn" data-tab="profile">🏠 Edit home / hero</button>
-              <button class="quick-btn" data-tab="theme">🎨 Change color theme</button>
-              <button class="quick-btn" data-tab="projects">🎨 Manage work</button>
-              <button class="quick-btn" data-tab="testimonials">⭐ Add client review</button>
-              <button class="quick-btn" data-tab="services">🧩 Manage services</button>
-              <button class="quick-btn" data-tab="messages">📥 Read messages</button>
+              <button class="quick-btn" data-tab="profile"><span data-sico="pen"></span> Edit home / hero</button>
+              <button class="quick-btn" data-tab="theme"><span data-sico="palette"></span> Change color theme</button>
+              <button class="quick-btn" data-tab="projects"><span data-sico="folder"></span> Manage work</button>
+              <button class="quick-btn" data-tab="testimonials"><span data-sico="quote"></span> Add client review</button>
+              <button class="quick-btn" data-tab="services"><span data-sico="briefcase"></span> Manage services</button>
+              <button class="quick-btn" data-tab="messages"><span data-sico="message"></span> Read messages</button>
             </div>
           </div>
         </section>
@@ -214,7 +236,7 @@
         <section class="tab-panel" id="tab-theme" hidden>
           <div class="panel">
             <div class="panel-head">
-              <h2>🎨 Color Theme <small>(10 themes + custom)</small></h2>
+              <h2><span data-sico="palette"></span> Color Theme <small>(10 themes + custom)</small></h2>
               <button class="btn btn-primary" id="save-theme">Save theme</button>
             </div>
             <div class="theme-grid" id="theme-grid"></div>
@@ -231,9 +253,19 @@
             <p class="save-status" id="status-theme"></p>
           </div>
 
+          <!-- ===== Logo Manager (২/৩টা logo upload + delete) ===== -->
           <div class="panel">
             <div class="panel-head">
-              <h2>🖼️ Images <small>(logo, profile photo)</small></h2>
+              <h2><span data-sico="image"></span> Logo Manager <small>(site header-এ logo strip হিসেবে দেখাবে)</small></h2>
+            </div>
+            <p class="panel-note">যত খুশি logo রাখতে পারেন না — সর্বোচ্চ <b>৩টি</b>। খালি ঘর সাইটে দেখানো হবে না। সবগুলো delete করলে header-এ শুধু নাম থাকবে।</p>
+            <div class="logo-manager" id="logo-manager"></div>
+            <p class="save-status" id="status-logos"></p>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head">
+              <h2><span data-sico="image"></span> Images <small>(avatar photo)</small></h2>
               <button class="btn btn-primary" id="save-images">Save images</button>
             </div>
             <div class="form-grid" id="img-settings"></div>

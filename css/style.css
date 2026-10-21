@@ -537,6 +537,27 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .nav-logo-img { height: 34px; width: auto; max-width: 150px; object-fit: contain; display: block; }
 .nav-logo-img[hidden] { display: none; }
 
+/* ---- Brand logo strip (admin থেকে upload করা ২/৩টা logo) ---- */
+.logo-strip {
+  display: flex; align-items: center; justify-content: center; flex-wrap: wrap;
+  gap: 24px 42px;
+  padding: 26px 20px;
+  background: var(--bg-soft, #f6faf8);
+  border-top: 1px solid var(--border, #e7ece9);
+  border-bottom: 1px solid var(--border, #e7ece9);
+}
+.logo-strip[hidden] { display: none; }
+.logo-strip img {
+  height: 44px; width: auto; max-width: 180px; object-fit: contain;
+  filter: grayscale(1); opacity: 0.7;
+  transition: var(--transition, 0.3s ease);
+}
+.logo-strip img:hover { filter: grayscale(0); opacity: 1; transform: translateY(-2px); }
+@media (max-width: 640px) {
+  .logo-strip { gap: 16px 26px; padding: 20px 16px; }
+  .logo-strip img { height: 34px; max-width: 125px; }
+}
+
 /* --- hero / about avatar --- */
 .hero-avatar.has-img,
 .about-avatar.has-img {
