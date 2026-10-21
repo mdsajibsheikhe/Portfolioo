@@ -227,11 +227,17 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 
 .theme-toggle {
   display: flex; align-items: center; justify-content: center;
-  width: 42px; height: 42px; border-radius: 50%;
+  width: 44px; height: 44px; border-radius: 50%;
   background: var(--bg-soft); border: 1px solid var(--border);
-  font-size: 1.05rem; transition: all var(--transition);
+  color: var(--primary); /* icon সবসময় স্পষ্ট দেখা যায় (light + dark দুটোতেই) */
+  transition: all var(--transition);
 }
-.theme-toggle:hover { transform: rotate(20deg) scale(1.1); box-shadow: var(--shadow-sm); }
+.theme-toggle:hover {
+  transform: rotate(20deg) scale(1.1);
+  box-shadow: var(--shadow-sm);
+  background: rgba(var(--primary-rgb), 0.14);
+  border-color: rgba(var(--primary-rgb), 0.45);
+}
 /* [data-ico] { display:inline-flex } পরে আসায় .theme-icon-* কে override করত —
    তাই .theme-toggle scope দিয়ে specificity বাড়ানো হয়েছে */
 [data-theme="dark"] .theme-toggle .theme-icon-sun { display: inline-flex; }
@@ -569,7 +575,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 [data-ico] { display: inline-flex; align-items: center; justify-content: center; }
 
 .theme-icon-sun, .theme-icon-moon { align-items: center; justify-content: center; }
-.theme-icon-sun svg, .theme-icon-moon svg { width: 20px; height: 20px; }
+.theme-icon-sun svg, .theme-icon-moon svg { width: 21px; height: 21px; stroke-width: 2.2; }
 
 .scroll-top[data-ico] svg { width: 20px; height: 20px; }
 .btn [data-ico] svg { width: 18px; height: 18px; }
