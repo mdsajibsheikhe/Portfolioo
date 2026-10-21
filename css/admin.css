@@ -170,7 +170,7 @@ a { color: inherit; }
   display: flex;
   align-items: center;
   gap: 11px;
-  padding: 15px 18px 14px;
+  padding: 13px 18px 12px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.07);
 }
 
@@ -248,7 +248,7 @@ a { color: inherit; }
 }
 
 .sidebar-foot {
-  padding: 11px 18px;
+  padding: 8px 18px;
   border-top: 1px solid rgba(255, 255, 255, 0.07);
 }
 .sidebar-foot a {
@@ -997,12 +997,12 @@ a { color: inherit; }
 
 /* ---- Sidebar groups + SVG icons ---- */
 .nav-label {
-  padding: 11px 12px 4px;
+  padding: 8px 12px 3px;
   font-size: 10px; letter-spacing: 1.6px; color: #697583;
 }
-.nav-label:not(:first-child) { border-top: 1px solid rgba(255, 255, 255, 0.06); margin-top: 5px; }
+.nav-label:not(:first-child) { border-top: 1px solid rgba(255, 255, 255, 0.06); margin-top: 3px; }
 
-.side-link { gap: 11px; padding: 7px 12px; border-radius: 9px; position: relative; font-size: 13.5px; }
+.side-link { gap: 11px; padding: 6px 12px; border-radius: 9px; position: relative; font-size: 13.5px; }
 .side-link::before {
   content: ""; position: absolute; left: 0; top: 50%; transform: translateY(-50%);
   width: 3px; height: 0; background: var(--cyan); border-radius: 0 4px 4px 0;

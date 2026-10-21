@@ -623,7 +623,7 @@
       '<input type="text" class="img-text" data-imgtext="' + path + '" value="' + esc(v) + '" placeholder="Image URL" />' +
       '<div class="img-actions">' +
         '<button type="button" class="btn-mini" data-imgup="' + path + '">⬆ Upload image</button>' +
-        '<button type="button" class="btn-mini ghost" data-imgclr="' + path + '">✕ Remove</button>' +
+        '<button type="button" class="btn-mini ghost" data-imgclr="' + path + '"><span data-sico="close" data-sico-size="14"></span> Remove</button>' +
       "</div>" +
       (v ? '<img class="img-thumb" src="' + esc(v) + '" alt="" />'
          : '<div class="img-thumb empty">No image</div>') +
