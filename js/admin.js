@@ -462,7 +462,7 @@
       return '<button type="button" class="theme-card' + (cur === t.id ? " active" : "") + '" data-theme-id="' + t.id + '">' +
         '<span class="theme-swatches">' + sw + "</span>" +
         '<span class="theme-name">' + esc(t.n) + "</span>" +
-        '<span class="theme-check">' + (cur === t.id ? "✓" : "") + "</span>" +
+        '<span class="theme-check">' + (cur === t.id ? '<span data-sico="check" data-sico-size="13"></span>' : "") + "</span>" +
         "</button>";
     }).join("");
 
@@ -622,7 +622,7 @@
       (hint ? '<p class="field-hint">' + esc(hint) + "</p>" : "") +
       '<input type="text" class="img-text" data-imgtext="' + path + '" value="' + esc(v) + '" placeholder="Image URL" />' +
       '<div class="img-actions">' +
-        '<button type="button" class="btn-mini" data-imgup="' + path + '">⬆ Upload image</button>' +
+        '<button type="button" class="btn-mini" data-imgup="' + path + '"><span data-sico="upload" data-sico-size="15"></span> Upload image</button>' +
         '<button type="button" class="btn-mini ghost" data-imgclr="' + path + '"><span data-sico="close" data-sico-size="14"></span> Remove</button>' +
       "</div>" +
       (v ? '<img class="img-thumb" src="' + esc(v) + '" alt="" />'
@@ -990,7 +990,7 @@
 
     function row(label, ok, hint, tab) {
       return '<button class="ss-row' + (ok ? " ok" : " todo") + '"' + (tab ? ' data-tab="' + tab + '"' : "") + ">" +
-        '<span class="ss-dot">' + (ok ? "✓" : "!") + "</span>" +
+        '<span class="ss-dot">' + (ok ? '<span data-sico="check" data-sico-size="12"></span>' : '<span data-sico="alert" data-sico-size="12"></span>') + "</span>" +
         '<span class="ss-label">' + esc(label) + "</span>" +
         '<span class="ss-hint">' + esc(hint) + "</span>" +
         "</button>";

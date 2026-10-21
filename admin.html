@@ -45,7 +45,13 @@
       </div>
 
       <nav class="sidebar-nav" id="sidebar-nav">
-        <!-- গুরুত্ব অনুযায়ী সাজানো: MAIN → PAGES → CONTENT → INBOX → SETTINGS -->
+        <!-- গুরুত্ব অনুযায়ী সাজানো: INBOX → MAIN → PAGES → CONTENT → SETTINGS -->
+        <span class="nav-label">Inbox</span>
+        <button class="side-link" data-tab="messages">
+          <span class="side-ico" data-sico="message"></span> Messages
+          <span class="side-badge" id="msg-side-badge" hidden>0</span>
+        </button>
+
         <span class="nav-label">Main</span>
         <button class="side-link active" data-tab="dashboard">
           <span class="side-ico" data-sico="zap"></span> Dashboard
@@ -63,12 +69,6 @@
         <button class="side-link" data-tab="experience"><span class="side-ico" data-sico="calendar"></span> Experience</button>
         <button class="side-link" data-tab="stats"><span class="side-ico" data-sico="trending"></span> Stats</button>
         <button class="side-link" data-tab="tools"><span class="side-ico" data-sico="brush"></span> Tools</button>
-
-        <span class="nav-label">Inbox</span>
-        <button class="side-link" data-tab="messages">
-          <span class="side-ico" data-sico="message"></span> Messages
-          <span class="side-badge" id="msg-side-badge" hidden>0</span>
-        </button>
 
         <span class="nav-label">Settings</span>
         <button class="side-link" data-tab="theme"><span class="side-ico" data-sico="palette"></span> Theme &amp; Images</button>
