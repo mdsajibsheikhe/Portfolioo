@@ -609,7 +609,15 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 
 /* ---- Reviews slider ---- */
 .reviews-slider { margin-top: 48px; }
-.reviews-viewport { overflow: hidden; margin: 0 -8px; padding: 8px; }
+.reviews-viewport {
+  overflow: hidden;
+  margin: 0 -8px;
+  padding: 8px;
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.reviews-viewport:active { cursor: grabbing; }
 .reviews-track {
   display: flex;
   gap: 24px;
@@ -700,7 +708,8 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .review-text {
   font-size: 15.5px;
   line-height: 1.7;
-  color: var(--text-soft, #5b6b62);
+  /* --text-soft কোথাও define করা ছিল না → কালো fallback বসত (dark-এ অদৃশ্য) */
+  color: var(--text-light, #5b6b62);
   margin-bottom: 22px;
 }
 

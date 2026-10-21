@@ -377,13 +377,18 @@
       return 4;
     }
 
+    /* পরের card-এর একটু অংশ দেখা যাবে (peek) — বোঝা যায় এটা slider */
+    function peek() { return perView() >= 3 ? 0.22 : 0.12; }
+
     function maxIdx() { return Math.max(0, cards.length - perView()); }
+
+    function cardStep() { return (cards[0] ? cards[0].offsetWidth : 300) + 24; }
 
     function layout() {
       var pv = perView();
       var gap = 24;
       var w = track.clientWidth || slider.clientWidth;
-      var cardW = Math.max(240, Math.floor((w - gap * (pv - 1)) / pv));
+      var cardW = Math.max(240, Math.floor((w - gap * (pv - 1)) / (pv + peek())));
       cards.forEach(function (c) { c.style.flex = "0 0 " + cardW + "px"; });
       if (idx > maxIdx()) idx = maxIdx();
       track.style.transform = "translateX(-" + idx * (cardW + gap) + "px)";
@@ -404,22 +409,28 @@
       dotsHost.innerHTML = html;
     }
 
+    var reduce = !!(window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches);
+
+    /* wrap-around — শেষে গিয়ে আবার শুরুতে ফিরে আসে, তাই arrow সবসময় কাজ করে */
     function go(n) {
-      idx = Math.max(0, Math.min(maxIdx(), n));
+      var m = maxIdx();
+      if (m <= 0) { idx = 0; layout(); return; }
+      idx = n < 0 ? m : (n > m ? 0 : n);
       layout();
     }
 
+    function step(d) { go(idx + d); auto(); }
+
     function auto() {
       clearInterval(revTimer);
-      revTimer = setInterval(function () {
-        go(idx >= maxIdx() ? 0 : idx + 1);
-      }, 5000);
+      if (reduce || cards.length <= perView()) return;
+      revTimer = setInterval(function () { go(idx >= maxIdx() ? 0 : idx + 1); }, 5000);
     }
 
     var prev = q("#rev-prev");
     var next = q("#rev-next");
-    if (prev) prev.addEventListener("click", function () { go(idx - 1); auto(); });
-    if (next) next.addEventListener("click", function () { go(idx + 1); auto(); });
+    if (prev) prev.addEventListener("click", function () { step(-1); });
+    if (next) next.addEventListener("click", function () { step(1); });
     if (dotsHost) {
       dotsHost.addEventListener("click", function (e) {
         var b = e.target.closest("[data-rev-page]");
@@ -441,7 +452,35 @@
     track.addEventListener("touchend", function () {
       if (!dragging) return;
       dragging = false;
-      if (Math.abs(dx) > 45) { go(idx + (dx < 0 ? 1 : -1)); auto(); }
+      if (Math.abs(dx) > 45) step(dx < 0 ? 1 : -1);
+    });
+
+    /* mouse drag (ডেস্কটপ) */
+    var mx = 0, mdx = 0, mdrag = false;
+    track.addEventListener("mousedown", function (e) {
+      if (e.button) return;
+      mdrag = true; mx = e.clientX; mdx = 0;
+      track.style.transition = "none";
+      clearInterval(revTimer);
+    });
+    window.addEventListener("mousemove", function (e) {
+      if (!mdrag) return;
+      mdx = e.clientX - mx;
+      track.style.transform = "translateX(-" + (idx * cardStep() - mdx) + "px)";
+    });
+    window.addEventListener("mouseup", function () {
+      if (!mdrag) return;
+      mdrag = false;
+      track.style.transition = "";
+      if (Math.abs(mdx) > 50) step(mdx < 0 ? 1 : -1);
+      else { layout(); auto(); }
+    });
+    track.addEventListener("dragstart", function (e) { e.preventDefault(); });
+
+    /* ট্যাব hidden হলে autoplay থামাও */
+    document.addEventListener("visibilitychange", function () {
+      if (document.hidden) clearInterval(revTimer);
+      else auto();
     });
 
     layout();
