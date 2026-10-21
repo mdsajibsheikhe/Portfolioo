@@ -512,7 +512,7 @@
 
   /* ---- Images panel (logo + profile photo) ---- */
   var IMG_SETTINGS = [
-    { k: "logo_image", l: "Site logo (header)", h: "খালি রাখলে text logo (&lt;Sajib/&gt;) দেখাবে" },
+    { k: "logo_image", l: "Header logo (image)", h: "খালি রাখলে নাম লেখা দেখাবে। Brand logo strip-এর জন্য উপরের Logo Manager ব্যবহার করুন।" },
     { k: "avatar_image", l: "Profile photo (hero + about)", h: "খালি রাখলে initials \"MS\" দেখাবে" }
   ];
 
