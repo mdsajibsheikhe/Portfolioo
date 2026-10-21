@@ -276,6 +276,8 @@
       var tags = (p.tags || []).map(function (t) { return "<span>" + esc(t) + "</span>"; }).join("");
       var raw = String(p.emoji || "").trim();
       var ico = EMOJI_ICO[raw] || (/^[a-zA-Z][a-zA-Z0-9_]*$/.test(raw) ? raw : "");
+      /* নামটা icon set-এ না থাকলে layers দাও — নাহলে সরাসরি text বসে যেত */
+      if (ico && window.ICONS && !ICONS.has(ico)) ico = "layers";
       var media = p.image
         ? '<img class="project-img" src="' + esc(p.image) + '" alt="' + esc(p.title) + '" loading="lazy" />'
         : '<span class="project-emoji">' + (window.ICONS && ico ? ICONS.resolve(ico, "layers", 54) : (raw ? esc(raw) : "")) + "</span>";
