@@ -149,11 +149,13 @@ function initReveal() {
     });
 }
 
-/* IntersectionObserver না চললেও স্ক্রিনে যা আছে সেটা লুকিয়ে রাখবে না */
+/* IntersectionObserver না চললেও স্ক্রিনে যা আছে সেটা লুকিয়ে রাখবে না —
+   fold-এর উপরে/ভিতরে সব element সাথে সাথে active হবে */
 function revealInView() {
+  const vh = window.innerHeight || 600;
   document.querySelectorAll(".reveal:not(.active)").forEach((el) => {
     const r = el.getBoundingClientRect();
-    if (r.top < window.innerHeight * 0.92 && r.bottom > 0) el.classList.add("active");
+    if (r.top < vh) el.classList.add("active");
   });
 }
 window.addEventListener("scroll", revealInView, { passive: true });
