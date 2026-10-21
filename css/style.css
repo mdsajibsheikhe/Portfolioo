@@ -56,16 +56,17 @@
    10 COLOR THEMES — admin panel থেকে বাছাই
    প্রতিটি theme: light triad + dark triad + rgb
    ============================================ */
-[data-color="emerald"] { --t1:#059669; --t2:#10b981; --t3:#34d399; --d1:#10b981; --d2:#34d399; --d3:#6ee7b7; --primary-rgb:5,150,105; }
-[data-color="ocean"]   { --t1:#0369a1; --t2:#0284c7; --t3:#38bdf8; --d1:#0ea5e9; --d2:#38bdf8; --d3:#7dd3fc; --primary-rgb:3,105,161; }
-[data-color="indigo"]  { --t1:#4338ca; --t2:#4f46e5; --t3:#818cf8; --d1:#6366f1; --d2:#818cf8; --d3:#a5b4fc; --primary-rgb:67,56,202; }
-[data-color="violet"]  { --t1:#7c3aed; --t2:#8b5cf6; --t3:#a78bfa; --d1:#8b5cf6; --d2:#a78bfa; --d3:#c4b5fd; --primary-rgb:124,58,237; }
-[data-color="rose"]    { --t1:#be123c; --t2:#e11d48; --t3:#fb7185; --d1:#f43f5e; --d2:#fb7185; --d3:#fda4af; --primary-rgb:190,18,60; }
-[data-color="sunset"]  { --t1:#c2410c; --t2:#ea580c; --t3:#fb923c; --d1:#f97316; --d2:#fb923c; --d3:#fdba74; --primary-rgb:194,65,12; }
-[data-color="amber"]   { --t1:#b45309; --t2:#d97706; --t3:#fbbf24; --d1:#f59e0b; --d2:#fbbf24; --d3:#fcd34d; --primary-rgb:180,83,9; }
-[data-color="teal"]    { --t1:#0f766e; --t2:#0d9488; --t3:#2dd4bf; --d1:#14b8a6; --d2:#2dd4bf; --d3:#5eead4; --primary-rgb:15,118,110; }
-[data-color="lime"]    { --t1:#4d7c0f; --t2:#65a30d; --t3:#a3e635; --d1:#84cc16; --d2:#a3e635; --d3:#d9f99d; --primary-rgb:77,124,15; }
-[data-color="slate"]   { --t1:#475569; --t2:#64748b; --t3:#94a3b8; --d1:#94a3b8; --d2:#cbd5e1; --d3:#e2e8f0; --primary-rgb:71,85,105; }
+/* ---- আপনার দেওয়া colour palettes থেকে তৈরি ১০টা theme ---- */
+[data-color="emerald"]    { --t1:#059669; --t2:#10b981; --t3:#34d399; --d1:#10b981; --d2:#34d399; --d3:#6ee7b7; --primary-rgb:5,150,105; }
+[data-color="autumn"]     { --t1:#8e5c63; --t2:#a8757c; --t3:#c9a0a5; --d1:#b9858d; --d2:#d2aab0; --d3:#e8cdd1; --primary-rgb:142,92,99; }
+[data-color="sage"]       { --t1:#6f8a76; --t2:#8fa794; --t3:#b6c8ba; --d1:#9cb4a2; --d2:#bcd0c0; --d3:#dce7dd; --primary-rgb:111,138,118; }
+[data-color="terracotta"] { --t1:#b85434; --t2:#d96846; --t3:#eda588; --d1:#e07a52; --d2:#efa07f; --d3:#f8ccba; --primary-rgb:184,84,52; }
+[data-color="olive"]      { --t1:#4f5729; --t2:#6b7540; --t3:#9aa76d; --d1:#8b9557; --d2:#aab37e; --d3:#c9cfa9; --primary-rgb:79,87,41; }
+[data-color="coral"]      { --t1:#dd4f2b; --t2:#ef6b3c; --t3:#f5a06a; --d1:#f2703f; --d2:#f79a63; --d3:#fbcb9f; --primary-rgb:221,79,43; }
+[data-color="slateblue"]  { --t1:#34495e; --t2:#4a627a; --t3:#8fa3b3; --d1:#5b7896; --d2:#8fa8bf; --d3:#c4d4e0; --primary-rgb:52,73,94; }
+[data-color="coastal"]    { --t1:#2e4052; --t2:#46627a; --t3:#a5c9ca; --d1:#4f808c; --d2:#7cabae; --d3:#bcdde0; --primary-rgb:46,64,82; }
+[data-color="mustard"]    { --t1:#a8862f; --t2:#d0b264; --t3:#e6d4a0; --d1:#d0b264; --d2:#e6d4a0; --d3:#f3ead0; --primary-rgb:168,134,47; }
+[data-color="clay"]       { --t1:#b8432a; --t2:#c84b31; --t3:#de8a72; --d1:#d4603f; --d2:#e58a6d; --d3:#f2bda9; --primary-rgb:184,67,42; }
 
 /* admin থেকে দেওয়া custom theme (৩টা color) */
 [data-color="custom"] { --t1:var(--c1,#059669); --t2:var(--c2,#10b981); --t3:var(--c3,#34d399); --d1:var(--c1,#059669); --d2:var(--c2,#10b981); --d3:var(--c3,#34d399); }
@@ -231,10 +232,10 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   font-size: 1.05rem; transition: all var(--transition);
 }
 .theme-toggle:hover { transform: rotate(20deg) scale(1.1); box-shadow: var(--shadow-sm); }
-[data-theme="dark"] .theme-icon-sun { display: inline; }
+[data-theme="dark"] .theme-icon-sun { display: inline-flex; }
 [data-theme="dark"] .theme-icon-moon { display: none; }
 .theme-icon-sun { display: none; }
-.theme-icon-moon { display: inline; }
+.theme-icon-moon { display: inline-flex; }
 
 .nav-cv { padding: 0.55rem 1.4rem; font-size: 0.9rem; box-shadow: 0 8px 20px rgba(var(--primary-rgb), 0.28); }
 .nav-cv:hover { box-shadow: 0 12px 26px rgba(var(--primary-rgb), 0.4); }
@@ -565,7 +566,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 .ico { display: inline-block; vertical-align: middle; flex: none; }
 [data-ico] { display: inline-flex; align-items: center; justify-content: center; }
 
-.theme-icon-sun, .theme-icon-moon { display: inline-flex; align-items: center; }
+.theme-icon-sun, .theme-icon-moon { align-items: center; justify-content: center; }
 .theme-icon-sun svg, .theme-icon-moon svg { width: 20px; height: 20px; }
 
 .scroll-top[data-ico] svg { width: 20px; height: 20px; }
@@ -726,4 +727,70 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 @media (max-width: 480px) {
   .review-card { padding: 26px 20px 22px; }
   .review-quote svg { width: 26px; height: 26px; }
+}
+
+/* ============================================================
+   Thank-you popup
+   ============================================================ */
+.popup-overlay {
+  position: fixed; inset: 0; z-index: 9999;
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px;
+  background: rgba(6, 20, 15, 0.55);
+  backdrop-filter: blur(7px);
+  -webkit-backdrop-filter: blur(7px);
+  animation: popFade 0.28s ease;
+}
+@keyframes popFade { from { opacity: 0; } to { opacity: 1; } }
+
+.popup-card {
+  width: 100%; max-width: 430px;
+  padding: 40px 34px 34px;
+  text-align: center;
+  border-radius: 24px;
+  background: var(--bg, #fff);
+  border: 1px solid var(--border, #e7ece9);
+  box-shadow: 0 30px 80px rgba(6, 20, 15, 0.32);
+  transform: scale(0.86) translateY(14px);
+  opacity: 0;
+}
+.popup-card.in { animation: popIn 0.36s cubic-bezier(0.34, 1.4, 0.64, 1) forwards; }
+@keyframes popIn { to { transform: scale(1) translateY(0); opacity: 1; } }
+
+.popup-ico {
+  width: 84px; height: 84px;
+  margin: 0 auto 20px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  background: rgba(var(--primary-rgb, 5, 150, 105), 0.12);
+  color: var(--primary, #059669);
+  animation: popRing 0.6s ease 0.15s;
+}
+.popup-ico svg { width: 52px; height: 52px; }
+@keyframes popRing {
+  0% { box-shadow: 0 0 0 0 rgba(var(--primary-rgb, 5, 150, 105), 0.4); }
+  100% { box-shadow: 0 0 0 26px rgba(var(--primary-rgb, 5, 150, 105), 0); }
+}
+
+.popup-title {
+  font-size: 1.45rem; font-weight: 700;
+  margin: 0 0 10px; color: var(--text, #0f172a);
+  line-height: 1.3;
+}
+.popup-text {
+  font-size: 0.95rem; line-height: 1.65;
+  color: var(--text-light, #5b6b62);
+  margin: 0 0 26px;
+}
+.popup-actions { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; }
+.popup-actions .btn { padding: 0.7rem 1.5rem; font-size: 0.9rem; }
+.popup-wa-ico { display: inline-flex; margin-right: 7px; }
+.popup-wa-ico svg { width: 18px; height: 18px; }
+#popup-wa { background: #25d366; border-color: #25d366; box-shadow: 0 8px 22px rgba(37, 211, 102, 0.35); }
+#popup-wa:hover { background: #1eb857; border-color: #1eb857; transform: translateY(-2px); }
+
+@media (max-width: 420px) {
+  .popup-card { padding: 32px 22px 26px; }
+  .popup-actions { flex-direction: column; }
+  .popup-actions .btn { width: 100%; justify-content: center; display: flex; align-items: center; }
 }

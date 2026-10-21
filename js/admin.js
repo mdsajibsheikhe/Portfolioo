@@ -34,10 +34,12 @@
         { k: "hero_desc", l: "Hero description", t: "textarea", wide: true },
         { k: "avatar", l: "Avatar initials (e.g. MS)" },
         { k: "cv_url", l: "Download CV link" },
-        { k: "facebook", l: "Facebook URL" },
-        { k: "instagram", l: "Instagram URL" },
-        { k: "linkedin", l: "LinkedIn URL" },
-        { k: "twitter", l: "X / Twitter URL" },
+        { k: "linkedin", l: "LinkedIn URL (খালি রাখলে hero-তে লুকিয়ে যাবে)" },
+        { k: "behance", l: "Behance URL (খালি রাখলে লুকিয়ে যাবে)" },
+        { k: "whatsapp", l: "WhatsApp number (+8801... — hero icon ও popup-এ ব্যবহার হবে)" },
+        { k: "facebook", l: "Facebook URL (খালি রাখলে লুকিয়ে যাবে)" },
+        { k: "instagram", l: "Instagram URL (খালি রাখলে লুকিয়ে যাবে)" },
+        { k: "twitter", l: "X / Twitter URL (খালি রাখলে লুকিয়ে যাবে)" },
         { k: "footer_text", l: "Footer text", wide: true }
       ]
     },
@@ -206,8 +208,14 @@
       { k: "contact_title", l: "Title — main word" },
       { k: "contact_title_accent", l: "Title — green word" },
       { k: "contact_item_email", l: "Item label: Email" },
+      { k: "contact_item_whatsapp", l: "Item label: WhatsApp" },
       { k: "contact_item_location", l: "Item label: Location" },
       { k: "contact_item_socials", l: "Item label: Socials" }
+    ]},
+    { group: "Thank-you popup", keys: [
+      { k: "popup_title", l: "Popup title" },
+      { k: "popup_text", l: "Popup message", t: "textarea" },
+      { k: "popup_btn", l: "Popup button" }
     ]},
     { group: "Contact form", keys: [
       { k: "form_name_label", l: "Label: Name" },
@@ -401,17 +409,17 @@
 
   /* ============ APPEARANCE: 10 color themes ============ */
   var THEMES = [
-    { id: "emerald", n: "Emerald", c: ["#059669", "#10b981", "#34d399"] },
-    { id: "ocean",   n: "Ocean",   c: ["#0369a1", "#0284c7", "#38bdf8"] },
-    { id: "indigo",  n: "Indigo",  c: ["#4338ca", "#4f46e5", "#818cf8"] },
-    { id: "violet",  n: "Violet",  c: ["#7c3aed", "#8b5cf6", "#a78bfa"] },
-    { id: "rose",    n: "Rose",    c: ["#be123c", "#e11d48", "#fb7185"] },
-    { id: "sunset",  n: "Sunset",  c: ["#c2410c", "#ea580c", "#fb923c"] },
-    { id: "amber",   n: "Amber",   c: ["#b45309", "#d97706", "#fbbf24"] },
-    { id: "teal",    n: "Teal",    c: ["#0f766e", "#0d9488", "#2dd4bf"] },
-    { id: "lime",    n: "Lime",    c: ["#4d7c0f", "#65a30d", "#a3e635"] },
-    { id: "slate",   n: "Slate",   c: ["#475569", "#64748b", "#94a3b8"] },
-    { id: "custom",  n: "Custom",  c: null }
+    { id: "emerald",    n: "Emerald",     c: ["#059669", "#10b981", "#34d399"] },
+    { id: "autumn",     n: "Autumn",      c: ["#8e5c63", "#a8757c", "#c9a0a5"] },
+    { id: "sage",       n: "Sage",        c: ["#6f8a76", "#8fa794", "#b6c8ba"] },
+    { id: "terracotta", n: "Terracotta",  c: ["#b85434", "#d96846", "#eda588"] },
+    { id: "olive",      n: "Olive",       c: ["#4f5729", "#6b7540", "#9aa76d"] },
+    { id: "coral",      n: "Coral",       c: ["#dd4f2b", "#ef6b3c", "#f5a06a"] },
+    { id: "slateblue",  n: "Slate Blue",  c: ["#34495e", "#4a627a", "#8fa3b3"] },
+    { id: "coastal",    n: "Coastal",     c: ["#2e4052", "#46627a", "#a5c9ca"] },
+    { id: "mustard",    n: "Mustard",     c: ["#a8862f", "#d0b264", "#e6d4a0"] },
+    { id: "clay",       n: "Clay",        c: ["#b8432a", "#c84b31", "#de8a72"] },
+    { id: "custom",     n: "Custom",      c: null }
   ];
 
   function applyAdminTheme(id) {

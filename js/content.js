@@ -10,6 +10,7 @@
 
   var D = document;
   var SET = {}; // settings map
+  var WHATSAPP = "";
 
   function esc(v) {
     return String(v === null || v === undefined ? "" : v).replace(/[&<>"']/g, function (c) {
@@ -48,10 +49,11 @@
   function applySettings() {
     if (!Object.keys(SET).length) return;
 
-    /* ---- color theme (10 preset + custom) ---- */
-    var THEMES = ["emerald","ocean","indigo","violet","rose","sunset","amber","teal","lime","slate","custom"];
+    /* ---- color theme (১০টা palette theme + custom) ---- */
+    var THEMES = ["emerald","autumn","sage","terracotta","olive","coral","slateblue","coastal","mustard","clay","custom"];
+    var LEGACY = { ocean:"slateblue", indigo:"slateblue", violet:"clay", rose:"clay", sunset:"coral", amber:"mustard", teal:"sage", lime:"sage", slate:"slateblue" };
     var th = SET.theme || "emerald";
-    if (THEMES.indexOf(th) === -1) th = "emerald";
+    if (THEMES.indexOf(th) === -1) th = LEGACY[th] || "emerald";
     document.documentElement.setAttribute("data-color", th);
     if (th === "custom") {
       var rs = document.documentElement.style;
@@ -144,14 +146,24 @@
       contact_heading: p.contact_heading,
       contact_sub: p.contact_sub,
       contact_email: p.contact_email,
+      contact_whatsapp: p.whatsapp,
       contact_location: p.contact_location,
       contact_socials: p.contact_socials,
       footer_text: p.footer_text,
       social_facebook: p.facebook,
       social_instagram: p.instagram,
       social_linkedin: p.linkedin,
-      social_twitter: p.twitter
+      social_twitter: p.twitter,
+      social_behance: p.behance,
+      social_whatsapp: p.whatsapp
     };
+
+    /* WhatsApp link wa.me তে বদলাও */
+    if (p.whatsapp) {
+      var digits = String(p.whatsapp).replace(/[^\d]/g, "");
+      c.social_whatsapp = digits ? "https://wa.me/" + digits : "";
+      WHATSAPP = digits;
+    }
 
     // profession: শেষ word টা green করে
     if (p.profession) {
@@ -175,8 +187,13 @@
       if (key === "profession" || key === "avatar_multiple") return;
 
       var v = c[key];
-      if (key === "social_facebook" || key === "social_instagram" || key === "social_linkedin" || key === "social_twitter") {
-        if (v) el.href = v;
+      if (key.indexOf("social_") === 0) {
+        // URL খালি/"#" হলে icon লুকিয়ে দাও — admin থেকে যোগ/মুছে দিতে পারবেন
+        var url = String(v || "").trim();
+        if (!url || url === "#") { el.hidden = true; el.setAttribute("aria-hidden", "true"); return; }
+        el.hidden = false;
+        el.removeAttribute("aria-hidden");
+        el.href = url;
         return;
       }
       if (v !== undefined && v !== null && String(v).trim() !== "") el.textContent = v;
@@ -386,6 +403,39 @@
     });
   }
 
+  /* ---------- thank-you popup ---------- */
+  function showPopup() {
+    var pop = q("#popup");
+    if (!pop) return;
+    pop.hidden = false;
+    document.body.style.overflow = "hidden";
+    var card = pop.querySelector(".popup-card");
+    if (card) { card.classList.remove("in"); void card.offsetWidth; card.classList.add("in"); }
+  }
+
+  function hidePopup() {
+    var pop = q("#popup");
+    if (!pop) return;
+    pop.hidden = true;
+    document.body.style.overflow = "";
+  }
+
+  function bindPopup() {
+    var pop = q("#popup");
+    if (!pop) return;
+    var close = q("#popup-close");
+    if (close) close.addEventListener("click", hidePopup);
+    pop.addEventListener("click", function (e) { if (e.target === pop) hidePopup(); });
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape" && !pop.hidden) hidePopup();
+    });
+    // WhatsApp direct link বসাও
+    var wa = q("#popup-wa");
+    if (wa) {
+      if (WHATSAPP) { wa.href = "https://wa.me/" + WHATSAPP; wa.hidden = false; }
+    }
+  }
+
   /* ---------- contact form → email notification ---------- */
   function bindContactForm() {
     var f = q("#contact-form");
@@ -419,17 +469,19 @@
         var j = await r.json().catch(function () { return {}; });
         if (!r.ok || !j.ok) throw new Error(j.error || ("HTTP " + r.status));
         if (st) {
-          st.textContent = "✅ Message sent — I'll reply to " + data.email + " soon.";
+          st.textContent = "✅ Message sent.";
           st.className = "form-status ok";
         }
         f.reset();
+        showPopup();
       } catch (err) {
         // email না গেলেও message DB-তে থাকে (নিচে সংরক্ষণ হয়)
         if (st) {
-          st.textContent = "✅ Message received. I'll reply soon.";
+          st.textContent = "✅ Message received.";
           st.className = "form-status ok";
         }
         f.reset();
+        showPopup();
       } finally {
         if (btn) { btn.disabled = false; btn.textContent = SET.form_submit || "Send Message"; }
       }
@@ -467,6 +519,7 @@
     renderReviews(r[7]);
     initReviewSlider();
     bindContactForm();
+    bindPopup();
 
     // icons render হওয়ার পর আবার (dynamic কনটেন্ট)
     applyIcons();
