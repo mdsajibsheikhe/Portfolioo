@@ -125,6 +125,7 @@
     profile: "Profile & Hero",
     about: "About",
     contact: "Contact & Footer",
+    appearance: "Appearance",
     labels: "Text & Labels",
     stats: "Stats",
     services: "Services",
@@ -376,6 +377,94 @@
   $("#save-profile").addEventListener("click", function () { saveForm("profile"); });
   $("#save-about").addEventListener("click", function () { saveForm("about"); });
   $("#save-contact").addEventListener("click", function () { saveForm("contact"); });
+
+  /* ============ APPEARANCE: 10 color themes ============ */
+  var THEMES = [
+    { id: "emerald", n: "Emerald", c: ["#059669", "#10b981", "#34d399"] },
+    { id: "ocean",   n: "Ocean",   c: ["#0369a1", "#0284c7", "#38bdf8"] },
+    { id: "indigo",  n: "Indigo",  c: ["#4338ca", "#4f46e5", "#818cf8"] },
+    { id: "violet",  n: "Violet",  c: ["#7c3aed", "#8b5cf6", "#a78bfa"] },
+    { id: "rose",    n: "Rose",    c: ["#be123c", "#e11d48", "#fb7185"] },
+    { id: "sunset",  n: "Sunset",  c: ["#c2410c", "#ea580c", "#fb923c"] },
+    { id: "amber",   n: "Amber",   c: ["#b45309", "#d97706", "#fbbf24"] },
+    { id: "teal",    n: "Teal",    c: ["#0f766e", "#0d9488", "#2dd4bf"] },
+    { id: "lime",    n: "Lime",    c: ["#4d7c0f", "#65a30d", "#a3e635"] },
+    { id: "slate",   n: "Slate",   c: ["#475569", "#64748b", "#94a3b8"] },
+    { id: "custom",  n: "Custom",  c: null }
+  ];
+
+  function applyAdminTheme(id) {
+    document.documentElement.setAttribute("data-color", id || "emerald");
+    if (id === "custom") {
+      var rs = document.documentElement.style;
+      rs.setProperty("--c1", state.settings.custom_c1 || "#059669");
+      rs.setProperty("--c2", state.settings.custom_c2 || "#10b981");
+      rs.setProperty("--c3", state.settings.custom_c3 || "#34d399");
+    }
+  }
+
+  function renderThemePicker() {
+    var g = $("#theme-grid");
+    if (!g) return;
+    var cur = state.settings.theme || "emerald";
+
+    g.innerHTML = THEMES.map(function (t) {
+      var cols = t.c || [
+        state.settings.custom_c1 || "#059669",
+        state.settings.custom_c2 || "#10b981",
+        state.settings.custom_c3 || "#34d399"
+      ];
+      var sw = cols.map(function (c) { return '<span class="sw" style="background:' + esc(c) + '"></span>'; }).join("");
+      return '<button type="button" class="theme-card' + (cur === t.id ? " active" : "") + '" data-theme-id="' + t.id + '">' +
+        '<span class="theme-swatches">' + sw + "</span>" +
+        '<span class="theme-name">' + esc(t.n) + "</span>" +
+        '<span class="theme-check">' + (cur === t.id ? "✓" : "") + "</span>" +
+        "</button>";
+    }).join("");
+
+    var cb = $("#custom-box");
+    if (cb) cb.hidden = cur !== "custom";
+
+    g.onclick = function (e) {
+      var b = e.target.closest("[data-theme-id]");
+      if (!b) return;
+      state.settings.theme = b.getAttribute("data-theme-id");
+      renderThemePicker();
+      applyAdminTheme(state.settings.theme);
+    };
+  }
+
+  function bindCustomColors() {
+    var defs = [["cc1", "custom_c1"], ["cc2", "custom_c2"], ["cc3", "custom_c3"]];
+    defs.forEach(function (d) {
+      var el = $("#" + d[0]);
+      if (!el) return;
+      el.value = state.settings[d[1]] || el.value;
+      el.oninput = function () {
+        state.settings[d[1]] = el.value;
+        if (state.settings.theme === "custom") applyAdminTheme("custom");
+        renderThemePicker();
+      };
+    });
+  }
+
+  $("#save-theme").addEventListener("click", async function () {
+    var st = "#status-theme";
+    setStatus(st, "Saving…", true);
+    try {
+      var keys = ["theme", "custom_c1", "custom_c2", "custom_c3"];
+      var payload = keys.map(function (k) { return { key: k, value: String(state.settings[k] || "") }; });
+      await SB.table("settings?on_conflict=key", {
+        method: "POST",
+        body: payload,
+        prefer: "resolution=merge-duplicates"
+      });
+      setStatus(st, "✅ Theme saved — live site reload করলেই দেখা যাবে।", true);
+      showAlert("Color theme updated. Reload the live site to see it.", "info");
+    } catch (err) {
+      setStatus(st, "❌ " + err.message, false);
+    }
+  });
 
   /* ============ RENDER: settings / labels ============ */
   function renderLabels() {
@@ -673,6 +762,9 @@
       renderForm("about");
       renderForm("contact");
       renderLabels();
+      applyAdminTheme(state.settings.theme || "emerald");
+      renderThemePicker();
+      bindCustomColors();
       Object.keys(LISTS).forEach(renderList);
       refreshCounts();
 
@@ -688,6 +780,9 @@
       renderForm("about");
       renderForm("contact");
       renderLabels();
+      applyAdminTheme(state.settings.theme || "emerald");
+      renderThemePicker();
+      bindCustomColors();
       Object.keys(LISTS).forEach(renderList);
     }
   }

@@ -54,6 +54,7 @@
         <button class="side-link" data-tab="profile"><span class="side-ico">👤</span> Profile &amp; Hero</button>
         <button class="side-link" data-tab="about"><span class="side-ico">📝</span> About</button>
         <button class="side-link" data-tab="contact"><span class="side-ico">✉️</span> Contact &amp; Footer</button>
+        <button class="side-link" data-tab="appearance"><span class="side-ico">🎨</span> Appearance</button>
         <button class="side-link" data-tab="labels"><span class="side-ico">🔤</span> Text &amp; Labels</button>
 
         <span class="nav-label">Portfolio</span>
@@ -201,6 +202,28 @@
             </div>
             <div class="form-grid" id="form-contact"></div>
             <p class="save-status" id="status-contact"></p>
+          </div>
+        </section>
+
+        <!-- ===== Appearance (theme / logo / images) ===== -->
+        <section class="tab-panel" id="tab-appearance" hidden>
+          <div class="panel">
+            <div class="panel-head">
+              <h2>🎨 Color Theme <small>(10 themes + custom)</small></h2>
+              <button class="btn btn-primary" id="save-theme">Save theme</button>
+            </div>
+            <div class="theme-grid" id="theme-grid"></div>
+
+            <div class="custom-box" id="custom-box" hidden>
+              <h3 class="group-title">Custom colors</h3>
+              <div class="form-grid">
+                <div class="field"><label>Color 1 (main)</label><input type="color" id="cc1" value="#059669" /></div>
+                <div class="field"><label>Color 2 (mid)</label><input type="color" id="cc2" value="#10b981" /></div>
+                <div class="field"><label>Color 3 (light)</label><input type="color" id="cc3" value="#34d399" /></div>
+              </div>
+            </div>
+
+            <p class="save-status" id="status-theme"></p>
           </div>
         </section>
 

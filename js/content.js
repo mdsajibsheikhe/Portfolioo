@@ -19,6 +19,14 @@
 
   function q(s) { return D.querySelector(s); }
 
+  function hexToRgb(h) {
+    if (!h) return null;
+    h = String(h).trim().replace(/^#/, "");
+    if (h.length === 3) h = h[0] + h[0] + h[1] + h[1] + h[2] + h[2];
+    if (!/^[0-9a-f]{6}$/i.test(h)) return null;
+    return parseInt(h.slice(0, 2), 16) + ", " + parseInt(h.slice(2, 4), 16) + ", " + parseInt(h.slice(4, 6), 16);
+  }
+
   function rows(path) {
     return SB.table(path)
       .then(function (r) { return Array.isArray(r) ? r : []; })
@@ -28,6 +36,21 @@
   /* ---------- settings: data-s / data-s-ph apply ---------- */
   function applySettings() {
     if (!Object.keys(SET).length) return;
+
+    /* ---- color theme (10 preset + custom) ---- */
+    var THEMES = ["emerald","ocean","indigo","violet","rose","sunset","amber","teal","lime","slate","custom"];
+    var th = SET.theme || "emerald";
+    if (THEMES.indexOf(th) === -1) th = "emerald";
+    document.documentElement.setAttribute("data-color", th);
+    if (th === "custom") {
+      var rs = document.documentElement.style;
+      if (SET.custom_c1) rs.setProperty("--c1", SET.custom_c1);
+      if (SET.custom_c2) rs.setProperty("--c2", SET.custom_c2);
+      if (SET.custom_c3) rs.setProperty("--c3", SET.custom_c3);
+      // custom এর rgb triplet (shadows)
+      var rgb = hexToRgb(SET.custom_c1 || "#059669");
+      if (rgb) rs.setProperty("--primary-rgb", rgb);
+    }
 
     // <title> special case
     if (SET.site_title) D.title = SET.site_title;
