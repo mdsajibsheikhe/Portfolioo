@@ -79,13 +79,13 @@
     services: {
       table: "services", el: "#list-services", status: "#status-services",
       fields: [
-        { k: "icon", l: "Icon (emoji)" },
+        { k: "icon", l: "Icon — icon name লিখুন (palette, layers, video, package, brush, image, type, zap, award, briefcase…) অথবা emoji" },
         { k: "title", l: "Title" },
-        { k: "image", l: "Image icon (optional — emoji-এর বদলে)", t: "image", wide: true },
+        { k: "image", l: "Image icon (optional — icon/emoji-এর বদলে নিজের ছবি)", t: "image", wide: true },
         { k: "tags", l: "Skill tags (comma separated)", t: "tags", wide: true },
         { k: "sort", l: "Order", t: "number" }
       ],
-      blank: { icon: "🎨", title: "", image: "", tags: "", sort: 0 }
+      blank: { icon: "palette", title: "", image: "", tags: "", sort: 0 }
     },
     tools: {
       table: "tools", el: "#list-tools", status: "#status-tools",
@@ -119,21 +119,36 @@
         { k: "sort", l: "Order", t: "number" }
       ],
       blank: { date_label: "", title: "", description: "", sort: 0 }
+    },
+    testimonials: {
+      table: "testimonials", el: "#list-testimonials", status: "#status-testimonials",
+      fields: [
+        { k: "name", l: "Client name" },
+        { k: "role", l: "Role (e.g. YouTube Creator)" },
+        { k: "company", l: "Company / Brand" },
+        { k: "rating", l: "Rating (1-5)", t: "number" },
+        { k: "avatar", l: "Photo (optional — না দিলে নামের প্রথম অক্ষর দেখাবে)", t: "image", wide: true },
+        { k: "text", l: "Review text", t: "textarea", wide: true },
+        { k: "sort", l: "Order", t: "number" }
+      ],
+      blank: { name: "", role: "", company: "", rating: 5, avatar: "", text: "", sort: 0 }
     }
   };
 
   var TITLES = {
     dashboard: "Dashboard",
-    profile: "Profile & Hero",
+    profile: "Home",
     about: "About",
     contact: "Contact & Footer",
-    theme: "Theme",
+    theme: "Theme & Images",
     labels: "Text & Labels",
+    seo: "SEO",
     stats: "Stats",
     services: "Services",
     tools: "Tools",
     projects: "Work / Projects",
     experience: "Experience",
+    testimonials: "Client Reviews",
     messages: "Messages"
   };
 
@@ -214,9 +229,10 @@
     tools: [],
     projects: [],
     experience: [],
+    testimonials: [],
     messages: []
   };
-  var persisted = { stats: [], services: [], tools: [], projects: [], experience: [] };
+  var persisted = { stats: [], services: [], tools: [], projects: [], experience: [], testimonials: [] };
 
   /* ============ ALERT ============ */
   var alertBox = $("#alert");
@@ -838,20 +854,143 @@
     badge.hidden = n === 0;
   }
 
-  /* ============ COUNTS ============ */
+  /* ============ COUNTS + SITE STATUS ============ */
+  var SEO_FIELDS = [
+    { k: "site_title", l: "Page title (browser tab & Google)" },
+    { k: "seo_description", l: "Meta description (Google-এ দেখায়)", t: "textarea", wide: true },
+    { k: "seo_keywords", l: "Keywords (comma separated)", wide: true },
+    { k: "og_image", l: "Share image (Facebook / WhatsApp) — 1200×630 ভালো দেখায়", t: "image", wide: true }
+  ];
+
+  function renderSeoForm() {
+    var host = $("#form-seo");
+    if (!host) return;
+    host.innerHTML = SEO_FIELDS.map(function (f) {
+      var v = state.settings[f.k];
+      v = v === null || v === undefined ? "" : v;
+      if (f.t === "image") return imageFieldHtml("set." + f.k, f.l, "", v);
+      var wide = f.wide ? " wide" : "";
+      var input = f.t === "textarea"
+        ? '<textarea data-sk="' + f.k + '" rows="3">' + esc(v) + "</textarea>"
+        : '<input type="text" data-sk="' + f.k + '" value="' + esc(v) + '" />';
+      return '<div class="field' + wide + '"><label>' + esc(f.l) + "</label>" + input + "</div>";
+    }).join("");
+    host.oninput = function (e) {
+      var k = e.target.dataset.sk;
+      if (k) state.settings[k] = e.target.value;
+    };
+    renderSeoPreview();
+  }
+
+  function renderSeoPreview() {
+    var host = $("#seo-preview");
+    if (!host) return;
+    var t = state.settings.site_title || "Md Sajib Sheikh | Graphic Designer";
+    var d = state.settings.seo_description || "Graphic Designer with 5+ years experience…";
+    var img = state.settings.og_image || "";
+    var url = "mdsajibsheikh.vercel.app";
+    host.innerHTML =
+      '<div class="seo-card">' +
+        '<div class="seo-thumb">' + (img
+          ? '<img src="' + esc(img) + '" alt="" />'
+          : '<span>No image</span>') + "</div>" +
+        '<div class="seo-meta">' +
+          '<span class="seo-url">' + esc(url) + "</span>" +
+          '<h4>' + esc(t) + "</h4>" +
+          "<p>" + esc(String(d).slice(0, 180)) + "</p>" +
+        "</div>" +
+      "</div>" +
+      '<p class="field-hint">এটা Google ও Facebook-এ যেমন দেখাবে তার আনুমানিক রূপ। ছবি দিলে share-এ সেটা যাবে।</p>';
+  }
+
+  $("#save-seo").addEventListener("click", async function () {
+    var st = "#status-seo";
+    setStatus(st, "Saving…", true);
+    try {
+      var keys = ["site_title", "seo_description", "seo_keywords", "og_image"];
+      var payload = keys.map(function (k) { return { key: k, value: String(state.settings[k] || "") }; });
+      await SB.table("settings?on_conflict=key", {
+        method: "POST",
+        body: payload,
+        prefer: "resolution=merge-duplicates"
+      });
+      setStatus(st, "✅ SEO saved — Google-এ প্রভাব দেখতে কয়েক দিন লাগে।", true);
+      showAlert("SEO updated. Reload the live site to see changes.", "info");
+      refreshCounts();
+    } catch (err) {
+      setStatus(st, "❌ " + err.message, false);
+    }
+  });
+
   function refreshCounts() {
     $("#cnt-projects").textContent = state.projects.length || 0;
     $("#cnt-services").textContent = state.services.length || 0;
     $("#cnt-experience").textContent = state.experience.length || 0;
     $("#cnt-tools").textContent = state.tools.length || 0;
     $("#cnt-messages").textContent = state.messages.length || 0;
+    if ($("#cnt-reviews")) $("#cnt-reviews").textContent = state.testimonials.length || 0;
+    if ($("#cnt-msg2")) $("#cnt-msg2").textContent = state.messages.length || 0;
+
     var sections =
       (state.profile && Object.keys(state.profile).length ? 1 : 0) +
       state.stats.length + state.services.length + state.tools.length +
-      state.projects.length + state.experience.length;
-    $("#cnt-all").textContent = sections || 0;
+      state.projects.length + state.experience.length + state.testimonials.length;
+    if ($("#cnt-all")) $("#cnt-all").textContent = sections || 0;
+
+    var s = state.settings;
+    var seoDone = ["site_title", "seo_description", "seo_keywords", "og_image"]
+      .filter(function (k) { return String(s[k] || "").trim(); }).length;
+    if ($("#seo-count")) $("#seo-count").textContent = seoDone + "/4";
+    var imgDone = ["logo_image", "avatar_image"].filter(function (k) { return String(s[k] || "").trim(); }).length +
+      state.projects.filter(function (p) { return p.image; }).length +
+      state.services.filter(function (x) { return x.image; }).length +
+      state.testimonials.filter(function (x) { return x.avatar; }).length;
+    if ($("#img-count")) $("#img-count").textContent = imgDone;
+    if ($("#mail-state")) $("#mail-state").textContent = s.contact_notify_email ? "ON" : "—";
+
     updateMsgBadge();
+    renderSiteStatus();
   }
+
+  function renderSiteStatus() {
+    var host = $("#site-status");
+    if (!host) return;
+    var s = state.settings;
+
+    function row(label, ok, hint, tab) {
+      return '<button class="ss-row' + (ok ? " ok" : " todo") + '"' + (tab ? ' data-tab="' + tab + '"' : "") + ">" +
+        '<span class="ss-dot">' + (ok ? "✓" : "!") + "</span>" +
+        '<span class="ss-label">' + esc(label) + "</span>" +
+        '<span class="ss-hint">' + esc(hint) + "</span>" +
+        "</button>";
+    }
+
+    var hasPhoto = !!String(s.avatar_image || "").trim();
+    var hasLogo = !!String(s.logo_image || "").trim();
+    var themeOk = !!String(s.theme || "").trim();
+    var seoDone = ["site_title", "seo_description", "seo_keywords", "og_image"]
+      .every(function (k) { return String(s[k] || "").trim(); });
+
+    host.innerHTML =
+      '<div class="ss-group"><h3>Quick checks</h3>' +
+        row("Profile photo", hasPhoto, hasPhoto ? "Uploaded" : "Theme → Images থেকে upload করুন", "theme") +
+        row("Site logo", hasLogo, hasLogo ? "Uploaded" : "থাকলেও চলবে — text logo দেখাচ্ছে", "theme") +
+        row("Color theme", themeOk, themeOk ? (s.theme || "emerald") + " সক্রিয়" : "নির্বাচন করুন", "theme") +
+        row("SEO fields", seoDone, seoDone ? "সব পূরণ" : "SEO tab থেকে পূরণ করুন", "seo") +
+        row("Client reviews", state.testimonials.length > 0,
+            state.testimonials.length + " টা আছে", "testimonials") +
+      "</div>" +
+      '<div class="ss-group"><h3>Live sites</h3>' +
+        '<a class="ss-link" href="https://mdsajibsheikh.vercel.app/" target="_blank" rel="noopener">🌐 mdsajibsheikh.vercel.app <span>↗</span></a>' +
+        '<a class="ss-link" href="https://mdsajibsheikhe.github.io/Portfolioo/" target="_blank" rel="noopener">🐙 GitHub Pages <span>↗</span></a>' +
+        '<a class="ss-link" href="https://mdsajibsheikh.vercel.app/admin.html" target="_blank" rel="noopener">🔐 This admin panel <span>↗</span></a>' +
+      "</div>";
+  }
+
+  document.addEventListener("click", function (e) {
+    var r = e.target.closest(".ss-row[data-tab]");
+    if (r) switchTab(r.getAttribute("data-tab"));
+  });
 
   /* ============ BOOT ============ */
   async function boot() {
@@ -864,10 +1003,11 @@
     var toolsP = SB.table("tools?select=*&order=sort.asc");
     var projectsP = SB.table("projects?select=*&order=sort.asc");
     var expP = SB.table("experience?select=*&order=sort.asc");
+    var testiP = SB.table("testimonials?select=*&order=sort.asc").catch(function () { return []; });
     var msgP = SB.table("messages?select=*&order=created_at.desc").catch(function () { return []; });
 
     try {
-      var res = await Promise.all([profileP, settingsP, statsP, servicesP, toolsP, projectsP, expP, msgP]);
+      var res = await Promise.all([profileP, settingsP, statsP, servicesP, toolsP, projectsP, expP, testiP, msgP]);
 
       state.profile = res[0] && res[0][0] ? res[0][0] : { id: 1 };
       (res[1] || []).forEach(function (s) { state.settings[s.key] = s.value; });
@@ -876,9 +1016,10 @@
       state.tools = res[4] || [];
       state.projects = res[5] || [];
       state.experience = res[6] || [];
-      state.messages = res[7] || [];
+      state.testimonials = res[7] || [];
+      state.messages = res[8] || [];
 
-      ["stats", "services", "tools", "projects", "experience"].forEach(function (k) {
+      ["stats", "services", "tools", "projects", "experience", "testimonials"].forEach(function (k) {
         state[k] = state[k].map(function (it) {
           var copy = Object.assign({}, it);
           if (Array.isArray(copy.tags)) copy.tags = copy.tags.join(", ");
@@ -891,6 +1032,7 @@
       renderForm("about");
       renderForm("contact");
       renderLabels();
+      renderSeoForm();
       applyAdminTheme(state.settings.theme || "emerald");
       renderThemePicker();
       bindCustomColors();
@@ -910,6 +1052,7 @@
       renderForm("about");
       renderForm("contact");
       renderLabels();
+      renderSeoForm();
       applyAdminTheme(state.settings.theme || "emerald");
       renderThemePicker();
       bindCustomColors();

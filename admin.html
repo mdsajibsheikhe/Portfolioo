@@ -51,11 +51,12 @@
         </button>
 
         <span class="nav-label">Content</span>
-        <button class="side-link" data-tab="profile"><span class="side-ico">👤</span> Profile &amp; Hero</button>
+        <button class="side-link" data-tab="profile"><span class="side-ico">🏠</span> Home</button>
         <button class="side-link" data-tab="about"><span class="side-ico">📝</span> About</button>
         <button class="side-link" data-tab="contact"><span class="side-ico">✉️</span> Contact &amp; Footer</button>
-        <button class="side-link" data-tab="theme"><span class="side-ico">🎨</span> Theme</button>
+        <button class="side-link" data-tab="theme"><span class="side-ico">🎨</span> Theme &amp; Images</button>
         <button class="side-link" data-tab="labels"><span class="side-ico">🔤</span> Text &amp; Labels</button>
+        <button class="side-link" data-tab="seo"><span class="side-ico">🔍</span> SEO</button>
 
         <span class="nav-label">Portfolio</span>
         <button class="side-link" data-tab="stats"><span class="side-ico">📊</span> Stats</button>
@@ -63,6 +64,7 @@
         <button class="side-link" data-tab="tools"><span class="side-ico">🛠️</span> Tools</button>
         <button class="side-link" data-tab="projects"><span class="side-ico">🎨</span> Work / Projects</button>
         <button class="side-link" data-tab="experience"><span class="side-ico">📅</span> Experience</button>
+        <button class="side-link" data-tab="testimonials"><span class="side-ico">⭐</span> Client Reviews</button>
 
         <span class="nav-label">Inbox</span>
         <button class="side-link" data-tab="messages">
@@ -140,29 +142,32 @@
           </div>
 
           <div class="cards-4 social-cards">
-            <div class="social-card so-fb">
-              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M22 12a10 10 0 1 0-11.56 9.88v-6.99H7.9V12h2.54V9.8c0-2.5 1.49-3.89 3.77-3.89 1.09 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.77-1.63 1.56V12h2.78l-.44 2.89h-2.34v6.99A10 10 0 0 0 22 12Z"/></svg>
-              <div class="sc-stats"><div><strong>500</strong><span>Projects</span></div><div><strong>120</strong><span>Clients</span></div></div>
+            <div class="social-card sc-live">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+              <div class="sc-stats"><div><strong id="cnt-tools">—</strong><span>Tools</span></div><div><strong id="cnt-reviews">—</strong><span>Reviews</span></div></div>
             </div>
-            <div class="social-card so-x">
-              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.9 1.15h3.68l-8.04 9.19L24 22.85h-7.4l-5.8-7.58-6.63 7.58H.48l8.6-9.83L0 1.15h7.59l5.24 6.93 6.07-6.93Zm-1.29 19.5h2.04L6.49 3.24H4.3l13.31 17.41Z"/></svg>
-              <div class="sc-stats"><div><strong id="cnt-tools">—</strong><span>Tools</span></div><div><strong>5+</strong><span>Years</span></div></div>
+            <div class="social-card sc-live">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
+              <div class="sc-stats"><div><strong id="cnt-all">—</strong><span>Items</span></div><div><strong>2</strong><span>Live sites</span></div></div>
             </div>
-            <div class="social-card so-in">
-              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M4.98 3.5A2.5 2.5 0 1 1 0 3.5a2.5 2.5 0 0 1 4.98 0ZM.5 8.5h4V24h-4V8.5Zm7 0h3.83v2.1h.05c.53-1 1.84-2.1 3.79-2.1 4.05 0 4.8 2.67 4.8 6.14V24h-4v-7.7c0-1.83-.03-4.2-2.56-4.2-2.56 0-2.95 2-2.95 4.07V24h-4V8.5Z"/></svg>
-              <div class="sc-stats"><div><strong id="cnt-all">—</strong><span>Sections</span></div><div><strong>2</strong><span>Sites</span></div></div>
+            <div class="social-card sc-live">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
+              <div class="sc-stats"><div><strong id="seo-count">—</strong><span>SEO fields</span></div><div><strong id="img-count">—</strong><span>Images</span></div></div>
             </div>
-            <div class="social-card so-ig">
-              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.16c3.2 0 3.58.01 4.85.07 1.17.05 1.8.25 2.23.41.56.22.96.48 1.38.9.42.42.68.82.9 1.38.16.42.36 1.06.41 2.23.06 1.27.07 1.65.07 4.85s-.01 3.58-.07 4.85c-.05 1.17-.25 1.8-.41 2.23-.22.56-.48.96-.9 1.38-.42.42-.82.68-1.38.9-.42.16-1.06.36-2.23.41-1.27.06-1.65.07-4.85.07s-3.58-.01-4.85-.07c-1.17-.05-1.8-.25-2.23-.41-.56-.22-.96-.48-1.38-.9-.42-.42-.68-.82-.9-1.38-.16-.42-.36-1.06-.41-2.23C2.17 15.58 2.16 15.2 2.16 12s.01-3.58.07-4.85c.05-1.17.25-1.8.41-2.23.22-.56.48-.96.9-1.38.42-.42.82-.68 1.38-.9.42-.16 1.06-.36 2.23-.41C8.42 2.17 8.8 2.16 12 2.16Zm0 1.62c-3.15 0-3.52.01-4.76.07-1.15.05-1.77.24-2.19.4-.55.22-.94.47-1.35.88-.41.41-.66.8-.88 1.35-.16.42-.35 1.04-.4 2.19-.06 1.24-.07 1.61-.07 4.76s.01 3.52.07 4.76c.05 1.15.24 1.77.4 2.19.22.55.47.94.88 1.35.41.41.8.66 1.35.88.42.16 1.04.35 2.19.4 1.24.06 1.61.07 4.76.07s3.52-.01 4.76-.07c1.15-.05 1.77-.24 2.19-.4.55-.22.94-.47 1.35-.88.41-.41.66-.8.88-1.35.16-.42.35-1.04.4-2.19.06-1.24.07-1.61.07-4.76s-.01-3.52-.07-4.76c-.05-1.15-.24-1.77-.4-2.19a3.6 3.6 0 0 0-.88-1.35 3.6 3.6 0 0 0-1.35-.88c-.42-.16-1.04-.35-2.19-.4-1.24-.06-1.61-.07-4.76-.07Zm0 2.76a5.3 5.3 0 1 1 0 10.6 5.3 5.3 0 0 1 0-10.6Zm0 8.74a3.44 3.44 0 1 0 0-6.88 3.44 3.44 0 0 0 0 6.88Zm6.75-8.94a1.24 1.24 0 1 1-2.48 0 1.24 1.24 0 0 1 2.48 0Z"/></svg>
-              <div class="sc-stats"><div><strong>500+</strong><span>Designs</span></div><div><strong>3</strong><span>Services</span></div></div>
+            <div class="social-card sc-live">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+              <div class="sc-stats"><div><strong id="mail-state">—</strong><span>Email alert</span></div><div><strong id="cnt-msg2">0</strong><span>Inbox</span></div></div>
             </div>
           </div>
 
           <div class="panel">
-            <div class="panel-head"><h2>Quick edit</h2></div>
+            <div class="panel-head"><h2>Site status &amp; quick links</h2></div>
+            <div class="site-status" id="site-status"></div>
             <div class="quick-grid" id="quick-grid">
-              <button class="quick-btn" data-tab="profile">👤 Edit hero &amp; profile</button>
+              <button class="quick-btn" data-tab="profile">🏠 Edit home / hero</button>
+              <button class="quick-btn" data-tab="theme">🎨 Change color theme</button>
               <button class="quick-btn" data-tab="projects">🎨 Manage work</button>
+              <button class="quick-btn" data-tab="testimonials">⭐ Add client review</button>
               <button class="quick-btn" data-tab="services">🧩 Manage services</button>
               <button class="quick-btn" data-tab="messages">📥 Read messages</button>
             </div>
@@ -173,7 +178,7 @@
         <section class="tab-panel" id="tab-profile" hidden>
           <div class="panel">
             <div class="panel-head">
-              <h2>Profile &amp; Hero</h2>
+              <h2>Home <small>(hero section)</small></h2>
               <button class="btn btn-primary" id="save-profile">Save changes</button>
             </div>
             <div class="form-grid" id="form-profile"></div>
@@ -319,6 +324,38 @@
           </div>
         </section>
 
+        <!-- ===== SEO ===== -->
+        <section class="tab-panel" id="tab-seo" hidden>
+          <div class="panel">
+            <div class="panel-head">
+              <h2>🔍 SEO <small>(Google / Facebook share)</small></h2>
+              <button class="btn btn-primary" id="save-seo">Save SEO</button>
+            </div>
+            <div class="form-grid" id="form-seo"></div>
+            <p class="save-status" id="status-seo"></p>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head"><h2>Share preview</h2></div>
+            <div id="seo-preview"></div>
+          </div>
+        </section>
+
+        <!-- ===== Client Reviews ===== -->
+        <section class="tab-panel" id="tab-testimonials" hidden>
+          <div class="panel">
+            <div class="panel-head">
+              <h2>⭐ Client Reviews <small>(live site-এর "Reviews" section)</small></h2>
+              <div class="panel-actions">
+                <button class="btn btn-ghost" data-add="testimonials">+ Add review</button>
+                <button class="btn btn-primary" data-save="testimonials">Save all</button>
+              </div>
+            </div>
+            <div class="list-wrap" id="list-testimonials"></div>
+            <p class="save-status" id="status-testimonials"></p>
+          </div>
+        </section>
+
         <!-- ===== Messages ===== -->
         <section class="tab-panel" id="tab-messages" hidden>
           <div class="panel">
@@ -335,6 +372,7 @@
   </div>
 
   <script src="js/sb.js"></script>
+  <script src="js/icons.js"></script>
   <script src="js/admin.js"></script>
 </body>
 </html>

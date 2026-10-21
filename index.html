@@ -4,11 +4,55 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="Md Sajib Sheikh — Graphic Designer with 5+ years experience in social media design, YouTube thumbnails, and packaging design." />
+  <meta name="keywords" content="graphic designer, social media design, youtube thumbnail, packaging design, logo design, bangladesh designer" />
+  <meta name="author" content="Md Sajib Sheikh" />
+  <meta name="theme-color" content="#059669" />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://mdsajibsheikh.vercel.app/" />
   <title data-s="site_title">Md Sajib Sheikh | Graphic Designer</title>
+
+  <!-- Open Graph (Facebook / WhatsApp / LinkedIn share) -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://mdsajibsheikh.vercel.app/" />
+  <meta property="og:site_name" content="Md Sajib Sheikh" />
+  <meta property="og:title" content="Md Sajib Sheikh | Graphic Designer" />
+  <meta property="og:description" content="Graphic Designer with 5+ years experience in social media design, YouTube thumbnails and packaging design." />
+  <meta property="og:image" content="https://mdsajibsheikh.vercel.app/og.png" />
+  <meta property="og:locale" content="en_US" />
+
+  <!-- Twitter / X -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Md Sajib Sheikh | Graphic Designer" />
+  <meta name="twitter:description" content="Graphic Designer with 5+ years experience in social media design, YouTube thumbnails and packaging design." />
+  <meta name="twitter:image" content="https://mdsajibsheikh.vercel.app/og.png" />
+
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <link rel="apple-touch-icon" href="favicon.svg" />
+
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/style.css" />
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    "name": "Md Sajib Sheikh",
+    "jobTitle": "Senior Graphic Designer",
+    "url": "https://mdsajibsheikh.vercel.app/",
+    "image": "https://mdsajibsheikh.vercel.app/og.png",
+    "email": "mailto:hello@example.com",
+    "address": { "@type": "PostalAddress", "addressLocality": "Dhaka", "addressCountry": "BD" },
+    "knowsAbout": ["Graphic Design", "Social Media Design", "YouTube Thumbnails", "Packaging Design", "Logo Design", "Brand Identity"],
+    "sameAs": [
+      "https://facebook.com/",
+      "https://instagram.com/",
+      "https://linkedin.com/",
+      "https://twitter.com/"
+    ]
+  }
+  </script>
 </head>
 <body>
 
@@ -45,11 +89,12 @@
           <li><a href="#skills" class="nav-link" data-s="nav_services">Services</a></li>
           <li><a href="#projects" class="nav-link" data-s="nav_work">Work</a></li>
           <li><a href="#experience" class="nav-link" data-s="nav_experience">Experience</a></li>
+          <li><a href="#reviews" class="nav-link" data-s="nav_reviews">Reviews</a></li>
           <li><a href="#contact" class="nav-link" data-s="nav_contact">Contact</a></li>
         </ul>
         <button class="theme-toggle" id="theme-toggle" aria-label="Toggle dark / light theme">
-          <span class="theme-icon-sun">☀️</span>
-          <span class="theme-icon-moon">🌙</span>
+          <span class="theme-icon-sun" data-ico="sun">☀️</span>
+          <span class="theme-icon-moon" data-ico="moon">🌙</span>
         </button>
       </div>
 
@@ -342,6 +387,52 @@
       </div>
     </section>
 
+    <!-- ===== Client Reviews ===== -->
+    <section class="reviews section" id="reviews">
+      <div class="container">
+        <span class="section-eyebrow" data-s="reviews_eyebrow">Client feedback</span>
+        <h2 class="section-title"><span data-s="reviews_title">Client</span> <span class="gradient-text" data-s="reviews_title_accent">Reviews</span></h2>
+
+        <div class="reviews-container grid" id="reviews-container">
+          <article class="review-card">
+            <span class="review-quote" data-ico="quote">❝</span>
+            <div class="review-stars">
+              <span data-ico="star">★</span><span data-ico="star">★</span><span data-ico="star">★</span><span data-ico="star">★</span><span data-ico="star">★</span>
+            </div>
+            <p class="review-text">High-CTR thumbnails with bold text and scroll-stopping compositions. Delivery is always on time.</p>
+            <div class="review-person">
+              <span class="review-ava">R</span>
+              <div><strong>Rahim Uddin</strong><small>YouTube Creator</small></div>
+            </div>
+          </article>
+
+          <article class="review-card">
+            <span class="review-quote" data-ico="quote">❝</span>
+            <div class="review-stars">
+              <span data-ico="star">★</span><span data-ico="star">★</span><span data-ico="star">★</span><span data-ico="star">★</span><span data-ico="star">★</span>
+            </div>
+            <p class="review-text">Complete social kits — posts, stories and ad creatives that actually boosted our engagement.</p>
+            <div class="review-person">
+              <span class="review-ava">S</span>
+              <div><strong>Sarah Ahmed</strong><small>Marketing Lead</small></div>
+            </div>
+          </article>
+
+          <article class="review-card">
+            <span class="review-quote" data-ico="quote">❝</span>
+            <div class="review-stars">
+              <span data-ico="star">★</span><span data-ico="star">★</span><span data-ico="star">★</span><span data-ico="star">★</span><span data-ico="star">★</span>
+            </div>
+            <p class="review-text">Shelf-ready packaging and labels that build trust and drive product sales.</p>
+            <div class="review-person">
+              <span class="review-ava">T</span>
+              <div><strong>Tanvir Hasan</strong><small>Founder</small></div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
     <!-- ===== Contact ===== -->
     <section class="contact section" id="contact">
       <div class="container">
@@ -355,21 +446,21 @@
 
             <div class="contact-details">
               <div class="contact-item">
-                <span class="contact-icon">📧</span>
+                <span class="contact-icon" data-ico="mail">📧</span>
                 <div>
                   <h4 data-s="contact_item_email">Email</h4>
                   <p data-c="contact_email">hello@example.com</p>
                 </div>
               </div>
               <div class="contact-item">
-                <span class="contact-icon">📍</span>
+                <span class="contact-icon" data-ico="pin">📍</span>
                 <div>
                   <h4 data-s="contact_item_location">Location</h4>
                   <p data-c="contact_location">Dhaka, Bangladesh</p>
                 </div>
               </div>
               <div class="contact-item">
-                <span class="contact-icon">🔗</span>
+                <span class="contact-icon" data-ico="link">🔗</span>
                 <div>
                   <h4 data-s="contact_item_socials">Socials</h4>
                   <p data-c="contact_socials">GitHub · LinkedIn · Twitter</p>
@@ -395,7 +486,7 @@
               <label for="message" data-s="form_message_label">Message</label>
               <textarea id="message" name="message" rows="5" data-s-ph="form_message_ph" placeholder="Tell me about your design project..." required></textarea>
             </div>
-            <button type="submit" class="btn btn-primary" data-s="form_submit">Send Message ✉️</button>
+            <button type="submit" class="btn btn-primary" data-s="form_submit">Send Message</button>
             <p class="form-status" id="form-status"></p>
           </form>
         </div>
@@ -411,9 +502,10 @@
   </footer>
 
   <!-- ===== Back to top ===== -->
-  <button class="scroll-top" id="scroll-top" aria-label="Back to top">↑</button>
+  <button class="scroll-top" id="scroll-top" aria-label="Back to top" data-ico="up">↑</button>
 
   <script src="js/sb.js"></script>
+  <script src="js/icons.js"></script>
   <script src="js/script.js"></script>
   <script src="js/content.js"></script>
 </body>

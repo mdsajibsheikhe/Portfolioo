@@ -558,3 +558,95 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 /* --- service group icon image --- */
 .skills-group-icon { display: flex; align-items: center; justify-content: center; }
 .skills-group-img { width: 30px; height: 30px; object-fit: contain; display: block; border-radius: 7px; }
+
+/* ============================================================
+   Premium inline icons
+   ============================================================ */
+.ico { display: inline-block; vertical-align: middle; flex: none; }
+[data-ico] { display: inline-flex; align-items: center; justify-content: center; }
+
+.theme-icon-sun, .theme-icon-moon { display: inline-flex; align-items: center; }
+.theme-icon-sun svg, .theme-icon-moon svg { width: 20px; height: 20px; }
+
+.scroll-top[data-ico] svg { width: 20px; height: 20px; }
+.btn [data-ico] svg { width: 18px; height: 18px; }
+.form-submit-ico svg { width: 18px; height: 18px; margin-right: 8px; }
+
+/* ============================================================
+   Client reviews
+   ============================================================ */
+.reviews { position: relative; }
+.reviews-container { margin-top: 48px; }
+
+.review-card {
+  position: relative;
+  padding: 32px 28px 28px;
+  border-radius: 20px;
+  background: var(--bg-soft, #f8faf9);
+  border: 1px solid var(--line, #e7ece9);
+  box-shadow: 0 6px 24px rgba(15, 23, 42, 0.05);
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+  overflow: hidden;
+}
+.review-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto auto 0;
+  width: 100%;
+  height: 4px;
+  background: linear-gradient(90deg, var(--t1, #059669), var(--t2, #10b981), var(--t3, #34d399));
+  opacity: 0.9;
+}
+.review-card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(var(--primary-rgb, 5, 150, 105), 0.35);
+  box-shadow: 0 18px 40px rgba(var(--primary-rgb, 5, 150, 105), 0.14);
+}
+
+.review-quote {
+  position: absolute;
+  top: 18px;
+  right: 20px;
+  color: rgba(var(--primary-rgb, 5, 150, 105), 0.16);
+  line-height: 0;
+}
+.review-quote svg { width: 34px; height: 34px; fill: currentColor; stroke: none; }
+
+.review-stars { display: flex; gap: 4px; margin-bottom: 16px; }
+.review-stars .star { display: inline-flex; color: #f59e0b; }
+.review-stars .star svg { width: 16px; height: 16px; fill: currentColor; stroke: none; }
+.review-stars .star.off { color: var(--line, #e2e8f0); }
+
+.review-text {
+  font-size: 15.5px;
+  line-height: 1.7;
+  color: var(--text-soft, #5b6b62);
+  margin-bottom: 22px;
+}
+
+.review-person { display: flex; align-items: center; gap: 12px; }
+.review-ava {
+  width: 46px; height: 46px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 700; font-size: 17px; color: #fff;
+  background: linear-gradient(135deg, var(--t1, #059669), var(--t3, #34d399));
+  flex: none; overflow: hidden; object-fit: cover;
+}
+.review-ava.has-img { width: 46px; height: 46px; }
+.review-person strong { display: block; font-size: 15px; color: var(--text, #0f172a); }
+.review-person small { display: block; font-size: 12.5px; color: var(--muted, #8a978f); margin-top: 2px; }
+
+/* ============================================================
+   Contact form status
+   ============================================================ */
+.form-status.ok { color: var(--primary, #059669); font-weight: 600; }
+.form-status.err { color: #dc2626; font-weight: 600; }
+
+/* ============================================================
+   Small-screen polish
+   ============================================================ */
+@media (max-width: 480px) {
+  .review-card { padding: 26px 20px 22px; }
+  .review-quote svg { width: 26px; height: 26px; }
+}

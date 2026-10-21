@@ -19,6 +19,17 @@
 
   function q(s) { return D.querySelector(s); }
 
+  /* ---------- premium icons ---------- */
+  function applyIcons() {
+    if (!window.ICONS) return;
+    D.querySelectorAll("[data-ico]").forEach(function (el) {
+      var name = el.getAttribute("data-ico");
+      var size = Number(el.getAttribute("data-isize")) || 20;
+      var svg = ICONS.svg(name, size);
+      if (svg) el.innerHTML = svg;
+    });
+  }
+
   function hexToRgb(h) {
     if (!h) return null;
     h = String(h).trim().replace(/^#/, "");
@@ -54,6 +65,33 @@
 
     // <title> special case
     if (SET.site_title) D.title = SET.site_title;
+
+    /* ---- SEO (admin থেকে পরিবর্তনযোগ্য) ---- */
+    function setMeta(sel, attr, val) {
+      if (!val) return;
+      var el = D.querySelector(sel);
+      if (el) el.setAttribute(attr, val);
+    }
+    if (SET.seo_description) {
+      setMeta('meta[name="description"]', "content", SET.seo_description);
+      setMeta('meta[property="og:description"]', "content", SET.seo_description);
+      setMeta('meta[name="twitter:description"]', "content", SET.seo_description);
+    }
+    if (SET.seo_keywords) setMeta('meta[name="keywords"]', "content", SET.seo_keywords);
+    if (SET.og_image) {
+      setMeta('meta[property="og:image"]', "content", SET.og_image);
+      setMeta('meta[name="twitter:image"]', "content", SET.og_image);
+    }
+    if (SET.site_title) {
+      setMeta('meta[property="og:title"]', "content", SET.site_title);
+      setMeta('meta[name="twitter:title"]', "content", SET.site_title);
+    }
+
+    /* ---- ছবি থাকলে meta image বসাও (og:site-এ default না থাকলে) ---- */
+    if (!SET.og_image && SET.avatar_image) {
+      setMeta('meta[property="og:image"]', "content", SET.avatar_image);
+      setMeta('meta[name="twitter:image"]', "content", SET.avatar_image);
+    }
 
     /* ---- site logo image ---- */
     var logoImg = D.querySelector(".nav-logo-img");
@@ -165,7 +203,7 @@
       var tags = (s.tags || []).map(function (t) { return '<span class="skill-tag">' + esc(t) + "</span>"; }).join("");
       var media = s.image
         ? '<img class="skills-group-img" src="' + esc(s.image) + '" alt="" loading="lazy" />'
-        : esc(s.icon || "🎨");
+        : (window.ICONS ? ICONS.resolve(s.icon, "palette", 22) : esc(s.icon || "🎨"));
       return '<div class="skills-group"><div class="skills-group-head"><span class="skills-group-icon">' +
         media + "</span><h3>" + esc(s.title) + "</h3></div>" +
         '<div class="skills-list">' + tags + "</div></div>";
@@ -212,6 +250,91 @@
     }).join("");
   }
 
+  function renderReviews(list) {
+    var wrap = q("#reviews-container");
+    var sec = q("#reviews");
+    if (!wrap) return;
+    if (!list.length) return; // built-in fallback থাকুক
+    if (sec) sec.hidden = false;
+    var star = window.ICONS ? ICONS.svg("star", 16) : "★";
+    var quote = window.ICONS ? ICONS.svg("quote", 24) : "❝";
+    var stars = "";
+    for (var i = 0; i < 5; i++) stars += '<span class="star">' + star + "</span>";
+    wrap.innerHTML = list.map(function (r) {
+      var n = String(r.name || "?").trim();
+      var ava = r.avatar
+        ? '<img class="review-ava has-img" src="' + esc(r.avatar) + '" alt="" loading="lazy" />'
+        : '<span class="review-ava">' + esc(n.charAt(0).toUpperCase()) + "</span>";
+      var rating = Math.max(1, Math.min(5, Number(r.rating) || 5));
+      var st = "";
+      for (var k = 0; k < 5; k++) st += '<span class="star' + (k < rating ? "" : " off") + '">' + star + "</span>";
+      return '<article class="review-card">' +
+        '<span class="review-quote">' + quote + "</span>" +
+        '<div class="review-stars">' + st + "</div>" +
+        '<p class="review-text">' + esc(r.text) + "</p>" +
+        '<div class="review-person">' + ava +
+        "<div><strong>" + esc(n) + "</strong><small>" +
+        esc([r.role, r.company].filter(Boolean).join(" · ")) + "</small></div></div></article>";
+    }).join("");
+  }
+
+  /* ---------- contact form → email notification ---------- */
+  function bindContactForm() {
+    var f = q("#contact-form");
+    if (!f) return;
+    f.addEventListener("submit", async function (e) {
+      e.preventDefault();
+      var st = q("#form-status");
+      var btn = f.querySelector('button[type="submit"]');
+      var data = {
+        name: (f.name.value || "").trim(),
+        email: (f.email.value || "").trim(),
+        subject: (f.subject.value || "").trim(),
+        message: (f.message.value || "").trim()
+      };
+      if (!data.name || !data.email || !data.message) {
+        if (st) { st.textContent = "Please fill name, email and message."; st.className = "form-status err"; }
+        return;
+      }
+      if (btn) { btn.disabled = true; btn.textContent = "Sending…"; }
+      if (st) { st.textContent = ""; st.className = "form-status"; }
+
+      // সবসময় DB-তে সংরক্ষণ (admin panel-এ দেখাবে)
+      saveMessage(data);
+
+      try {
+        var r = await fetch("/api/contact", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(data)
+        });
+        var j = await r.json().catch(function () { return {}; });
+        if (!r.ok || !j.ok) throw new Error(j.error || ("HTTP " + r.status));
+        if (st) {
+          st.textContent = "✅ Message sent — I'll reply to " + data.email + " soon.";
+          st.className = "form-status ok";
+        }
+        f.reset();
+      } catch (err) {
+        // email না গেলেও message DB-তে থাকে (নিচে সংরক্ষণ হয়)
+        if (st) {
+          st.textContent = "✅ Message received. I'll reply soon.";
+          st.className = "form-status ok";
+        }
+        f.reset();
+      } finally {
+        if (btn) { btn.disabled = false; btn.textContent = SET.form_submit || "Send Message"; }
+      }
+    });
+  }
+
+  /* ---------- save message to DB (always) ---------- */
+  function saveMessage(data) {
+    try {
+      SB.table("messages", { method: "POST", body: data });
+    } catch (e) { /* silent */ }
+  }
+
   /* ---------- load all ---------- */
   Promise.all([
     rows("profile?select=*"),
@@ -220,17 +343,24 @@
     rows("services?select=*&order=sort.asc"),
     rows("tools?select=*&order=sort.asc"),
     rows("projects?select=*&order=sort.asc"),
-    rows("experience?select=*&order=sort.asc")
+    rows("experience?select=*&order=sort.asc"),
+    rows("testimonials?select=*&order=sort.asc")
   ]).then(function (r) {
     r[1].forEach(function (s) { SET[s.key] = s.value; });
 
-    applySettings();          // আগে labels
-    applyProfile(r[0][0]);    // তারপর profile data
+    applyIcons();            // প্রথমে premium icons
+    applySettings();          // তারপর labels
+    applyProfile(r[0][0]);
     renderStats(r[2]);
     renderServices(r[3]);
     renderTools(r[4]);
-    renderProjects(r[5]);     // settings-এর button label লাগবে
+    renderProjects(r[5]);
     renderTimeline(r[6]);
+    renderReviews(r[7]);
+    bindContactForm();
+
+    // icons render হওয়ার পর আবার (dynamic কনটেন্ট)
+    applyIcons();
 
     if (window.PortfolioUI && window.PortfolioUI.refresh) window.PortfolioUI.refresh();
   }).catch(function (e) {
