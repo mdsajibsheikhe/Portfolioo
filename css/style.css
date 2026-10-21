@@ -576,7 +576,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
    Client reviews
    ============================================================ */
 .reviews { position: relative; }
-.reviews-container { margin-top: 48px; }
+.reviews-container { margin-top: 48px; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); }
 
 .review-card {
   position: relative;
