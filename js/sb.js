@@ -129,12 +129,40 @@ window.SB = (function () {
     return request("/rest/v1/" + path, opts);
   }
 
+  /* ---- Storage upload: file পাঠিয়ে public URL ফেরত ---- */
+  async function upload(filePath, file, retried) {
+    var res = await fetch(URL_BASE + "/storage/v1/object/" + filePath, {
+      method: "POST",
+      headers: {
+        apikey: ANON,
+        Authorization: "Bearer " + token(),
+        "Content-Type": file.type || "application/octet-stream",
+        "x-upsert": "true"
+      },
+      body: file
+    });
+    var text = await res.text();
+
+    if (!res.ok && res.status === 401 && !retried && getSession()) {
+      var ok = await refresh();
+      if (ok) return upload(filePath, file, true);
+    }
+    if (!res.ok) throw errFrom(res, text);
+    return URL_BASE + "/storage/v1/object/public/" + filePath;
+  }
+
+  function publicUrl(filePath) {
+    return URL_BASE + "/storage/v1/object/public/" + filePath;
+  }
+
   return {
     URL: URL_BASE,
     ANON: ANON,
     table: table,
     login: login,
     logout: logout,
+    upload: upload,
+    publicUrl: publicUrl,
     getSession: getSession,
     setSession: setSession,
     clearSession: clearSession

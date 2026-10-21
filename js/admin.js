@@ -81,10 +81,11 @@
       fields: [
         { k: "icon", l: "Icon (emoji)" },
         { k: "title", l: "Title" },
+        { k: "image", l: "Image icon (optional — emoji-এর বদলে)", t: "image", wide: true },
         { k: "tags", l: "Skill tags (comma separated)", t: "tags", wide: true },
         { k: "sort", l: "Order", t: "number" }
       ],
-      blank: { icon: "🎨", title: "", tags: "", sort: 0 }
+      blank: { icon: "🎨", title: "", image: "", tags: "", sort: 0 }
     },
     tools: {
       table: "tools", el: "#list-tools", status: "#status-tools",
@@ -99,6 +100,7 @@
       fields: [
         { k: "emoji", l: "Emoji" },
         { k: "title", l: "Title" },
+        { k: "image", l: "Cover image (optional — emoji-এর বদলে)", t: "image", wide: true },
         { k: "description", l: "Description", t: "textarea", wide: true },
         { k: "tags", l: "Tags (comma separated)", t: "tags", wide: true },
         { k: "view_url", l: "View link" },
@@ -106,7 +108,7 @@
         { k: "variant", l: "Card color (0-3)", t: "number" },
         { k: "sort", l: "Order", t: "number" }
       ],
-      blank: { emoji: "🎨", title: "", description: "", tags: "", view_url: "#", case_url: "#", variant: 0, sort: 0 }
+      blank: { emoji: "🎨", title: "", image: "", description: "", tags: "", view_url: "#", case_url: "#", variant: 0, sort: 0 }
     },
     experience: {
       table: "experience", el: "#list-experience", status: "#status-experience",
@@ -125,7 +127,7 @@
     profile: "Profile & Hero",
     about: "About",
     contact: "Contact & Footer",
-    appearance: "Appearance",
+    theme: "Theme",
     labels: "Text & Labels",
     stats: "Stats",
     services: "Services",
@@ -150,6 +152,7 @@
     ]},
     { group: "Hero", keys: [
       { k: "site_title", l: "Browser tab title" },
+      { k: "watermark", l: "Hero background word (PORTFOLIO)" },
       { k: "hero_btn_about", l: "Button: About Me" }
     ]},
     { group: "About section", keys: [
@@ -466,6 +469,39 @@
     }
   });
 
+  /* ---- Images panel (logo + profile photo) ---- */
+  var IMG_SETTINGS = [
+    { k: "logo_image", l: "Site logo (header)", h: "খালি রাখলে text logo (&lt;Sajib/&gt;) দেখাবে" },
+    { k: "avatar_image", l: "Profile photo (hero + about)", h: "খালি রাখলে initials \"MS\" দেখাবে" }
+  ];
+
+  function renderImgSettings() {
+    var host = $("#img-settings");
+    if (!host) return;
+    host.innerHTML = IMG_SETTINGS.map(function (f) {
+      return imageFieldHtml("set." + f.k, f.l, f.h, state.settings[f.k]);
+    }).join("");
+  }
+
+  $("#save-images").addEventListener("click", async function () {
+    var st = "#status-images";
+    setStatus(st, "Saving…", true);
+    try {
+      var payload = IMG_SETTINGS.map(function (f) {
+        return { key: f.k, value: String(state.settings[f.k] || "") };
+      });
+      await SB.table("settings?on_conflict=key", {
+        method: "POST",
+        body: payload,
+        prefer: "resolution=merge-duplicates"
+      });
+      setStatus(st, "✅ Images saved — live site reload করলেই দেখা যাবে।", true);
+      showAlert("Images updated. Reload the live site to see changes.", "info");
+    } catch (err) {
+      setStatus(st, "❌ " + err.message, false);
+    }
+  });
+
   /* ============ RENDER: settings / labels ============ */
   function renderLabels() {
     var host = $("#form-labels");
@@ -516,7 +552,7 @@
   $("#save-labels").addEventListener("click", saveLabels);
 
   /* ============ RENDER: lists ============ */
-  function fieldHtml2(f, val, idx) {
+  function fieldHtml2(f, val, idx, listName) {
     var v = val === null || val === undefined ? "" : val;
     var wide = f.wide ? " wide" : "";
     var input;
@@ -527,11 +563,104 @@
         f.options.map(function (o) {
           return '<option value="' + o + '"' + (String(v) === String(o) ? " selected" : "") + ">" + o + "</option>";
         }).join("") + "</select>";
+    } else if (f.t === "image") {
+      input = imageFieldHtml("list." + listName + "." + idx + "." + f.k, "", "", v);
+      wide = " wide";
     } else {
       input = '<input type="' + (f.t === "number" ? "number" : "text") + '" data-i="' + idx + '" data-k="' + f.k + '" value="' + esc(v) + '" />';
     }
-    return '<div class="field' + wide + '"><label>' + esc(f.l) + "</label>" + input + "</div>";
+    var label = f.t === "image" ? "" : '<label>' + esc(f.l) + "</label>";
+    return '<div class="field' + wide + '">' + label + input + "</div>";
   }
+
+  /* ---------- shared image widget (upload → storage → URL) ---------- */
+  function imageFieldHtml(path, label, hint, value) {
+    var v = value === null || value === undefined ? "" : value;
+    return '<div class="img-field">' +
+      (label ? '<label>' + esc(label) + "</label>" : "") +
+      (hint ? '<p class="field-hint">' + esc(hint) + "</p>" : "") +
+      '<input type="text" class="img-text" data-imgtext="' + path + '" value="' + esc(v) + '" placeholder="Image URL" />' +
+      '<div class="img-actions">' +
+        '<button type="button" class="btn-mini" data-imgup="' + path + '">⬆ Upload image</button>' +
+        '<button type="button" class="btn-mini ghost" data-imgclr="' + path + '">✕ Remove</button>' +
+      "</div>" +
+      (v ? '<img class="img-thumb" src="' + esc(v) + '" alt="" />'
+         : '<div class="img-thumb empty">No image</div>') +
+      '<input type="file" accept="image/*" hidden data-imgfile="' + path + '" />' +
+      "</div>";
+  }
+
+  function imgParts(p) { return String(p).split("."); }
+
+  function setImgValue(p, val) {
+    var a = imgParts(p);
+    if (a[0] === "set") state.settings[a[1]] = val;
+    else if (a[0] === "list" && state[a[1]] && state[a[1]][+a[2]]) state[a[1]][+a[2]][a[3]] = val;
+  }
+
+  function updateThumb(p, val) {
+    var el = document.querySelector('[data-imgtext="' + p + '"]');
+    if (!el) return;
+    var field = el.closest(".img-field");
+    var old = field && field.querySelector(".img-thumb");
+    if (!old) return;
+    var html = val
+      ? '<img class="img-thumb" src="' + esc(val) + '" alt="" />'
+      : '<div class="img-thumb empty">No image</div>';
+    var tmp = document.createElement("div");
+    tmp.innerHTML = html;
+    old.replaceWith(tmp.firstChild);
+  }
+
+  async function doImageUpload(path, file) {
+    if (!file) return;
+    if (file.type && file.type.indexOf("image/") !== 0) { showAlert("Image file নির্বাচন করুন।", "info"); return; }
+    if (file.size > 5 * 1024 * 1024) { showAlert("সর্বোচ্চ ৫ MB ছবি হবে।", "info"); return; }
+    var clean = String(file.name || "image").replace(/[^a-z0-9.\-_]/gi, "_").toLowerCase();
+    var prefix = imgParts(path).slice(0, 2).join("_");
+    try {
+      var url = await SB.upload("assets/" + prefix + "/" + Date.now() + "_" + clean, file);
+      setImgValue(path, url);
+      var txt = document.querySelector('[data-imgtext="' + path + '"]');
+      if (txt) txt.value = url;
+      updateThumb(path, url);
+      showAlert("Image uploaded.", "info");
+    } catch (e) {
+      showAlert("Upload failed: " + e.message, "info");
+    }
+  }
+
+  document.addEventListener("click", function (e) {
+    var up = e.target.closest("[data-imgup]");
+    if (up) {
+      var fi = document.querySelector('[data-imgfile="' + up.getAttribute("data-imgup") + '"]');
+      if (fi) { fi.value = ""; fi.click(); }
+      return;
+    }
+    var clr = e.target.closest("[data-imgclr]");
+    if (clr) {
+      var p = clr.getAttribute("data-imgclr");
+      setImgValue(p, "");
+      var t = document.querySelector('[data-imgtext="' + p + '"]');
+      if (t) t.value = "";
+      updateThumb(p, "");
+      return;
+    }
+  });
+
+  document.addEventListener("change", function (e) {
+    var fi = e.target.closest("[data-imgfile]");
+    if (fi && fi.files && fi.files[0]) doImageUpload(fi.getAttribute("data-imgfile"), fi.files[0]);
+  });
+
+  document.addEventListener("input", function (e) {
+    var t = e.target.closest("[data-imgtext]");
+    if (t) {
+      var p = t.getAttribute("data-imgtext");
+      setImgValue(p, t.value);
+      updateThumb(p, t.value);
+    }
+  });
 
   function renderList(name) {
     var cfg = LISTS[name];
@@ -554,7 +683,7 @@
             "</div>" +
           "</div>" +
           '<div class="form-grid">' +
-            cfg.fields.map(function (f) { return fieldHtml2(f, item[f.k], i); }).join("") +
+            cfg.fields.map(function (f) { return fieldHtml2(f, item[f.k], i, name); }).join("") +
           "</div>" +
         "</div>"
       );
@@ -765,6 +894,7 @@
       applyAdminTheme(state.settings.theme || "emerald");
       renderThemePicker();
       bindCustomColors();
+      renderImgSettings();
       Object.keys(LISTS).forEach(renderList);
       refreshCounts();
 
@@ -783,6 +913,7 @@
       applyAdminTheme(state.settings.theme || "emerald");
       renderThemePicker();
       bindCustomColors();
+      renderImgSettings();
       Object.keys(LISTS).forEach(renderList);
     }
   }

@@ -55,6 +55,23 @@
     // <title> special case
     if (SET.site_title) D.title = SET.site_title;
 
+    /* ---- site logo image ---- */
+    var logoImg = D.querySelector(".nav-logo-img");
+    var logoTxt = D.querySelector(".nav-logo-text");
+    if (logoImg && SET.logo_image) {
+      logoImg.src = SET.logo_image;
+      logoImg.hidden = false;
+      if (logoTxt) logoTxt.hidden = true;
+    }
+
+    /* ---- avatar image (hero + about) ---- */
+    if (SET.avatar_image) {
+      D.querySelectorAll(".hero-avatar, .about-avatar").forEach(function (el) {
+        el.style.backgroundImage = 'url("' + SET.avatar_image + '")';
+        el.classList.add("has-img");
+      });
+    }
+
     D.querySelectorAll("[data-s]").forEach(function (el) {
       var v = SET[el.getAttribute("data-s")];
       if (v !== undefined && v !== null && String(v).trim() !== "") {
@@ -146,8 +163,11 @@
     if (!wrap || !list.length) return;
     wrap.innerHTML = list.map(function (s) {
       var tags = (s.tags || []).map(function (t) { return '<span class="skill-tag">' + esc(t) + "</span>"; }).join("");
+      var media = s.image
+        ? '<img class="skills-group-img" src="' + esc(s.image) + '" alt="" loading="lazy" />'
+        : esc(s.icon || "🎨");
       return '<div class="skills-group"><div class="skills-group-head"><span class="skills-group-icon">' +
-        esc(s.icon || "🎨") + "</span><h3>" + esc(s.title) + "</h3></div>" +
+        media + "</span><h3>" + esc(s.title) + "</h3></div>" +
         '<div class="skills-list">' + tags + "</div></div>";
     }).join("");
   }
@@ -166,8 +186,14 @@
     wrap.innerHTML = list.map(function (p) {
       var v = Number(p.variant) || 0;
       var tags = (p.tags || []).map(function (t) { return "<span>" + esc(t) + "</span>"; }).join("");
+      var media = p.image
+        ? '<img class="project-img" src="' + esc(p.image) + '" alt="' + esc(p.title) + '" loading="lazy" />'
+        : '<span class="project-emoji">' + esc(p.emoji || "🎨") + "</span>";
+      var boxCls = p.image
+        ? "project-image has-img"
+        : "project-image" + (v > 0 ? " alt-" + v : "");
       return '<article class="project-card">' +
-        '<div class="project-image' + (v > 0 ? " alt-" + v : "") + '"><span class="project-emoji">' + esc(p.emoji || "🎨") + "</span></div>" +
+        '<div class="' + boxCls + '">' + media + "</div>" +
         '<div class="project-content"><h3>' + esc(p.title) + "</h3><p>" + esc(p.description) + "</p>" +
         '<div class="project-tags">' + tags + "</div>" +
         '<div class="project-links">' +
