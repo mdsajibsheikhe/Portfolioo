@@ -83,9 +83,10 @@
         { k: "title", l: "Title" },
         { k: "image", l: "Image icon (optional — icon/emoji-এর বদলে নিজের ছবি)", t: "image", wide: true },
         { k: "tags", l: "Skill tags (comma separated)", t: "tags", wide: true },
+        { k: "tools", l: "Tools used (comma separated — admin থেকে যেকোনো সময় বদলান)", t: "tags", wide: true },
         { k: "sort", l: "Order", t: "number" }
       ],
-      blank: { icon: "palette", title: "", image: "", tags: "", sort: 0 }
+      blank: { icon: "palette", title: "", image: "", tags: "", tools: "", sort: 0 }
     },
     tools: {
       table: "tools", el: "#list-tools", status: "#status-tools",
@@ -185,6 +186,7 @@
       { k: "services_eyebrow", l: "Eyebrow" },
       { k: "services_title", l: "Title — main word" },
       { k: "services_title_accent", l: "Title — green word" },
+      { k: "tools_used_label", l: "Label above tools list (Tools used)" },
       { k: "tools_label", l: "Tools label" }
     ]},
     { group: "Work section", keys: [
@@ -1023,6 +1025,7 @@
         state[k] = state[k].map(function (it) {
           var copy = Object.assign({}, it);
           if (Array.isArray(copy.tags)) copy.tags = copy.tags.join(", ");
+          if (Array.isArray(copy.tools)) copy.tools = copy.tools.join(", ");
           return copy;
         });
         persisted[k] = state[k].map(function (it) { return it.id; });

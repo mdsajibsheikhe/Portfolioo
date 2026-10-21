@@ -204,9 +204,17 @@
       var media = s.image
         ? '<img class="skills-group-img" src="' + esc(s.image) + '" alt="" loading="lazy" />'
         : (window.ICONS ? ICONS.resolve(s.icon, "palette", 22) : esc(s.icon || "🎨"));
+      var tl = Array.isArray(s.tools) ? s.tools : [];
+      var tools = tl.filter(function (x) { return String(x || "").trim(); })
+        .map(function (t) { return '<span class="tool-mini">' + esc(t) + "</span>"; }).join("");
+      var toolsRow = tools
+        ? '<div class="service-tools"><span class="service-tools-label">' +
+          (window.ICONS ? ICONS.svg("zap", 13) : "") + esc(SET.tools_used_label || "Tools used") +
+          "</span>" + tools + "</div>"
+        : "";
       return '<div class="skills-group"><div class="skills-group-head"><span class="skills-group-icon">' +
         media + "</span><h3>" + esc(s.title) + "</h3></div>" +
-        '<div class="skills-list">' + tags + "</div></div>";
+        '<div class="skills-list">' + tags + "</div>" + toolsRow + "</div>";
     }).join("");
   }
 
@@ -276,6 +284,106 @@
         "<div><strong>" + esc(n) + "</strong><small>" +
         esc([r.role, r.company].filter(Boolean).join(" · ")) + "</small></div></div></article>";
     }).join("");
+  }
+
+  /* ---------- reviews slider ---------- */
+  var revTimer = null;
+
+  function initReviewSlider() {
+    var slider = q("#reviews-slider");
+    var track = q("#reviews-container");
+    var dotsHost = q("#rev-dots");
+    if (!slider || !track) return;
+
+    var cards = Array.prototype.slice.call(track.children);
+    if (!cards.length) { slider.hidden = true; return; }
+    slider.hidden = false;
+
+    var idx = 0;
+
+    function perView() {
+      var w = window.innerWidth;
+      if (w < 620) return 1;
+      if (w < 1000) return 2;
+      if (w < 1320) return 3;
+      return 4;
+    }
+
+    function maxIdx() { return Math.max(0, cards.length - perView()); }
+
+    function layout() {
+      var pv = perView();
+      var gap = 24;
+      var w = track.clientWidth || slider.clientWidth;
+      var cardW = Math.max(240, Math.floor((w - gap * (pv - 1)) / pv));
+      cards.forEach(function (c) { c.style.flex = "0 0 " + cardW + "px"; });
+      if (idx > maxIdx()) idx = maxIdx();
+      track.style.transform = "translateX(-" + idx * (cardW + gap) + "px)";
+      buildDots();
+      var nav = q(".reviews-nav");
+      if (nav) nav.hidden = cards.length <= pv;
+    }
+
+    function buildDots() {
+      if (!dotsHost) return;
+      var pages = maxIdx() + 1;
+      if (pages < 2) { dotsHost.innerHTML = ""; return; }
+      var html = "";
+      for (var i = 0; i < pages; i++) {
+        html += '<button type="button" class="review-dot' + (i === idx ? " active" : "") +
+          '" data-rev-page="' + i + '" aria-label="Go to review ' + (i + 1) + '"></button>';
+      }
+      dotsHost.innerHTML = html;
+    }
+
+    function go(n) {
+      idx = Math.max(0, Math.min(maxIdx(), n));
+      layout();
+    }
+
+    function auto() {
+      clearInterval(revTimer);
+      revTimer = setInterval(function () {
+        go(idx >= maxIdx() ? 0 : idx + 1);
+      }, 5000);
+    }
+
+    var prev = q("#rev-prev");
+    var next = q("#rev-next");
+    if (prev) prev.addEventListener("click", function () { go(idx - 1); auto(); });
+    if (next) next.addEventListener("click", function () { go(idx + 1); auto(); });
+    if (dotsHost) {
+      dotsHost.addEventListener("click", function (e) {
+        var b = e.target.closest("[data-rev-page]");
+        if (b) { go(Number(b.getAttribute("data-rev-page"))); auto(); }
+      });
+    }
+
+    slider.addEventListener("mouseenter", function () { clearInterval(revTimer); });
+    slider.addEventListener("mouseleave", auto);
+
+    /* touch swipe */
+    var sx = 0, dx = 0, dragging = false;
+    track.addEventListener("touchstart", function (e) {
+      sx = e.touches[0].clientX; dx = 0; dragging = true;
+    }, { passive: true });
+    track.addEventListener("touchmove", function (e) {
+      if (dragging) dx = e.touches[0].clientX - sx;
+    }, { passive: true });
+    track.addEventListener("touchend", function () {
+      if (!dragging) return;
+      dragging = false;
+      if (Math.abs(dx) > 45) { go(idx + (dx < 0 ? 1 : -1)); auto(); }
+    });
+
+    layout();
+    auto();
+
+    var rt = null;
+    window.addEventListener("resize", function () {
+      clearTimeout(rt);
+      rt = setTimeout(layout, 150);
+    });
   }
 
   /* ---------- contact form → email notification ---------- */
@@ -357,6 +465,7 @@
     renderProjects(r[5]);
     renderTimeline(r[6]);
     renderReviews(r[7]);
+    initReviewSlider();
     bindContactForm();
 
     // icons render হওয়ার পর আবার (dynamic কনটেন্ট)
