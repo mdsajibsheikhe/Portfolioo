@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>Dashboard | Md Sajib Sheikh — Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/admin.css" />
+</head>
+<body>
+
+  <!-- ================= LOGIN ================= -->
+  <div class="login-wrap" id="login-wrap">
+    <form class="login-card" id="login-form">
+      <div class="login-logo"><span class="logo-bracket">&lt;</span>Sajib<span class="logo-slash">/</span><span class="logo-bracket">/&gt;</span></div>
+      <h1>Admin Panel</h1>
+      <p class="login-sub">Portfolio content manager</p>
+
+      <label for="login-email">Email</label>
+      <input type="email" id="login-email" placeholder="you@email.com" required autocomplete="username" />
+
+      <label for="login-pass">Password</label>
+      <input type="password" id="login-pass" placeholder="••••••••" required autocomplete="current-password" />
+
+      <button type="submit" class="login-btn" id="login-btn">Sign in</button>
+      <p class="login-status" id="login-status"></p>
+      <a class="login-back" href="index.html">← Back to site</a>
+    </form>
+  </div>
+
+  <!-- ================= APP ================= -->
+  <div class="app" id="app" hidden>
+
+    <!-- ---------- Sidebar ---------- -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-brand">
+        <span class="brand-badge">MS</span>
+        <div class="brand-text">
+          <strong>Sajib<em>Admin</em></strong>
+          <small>Portfolio CMS</small>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <span class="nav-label">Overview</span>
+        <button class="side-link active" data-tab="dashboard">
+          <span class="side-ico">▦</span> Dashboard
+        </button>
+
+        <span class="nav-label">Content</span>
+        <button class="side-link" data-tab="profile"><span class="side-ico">👤</span> Profile &amp; Hero</button>
+        <button class="side-link" data-tab="about"><span class="side-ico">📝</span> About</button>
+        <button class="side-link" data-tab="contact"><span class="side-ico">✉️</span> Contact &amp; Footer</button>
+
+        <span class="nav-label">Portfolio</span>
+        <button class="side-link" data-tab="stats"><span class="side-ico">📊</span> Stats</button>
+        <button class="side-link" data-tab="services"><span class="side-ico">🧩</span> Services</button>
+        <button class="side-link" data-tab="tools"><span class="side-ico">🛠️</span> Tools</button>
+        <button class="side-link" data-tab="projects"><span class="side-ico">🎨</span> Work / Projects</button>
+        <button class="side-link" data-tab="experience"><span class="side-ico">📅</span> Experience</button>
+
+        <span class="nav-label">Inbox</span>
+        <button class="side-link" data-tab="messages">
+          <span class="side-ico">📥</span> Messages
+          <span class="side-badge" id="msg-side-badge" hidden>0</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-foot">
+        <a href="index.html" target="_blank">View live site ↗</a>
+      </div>
+    </aside>
+
+    <div class="side-overlay" id="side-overlay"></div>
+
+    <!-- ---------- Main ---------- -->
+    <div class="main">
+      <!-- Topbar -->
+      <header class="topbar">
+        <button class="hamburger" id="hamburger" aria-label="Toggle sidebar"><span></span><span></span><span></span></button>
+
+        <div class="top-search">
+          <input type="text" id="top-search" placeholder="Search sections…" />
+        </div>
+
+        <div class="top-right">
+          <button class="top-ico" id="admin-theme" title="Toggle theme"><span>🌙</span></button>
+          <button class="top-ico has-dot" title="Messages" data-tab-jump="messages"><span>🔔</span></button>
+          <div class="top-user">
+            <span class="user-ava" id="user-ava">MS</span>
+            <span class="user-name" id="user-name">Admin</span>
+            <button class="logout-btn" id="logout-btn">Logout</button>
+          </div>
+        </div>
+      </header>
+
+      <!-- Page header -->
+      <div class="page-head">
+        <h1 id="page-title">Dashboard</h1>
+        <div class="crumbs"><a href="index.html" target="_blank">Home</a> <span>/</span> <span id="crumb-current">Dashboard</span></div>
+      </div>
+
+      <!-- Content -->
+      <main class="content">
+
+        <div class="alert alert-success" id="alert">
+          <span class="alert-tag">Success</span>
+          <span id="alert-msg">Panel loaded. Changes you save will appear on the live site after reload.</span>
+          <button class="alert-x" id="alert-x" aria-label="Close">✕</button>
+        </div>
+
+        <!-- ===== Dashboard ===== -->
+        <section class="tab-panel" id="tab-dashboard">
+          <div class="cards-4">
+            <div class="stat-card sc-cyan">
+              <div class="sc-head"><strong id="cnt-projects">—</strong><span class="sc-gear">⚙</span></div>
+              <span class="sc-label">Projects</span>
+              <svg class="sc-spark" viewBox="0 0 120 40" preserveAspectRatio="none"><path d="M0,30 C15,10 25,34 40,20 C55,8 65,32 80,16 C95,4 105,24 120,10" /></svg>
+            </div>
+            <div class="stat-card sc-red">
+              <div class="sc-head"><strong id="cnt-messages">—</strong><span class="sc-gear">⚙</span></div>
+              <span class="sc-label">Messages</span>
+              <svg class="sc-spark" viewBox="0 0 120 40" preserveAspectRatio="none"><path d="M0,20 C10,34 22,6 34,26 C46,36 54,10 68,28 C82,38 92,8 104,22 C112,30 116,26 120,18" /></svg>
+            </div>
+            <div class="stat-card sc-amber">
+              <div class="sc-head"><strong id="cnt-services">—</strong><span class="sc-gear">⚙</span></div>
+              <span class="sc-label">Services</span>
+              <svg class="sc-spark" viewBox="0 0 120 40" preserveAspectRatio="none"><path d="M0,34 C14,26 24,8 38,14 C52,20 60,36 74,24 C88,12 98,6 112,16 L120,20" /></svg>
+            </div>
+            <div class="stat-card sc-green">
+              <div class="sc-head"><strong id="cnt-experience">—</strong><span class="sc-gear">⚙</span></div>
+              <span class="sc-label">Experience</span>
+              <svg class="sc-spark" viewBox="0 0 120 40" preserveAspectRatio="none"><path d="M0,26 C16,12 26,30 42,18 C58,6 66,28 82,20 C98,12 108,4 120,14" /></svg>
+            </div>
+          </div>
+
+          <div class="cards-4 social-cards">
+            <div class="social-card so-fb">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M22 12a10 10 0 1 0-11.56 9.88v-6.99H7.9V12h2.54V9.8c0-2.5 1.49-3.89 3.77-3.89 1.09 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.77-1.63 1.56V12h2.78l-.44 2.89h-2.34v6.99A10 10 0 0 0 22 12Z"/></svg>
+              <div class="sc-stats"><div><strong>500</strong><span>Projects</span></div><div><strong>120</strong><span>Clients</span></div></div>
+            </div>
+            <div class="social-card so-x">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.9 1.15h3.68l-8.04 9.19L24 22.85h-7.4l-5.8-7.58-6.63 7.58H.48l8.6-9.83L0 1.15h7.59l5.24 6.93 6.07-6.93Zm-1.29 19.5h2.04L6.49 3.24H4.3l13.31 17.41Z"/></svg>
+              <div class="sc-stats"><div><strong id="cnt-tools">—</strong><span>Tools</span></div><div><strong>5+</strong><span>Years</span></div></div>
+            </div>
+            <div class="social-card so-in">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M4.98 3.5A2.5 2.5 0 1 1 0 3.5a2.5 2.5 0 0 1 4.98 0ZM.5 8.5h4V24h-4V8.5Zm7 0h3.83v2.1h.05c.53-1 1.84-2.1 3.79-2.1 4.05 0 4.8 2.67 4.8 6.14V24h-4v-7.7c0-1.83-.03-4.2-2.56-4.2-2.56 0-2.95 2-2.95 4.07V24h-4V8.5Z"/></svg>
+              <div class="sc-stats"><div><strong id="cnt-all">—</strong><span>Sections</span></div><div><strong>2</strong><span>Sites</span></div></div>
+            </div>
+            <div class="social-card so-ig">
+              <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.16c3.2 0 3.58.01 4.85.07 1.17.05 1.8.25 2.23.41.56.22.96.48 1.38.9.42.42.68.82.9 1.38.16.42.36 1.06.41 2.23.06 1.27.07 1.65.07 4.85s-.01 3.58-.07 4.85c-.05 1.17-.25 1.8-.41 2.23-.22.56-.48.96-.9 1.38-.42.42-.82.68-1.38.9-.42.16-1.06.36-2.23.41-1.27.06-1.65.07-4.85.07s-3.58-.01-4.85-.07c-1.17-.05-1.8-.25-2.23-.41-.56-.22-.96-.48-1.38-.9-.42-.42-.68-.82-.9-1.38-.16-.42-.36-1.06-.41-2.23C2.17 15.58 2.16 15.2 2.16 12s.01-3.58.07-4.85c.05-1.17.25-1.8.41-2.23.22-.56.48-.96.9-1.38.42-.42.82-.68 1.38-.9.42-.16 1.06-.36 2.23-.41C8.42 2.17 8.8 2.16 12 2.16Zm0 1.62c-3.15 0-3.52.01-4.76.07-1.15.05-1.77.24-2.19.4-.55.22-.94.47-1.35.88-.41.41-.66.8-.88 1.35-.16.42-.35 1.04-.4 2.19-.06 1.24-.07 1.61-.07 4.76s.01 3.52.07 4.76c.05 1.15.24 1.77.4 2.19.22.55.47.94.88 1.35.41.41.8.66 1.35.88.42.16 1.04.35 2.19.4 1.24.06 1.61.07 4.76.07s3.52-.01 4.76-.07c1.15-.05 1.77-.24 2.19-.4.55-.22.94-.47 1.35-.88.41-.41.66-.8.88-1.35.16-.42.35-1.04.4-2.19.06-1.24.07-1.61.07-4.76s-.01-3.52-.07-4.76c-.05-1.15-.24-1.77-.4-2.19a3.6 3.6 0 0 0-.88-1.35 3.6 3.6 0 0 0-1.35-.88c-.42-.16-1.04-.35-2.19-.4-1.24-.06-1.61-.07-4.76-.07Zm0 2.76a5.3 5.3 0 1 1 0 10.6 5.3 5.3 0 0 1 0-10.6Zm0 8.74a3.44 3.44 0 1 0 0-6.88 3.44 3.44 0 0 0 0 6.88Zm6.75-8.94a1.24 1.24 0 1 1-2.48 0 1.24 1.24 0 0 1 2.48 0Z"/></svg>
+              <div class="sc-stats"><div><strong>500+</strong><span>Designs</span></div><div><strong>3</strong><span>Services</span></div></div>
+            </div>
+          </div>
+
+          <div class="panel">
+            <div class="panel-head"><h2>Quick edit</h2></div>
+            <div class="quick-grid" id="quick-grid">
+              <button class="quick-btn" data-tab="profile">👤 Edit hero &amp; profile</button>
+              <button class="quick-btn" data-tab="projects">🎨 Manage work</button>
+              <button class="quick-btn" data-tab="services">🧩 Manage services</button>
+              <button class="quick-btn" data-tab="messages">📥 Read messages</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===== Profile & Hero ===== -->
+        <section class="tab-panel" id="tab-profile" hidden>
+          <div class="panel">
+            <div class="panel-head">
+              <h2>Profile &amp; Hero</h2>
+              <button class="btn btn-primary" id="save-profile">Save changes</button>
+            </div>
+            <div class="form-grid" id="form-profile"></div>
+            <p class="save-status" id="status-profile"></p>
+          </div>
+        </section>
+
+        <!-- ===== About ===== -->
+        <section class="tab-panel" id="tab-about" hidden>
+          <div class="panel">
+            <div class="panel-head">
+              <h2>About</h2>
+              <button class="btn btn-primary" id="save-about">Save changes</button>
+            </div>
+            <div class="form-grid" id="form-about"></div>
+            <p class="save-status" id="status-about"></p>
+          </div>
+        </section>
+
+        <!-- ===== Contact & Footer ===== -->
+        <section class="tab-panel" id="tab-contact" hidden>
+          <div class="panel">
+            <div class="panel-head">
+              <h2>Contact &amp; Footer</h2>
+              <button class="btn btn-primary" id="save-contact">Save changes</button>
+            </div>
+            <div class="form-grid" id="form-contact"></div>
+            <p class="save-status" id="status-contact"></p>
+          </div>
+        </section>
+
+        <!-- ===== List tabs (stats / services / tools / projects / experience) ===== -->
+        <section class="tab-panel" id="tab-stats" hidden>
+          <div class="panel">
+            <div class="panel-head">
+              <h2>Stats <small>(Projects / Clients / Years)</small></h2>
+              <div class="panel-actions">
+                <button class="btn btn-ghost" data-add="stats">+ Add</button>
+                <button class="btn btn-primary" data-save="stats">Save all</button>
+              </div>
+            </div>
+            <div class="list-wrap" id="list-stats"></div>
+            <p class="save-status" id="status-stats"></p>
+          </div>
+        </section>
+
+        <section class="tab-panel" id="tab-services" hidden>
+          <div class="panel">
+            <div class="panel-head">
+              <h2>Services</h2>
+              <div class="panel-actions">
+                <button class="btn btn-ghost" data-add="services">+ Add</button>
+                <button class="btn btn-primary" data-save="services">Save all</button>
+              </div>
+            </div>
+            <div class="list-wrap" id="list-services"></div>
+            <p class="save-status" id="status-services"></p>
+          </div>
+        </section>
+
+        <section class="tab-panel" id="tab-tools" hidden>
+          <div class="panel">
+            <div class="panel-head">
+              <h2>Tools</h2>
+              <div class="panel-actions">
+                <button class="btn btn-ghost" data-add="tools">+ Add</button>
+                <button class="btn btn-primary" data-save="tools">Save all</button>
+              </div>
+            </div>
+            <div class="list-wrap" id="list-tools"></div>
+            <p class="save-status" id="status-tools"></p>
+          </div>
+        </section>
+
+        <section class="tab-panel" id="tab-projects" hidden>
+          <div class="panel">
+            <div class="panel-head">
+              <h2>Work / Projects</h2>
+              <div class="panel-actions">
+                <button class="btn btn-ghost" data-add="projects">+ Add</button>
+                <button class="btn btn-primary" data-save="projects">Save all</button>
+              </div>
+            </div>
+            <div class="list-wrap" id="list-projects"></div>
+            <p class="save-status" id="status-projects"></p>
+          </div>
+        </section>
+
+        <section class="tab-panel" id="tab-experience" hidden>
+          <div class="panel">
+            <div class="panel-head">
+              <h2>Experience &amp; Education</h2>
+              <div class="panel-actions">
+                <button class="btn btn-ghost" data-add="experience">+ Add</button>
+                <button class="btn btn-primary" data-save="experience">Save all</button>
+              </div>
+            </div>
+            <div class="list-wrap" id="list-experience"></div>
+            <p class="save-status" id="status-experience"></p>
+          </div>
+        </section>
+
+        <!-- ===== Messages ===== -->
+        <section class="tab-panel" id="tab-messages" hidden>
+          <div class="panel">
+            <div class="panel-head">
+              <h2>Messages</h2>
+              <button class="btn btn-ghost" id="reload-msgs">↻ Refresh</button>
+            </div>
+            <div class="list-wrap" id="list-messages"></div>
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <script src="js/sb.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>

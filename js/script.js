@@ -5,7 +5,7 @@
 // ---------- Loader ----------
 window.addEventListener("load", () => {
   const loader = document.getElementById("loader");
-  setTimeout(() => loader.classList.add("hidden"), 600);
+  if (loader) setTimeout(() => loader.classList.add("hidden"), 600);
 });
 
 // ---------- Theme Toggle ----------
@@ -16,12 +16,14 @@ if (savedTheme) {
   document.documentElement.setAttribute("data-theme", savedTheme);
 }
 
-themeToggle.addEventListener("click", () => {
-  const current = document.documentElement.getAttribute("data-theme");
-  const next = current === "dark" ? "light" : "dark";
-  document.documentElement.setAttribute("data-theme", next);
-  localStorage.setItem("theme", next);
-});
+if (themeToggle) {
+  themeToggle.addEventListener("click", () => {
+    const current = document.documentElement.getAttribute("data-theme");
+    const next = current === "dark" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", next);
+    localStorage.setItem("theme", next);
+  });
+}
 
 // ---------- Mobile Nav ----------
 const navMenu = document.getElementById("nav-menu");
@@ -42,9 +44,9 @@ function closeMenu() {
   document.body.style.overflow = "";
 }
 
-navToggle.addEventListener("click", openMenu);
-navClose.addEventListener("click", closeMenu);
-navOverlay.addEventListener("click", closeMenu);
+if (navToggle) navToggle.addEventListener("click", openMenu);
+if (navClose) navClose.addEventListener("click", closeMenu);
+if (navOverlay) navOverlay.addEventListener("click", closeMenu);
 navLinks.forEach((link) => link.addEventListener("click", closeMenu));
 
 // Close menu with Escape key
@@ -57,13 +59,15 @@ const header = document.getElementById("header");
 const scrollTopBtn = document.getElementById("scroll-top");
 
 window.addEventListener("scroll", () => {
-  header.classList.toggle("scrolled", window.scrollY > 50);
-  scrollTopBtn.classList.toggle("show", window.scrollY > 400);
+  if (header) header.classList.toggle("scrolled", window.scrollY > 50);
+  if (scrollTopBtn) scrollTopBtn.classList.toggle("show", window.scrollY > 400);
 });
 
-scrollTopBtn.addEventListener("click", () => {
-  window.scrollTo({ top: 0, behavior: "smooth" });
-});
+if (scrollTopBtn) {
+  scrollTopBtn.addEventListener("click", () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+}
 
 // ---------- Active link on scroll ----------
 const sections = document.querySelectorAll("section[id]");
@@ -118,13 +122,7 @@ function type() {
 
 type();
 
-// ---------- Scroll reveal ----------
-const revealElements = document.querySelectorAll(
-  ".about, .skills-group, .project-card, .timeline-item, .contact-info, .contact-form"
-);
-
-revealElements.forEach((el) => el.classList.add("reveal"));
-
+// ---------- Scroll reveal (Supabase content লোড হলে নতুন element-এও কাজ করে) ----------
 const revealObserver = new IntersectionObserver(
   (entries) => {
     entries.forEach((entry) => {
@@ -137,74 +135,127 @@ const revealObserver = new IntersectionObserver(
   { threshold: 0.15 }
 );
 
-revealElements.forEach((el) => revealObserver.observe(el));
+function initReveal() {
+  document
+    .querySelectorAll(".about, .skills-group, .project-card, .timeline-item, .contact-info, .contact-form")
+    .forEach((el) => {
+      if (el.classList.contains("reveal")) return;
+      el.classList.add("reveal");
+      revealObserver.observe(el);
+    });
+}
+
+initReveal();
 
 // ---------- Custom cursor ----------
 const cursor = document.getElementById("cursor");
 
 document.addEventListener("mousemove", (e) => {
+  if (!cursor) return;
   cursor.style.left = e.clientX + "px";
   cursor.style.top = e.clientY + "px";
 });
 
-document.querySelectorAll("a, button, input, textarea").forEach((el) => {
-  el.addEventListener("mouseenter", () => {
-    cursor.style.width = "40px";
-    cursor.style.height = "40px";
-    cursor.style.background = "rgba(5, 150, 105, 0.2)";
+function initCursorHovers() {
+  if (!cursor) return;
+  document.querySelectorAll("a, button, input, textarea").forEach((el) => {
+    if (el.dataset.cursorBound) return;
+    el.dataset.cursorBound = "1";
+    el.addEventListener("mouseenter", () => {
+      cursor.style.width = "40px";
+      cursor.style.height = "40px";
+      cursor.style.background = "rgba(5, 150, 105, 0.2)";
+    });
+    el.addEventListener("mouseleave", () => {
+      cursor.style.width = "24px";
+      cursor.style.height = "24px";
+      cursor.style.background = "transparent";
+    });
   });
-  el.addEventListener("mouseleave", () => {
-    cursor.style.width = "24px";
-    cursor.style.height = "24px";
-    cursor.style.background = "transparent";
-  });
-});
+}
+
+initCursorHovers();
 
 // ---------- Stats counter ----------
-const stats = document.querySelectorAll(".stat-num");
 let statsStarted = false;
 
-const statsObserver = new IntersectionObserver(
-  (entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting && !statsStarted) {
-        statsStarted = true;
-        stats.forEach((stat) => {
-          const target = +stat.dataset.count;
-          let current = 0;
-          const increment = target / 60;
-          const counter = setInterval(() => {
-            current += increment;
-            if (current >= target) {
-              stat.textContent = target + "+";
-              clearInterval(counter);
-            } else {
-              stat.textContent = Math.floor(current);
-            }
-          }, 25);
-        });
-        statsObserver.disconnect();
+function runCounters() {
+  document.querySelectorAll(".stat-num").forEach((stat) => {
+    const target = +stat.dataset.count;
+    if (!target) {
+      stat.textContent = stat.dataset.count + (stat.dataset.count ? "+" : "");
+      return;
+    }
+    let current = 0;
+    const increment = target / 60;
+    const counter = setInterval(() => {
+      current += increment;
+      if (current >= target) {
+        stat.textContent = target + "+";
+        clearInterval(counter);
+      } else {
+        stat.textContent = Math.floor(current);
       }
-    });
-  },
-  { threshold: 0.5 }
-);
+    }, 25);
+  });
+}
 
-if (stats.length) statsObserver.observe(stats[0].closest(".about-stats"));
+const statsBlock = document.querySelector(".about-stats");
+if (statsBlock) {
+  const statsObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting && !statsStarted) {
+          statsStarted = true;
+          runCounters();
+          statsObserver.disconnect();
+        }
+      });
+    },
+    { threshold: 0.4 }
+  );
+  statsObserver.observe(statsBlock);
+}
 
-// ---------- Contact form ----------
+// ---------- Refresh hook (content.js data বদলালে ডাকে) ----------
+window.PortfolioUI = {
+  refresh() {
+    initReveal();
+    initCursorHovers();
+    if (statsStarted) runCounters();
+  }
+};
+
+// ---------- Contact form (Supabase-এ message save) ----------
 const contactForm = document.getElementById("contact-form");
 const formStatus = document.getElementById("form-status");
 
-contactForm.addEventListener("submit", (e) => {
-  e.preventDefault();
-  formStatus.textContent = "✅ Message sent! I'll get back to you soon.";
-  contactForm.reset();
+if (contactForm) {
+  contactForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const payload = {
+      name: contactForm.querySelector("#name").value.trim(),
+      email: contactForm.querySelector("#email").value.trim(),
+      subject: contactForm.querySelector("#subject").value.trim(),
+      message: contactForm.querySelector("#message").value.trim()
+    };
 
-  setTimeout(() => {
-    formStatus.textContent = "";
-  }, 4000);
-});
+    try {
+      if (!window.SB) throw new Error("offline");
+      await SB.table("messages", { method: "POST", body: payload });
+      formStatus.textContent = "✅ Message sent! I'll get back to you soon.";
+      contactForm.reset();
+    } catch (err) {
+      console.warn("Message not saved:", err.message);
+      formStatus.textContent = "⚠️ Could not send — please email me directly.";
+    }
+
+    setTimeout(() => {
+      formStatus.textContent = "";
+    }, 4000);
+  });
+}
 
 // ---------- Footer year ----------
-document.getElementById("year").textContent = new Date().getFullYear();
+const yearEl = document.getElementById("year");
+if (yearEl) yearEl.textContent = new Date().getFullYear();
