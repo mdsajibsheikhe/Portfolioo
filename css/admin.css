@@ -169,14 +169,14 @@ a { color: inherit; }
 .sidebar-brand {
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 20px 20px 18px;
+  gap: 11px;
+  padding: 15px 18px 14px;
   border-bottom: 1px solid rgba(255, 255, 255, 0.07);
 }
 
 .brand-badge {
-  width: 40px;
-  height: 40px;
+  width: 36px;
+  height: 36px;
   border-radius: 10px;
   background: linear-gradient(135deg, var(--primary), var(--cyan));
   color: #fff;
@@ -248,7 +248,7 @@ a { color: inherit; }
 }
 
 .sidebar-foot {
-  padding: 14px 20px;
+  padding: 11px 18px;
   border-top: 1px solid rgba(255, 255, 255, 0.07);
 }
 .sidebar-foot a {
@@ -997,12 +997,12 @@ a { color: inherit; }
 
 /* ---- Sidebar groups + SVG icons ---- */
 .nav-label {
-  padding: 14px 13px 5px;
+  padding: 11px 12px 4px;
   font-size: 10px; letter-spacing: 1.6px; color: #697583;
 }
-.nav-label:not(:first-child) { border-top: 1px solid rgba(255, 255, 255, 0.06); margin-top: 6px; }
+.nav-label:not(:first-child) { border-top: 1px solid rgba(255, 255, 255, 0.06); margin-top: 5px; }
 
-.side-link { gap: 12px; padding: 8px 13px; border-radius: 9px; position: relative; }
+.side-link { gap: 11px; padding: 7px 12px; border-radius: 9px; position: relative; font-size: 13.5px; }
 .side-link::before {
   content: ""; position: absolute; left: 0; top: 50%; transform: translateY(-50%);
   width: 3px; height: 0; background: var(--cyan); border-radius: 0 4px 4px 0;
