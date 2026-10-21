@@ -1,0 +1,9 @@
+# AI agent tooling (installed by `npx skills add`, not part of the site)
+.agents/
+
+# OS / editor junk
+.DS_Store
+Thumbs.db
+*.log
+.vscode/
+.idea/
