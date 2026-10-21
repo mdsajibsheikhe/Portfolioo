@@ -997,7 +997,8 @@
     }
 
     var hasPhoto = !!String(s.avatar_image || "").trim();
-    var hasLogo = !!String(s.logo_image || "").trim();
+    var logoCount = ["logo_1", "logo_2", "logo_3"].filter(function (k) { return String(s[k] || "").trim(); }).length;
+    var navLogo = !!String(s.logo_image || "").trim();
     var themeOk = !!String(s.theme || "").trim();
     var seoDone = ["site_title", "seo_description", "seo_keywords", "og_image"]
       .every(function (k) { return String(s[k] || "").trim(); });
@@ -1005,17 +1006,20 @@
     host.innerHTML =
       '<div class="ss-group"><h3>Quick checks</h3>' +
         row("Profile photo", hasPhoto, hasPhoto ? "Uploaded" : "Theme → Images থেকে upload করুন", "theme") +
-        row("Site logo", hasLogo, hasLogo ? "Uploaded" : "থাকলেও চলবে — text logo দেখাচ্ছে", "theme") +
+        row("Header logo", navLogo, navLogo ? "Image ব্যবহার হচ্ছে" : "Text logo দেখাচ্ছে", "theme") +
+        row("Brand logos", logoCount > 0, logoCount ? logoCount + " টা আপলোড করা আছে" : "Logo Manager থেকে যোগ করুন", "theme") +
         row("Color theme", themeOk, themeOk ? (s.theme || "emerald") + " সক্রিয়" : "নির্বাচন করুন", "theme") +
         row("SEO fields", seoDone, seoDone ? "সব পূরণ" : "SEO tab থেকে পূরণ করুন", "seo") +
         row("Client reviews", state.testimonials.length > 0,
             state.testimonials.length + " টা আছে", "testimonials") +
       "</div>" +
       '<div class="ss-group"><h3>Live sites</h3>' +
-        '<a class="ss-link" href="https://mdsajibsheikh.vercel.app/" target="_blank" rel="noopener">🌐 mdsajibsheikh.vercel.app <span>↗</span></a>' +
-        '<a class="ss-link" href="https://mdsajibsheikhe.github.io/Portfolioo/" target="_blank" rel="noopener">🐙 GitHub Pages <span>↗</span></a>' +
-        '<a class="ss-link" href="https://mdsajibsheikh.vercel.app/admin.html" target="_blank" rel="noopener">🔐 This admin panel <span>↗</span></a>' +
+        '<a class="ss-link" href="https://mdsajibsheikh.vercel.app/" target="_blank" rel="noopener"><span data-sico="globe"></span> mdsajibsheikh.vercel.app <span class="ss-go">↗</span></a>' +
+        '<a class="ss-link" href="https://mdsajibsheikhe.github.io/Portfolioo/" target="_blank" rel="noopener"><span data-sico="github"></span> GitHub Pages <span class="ss-go">↗</span></a>' +
+        '<a class="ss-link" href="https://mdsajibsheikh.vercel.app/admin.html" target="_blank" rel="noopener"><span data-sico="shield"></span> This admin panel <span class="ss-go">↗</span></a>' +
       "</div>";
+
+    applyPanelIcons(host);
   }
 
   /* ============ PANEL ICONS (SVG — emoji নয়) ============ */
