@@ -139,13 +139,30 @@ function initReveal() {
   document
     .querySelectorAll(".about, .skills-group, .project-card, .timeline-item, .contact-info, .contact-form")
     .forEach((el) => {
-      if (el.classList.contains("reveal")) return;
-      el.classList.add("reveal");
+      // index.html-তে আগে থেকেই reveal class থাকলেও observe করতে হবে —
+      // নাহলে সেই section কখনো visible হয় না (ফাঁকা দেখাত)
+      if (!el.classList.contains("reveal")) el.classList.add("reveal");
+      if (el.classList.contains("active")) return;
+      if (el.dataset.revealObserved === "1") return;
+      el.dataset.revealObserved = "1";
       revealObserver.observe(el);
     });
 }
 
+/* IntersectionObserver না চললেও স্ক্রিনে যা আছে সেটা লুকিয়ে রাখবে না */
+function revealInView() {
+  document.querySelectorAll(".reveal:not(.active)").forEach((el) => {
+    const r = el.getBoundingClientRect();
+    if (r.top < window.innerHeight * 0.92 && r.bottom > 0) el.classList.add("active");
+  });
+}
+window.addEventListener("scroll", revealInView, { passive: true });
+window.addEventListener("resize", revealInView);
+window.addEventListener("load", () => setTimeout(revealInView, 400));
+setTimeout(revealInView, 1500);
+
 initReveal();
+setTimeout(revealInView, 600);
 
 // ---------- Custom cursor ----------
 const cursor = document.getElementById("cursor");
@@ -222,6 +239,7 @@ window.PortfolioUI = {
   refresh() {
     initReveal();
     initCursorHovers();
+    revealInView();
     if (statsStarted) runCounters();
   }
 };
