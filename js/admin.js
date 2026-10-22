@@ -1100,7 +1100,9 @@
 
   function tbGet(n, k) {
     var v = state.settings["hero_tool_" + n + "_" + k];
-    return String(v === undefined || v === null ? TB_DEF[n - 1][k] : v);
+    if (v === undefined || v === null) v = TB_DEF[n - 1][k];
+    /* TB_DEF-এ key না থাকলে "undefined" স্ট্রিং ফেরাবে না */
+    return String(v === undefined || v === null ? "" : v);
   }
   function tbSet(n, k, val) { state.settings["hero_tool_" + n + "_" + k] = String(val); }
 
