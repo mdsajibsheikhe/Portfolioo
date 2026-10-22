@@ -1301,6 +1301,7 @@
       Object.keys(LISTS).forEach(renderList);
       refreshCounts();
       renderLogoManager();
+      renderToolBadges();
       initGreeting();
       applyPanelIcons();
 
