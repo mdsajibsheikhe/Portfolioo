@@ -324,11 +324,18 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 
 /* ---- ৩টা hero tool badge — admin থেকে content ও রং পরিবর্তনযোগ্য ----
    background/color inline হিসেবে বসানো হয় (js/content.js applyHeroTools) */
+/* ---- hero tool badge — অবস্থান (১-৬, এরপর ঘুরে ঘুরে বসে) ----
+   background/color inline হিসেবে বসানো হয় (js/content.js applyHeroTools) */
 .tool-badge { position: absolute; z-index: 3; }
-.tool-badge.tool-1 { top: 4%; left: 30%; animation: float 5s ease-in-out infinite; }
-.tool-badge.tool-2 { top: 32%; right: 0%; animation: float 5s ease-in-out 0.8s infinite; }
-.tool-badge.tool-3 { bottom: 18%; left: -2%; animation: float 5s ease-in-out 1.6s infinite; }
+.tool-badge.p1 { top: 4%; left: 30%; animation: float 5s ease-in-out infinite; }
+.tool-badge.p2 { top: 32%; right: 0%; animation: float 5s ease-in-out 0.8s infinite; }
+.tool-badge.p3 { bottom: 18%; left: -2%; animation: float 5s ease-in-out 1.6s infinite; }
+.tool-badge.p4 { bottom: 4%; right: 6%; animation: float 5s ease-in-out 2.4s infinite; }
+.tool-badge.p5 { top: -2%; right: 14%; animation: float 5s ease-in-out 3.2s infinite; }
+.tool-badge.p6 { top: 48%; left: -6%; animation: float 5s ease-in-out 4s infinite; }
 .tool-badge.tool-text { font-family: "Space Grotesk", sans-serif; font-weight: 700; }
+/* transparent badge — শুধু icon/লেখাটা ভেসে থাকবে, box নয় */
+.tool-badge.tool-transparent { box-shadow: none !important; }
 /* নিজের upload করা icon — ছবি পুরো badge-এ বসবে */
 .tool-badge.tool-img { overflow: hidden; }
 .tool-badge.tool-img img { width: 100%; height: 100%; object-fit: contain; border-radius: inherit; display: block; }

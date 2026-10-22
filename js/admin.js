@@ -1089,18 +1089,35 @@
     });
   }
 
-  /* ============ HERO TOOL BADGES (avatar চারপাশের ৩টা icon) ============ */
-  var TB_SLOTS = [1, 2, 3];
-  var TB_KEYS = ["icon", "label", "bg", "fg", "size", "img"];
+  /* ============ HERO TOOL BADGES (avatar চারপাশের icon) ============
+     সংখ্যা add/delete করা যায় (সর্বোচ্চ ৬), সাথে transparent background অপশন */
+  var TB_MAX = 6;
+  var TB_KEYS = ["icon", "label", "bg", "fg", "size", "img", "bgt"];
   var TB_DEF = [
-    { icon: "", label: "Ai", bg: "#332211", fg: "#ff9a00" },
-    { icon: "", label: "Ps", bg: "#001e36", fg: "#31a8ff" },
-    { icon: "figma", label: "Figma", bg: "#1e1e1e", fg: "#ffffff" }
+    { icon: "", label: "Ai", bg: "#332211", fg: "#ff9a00", size: 60, bgt: "" },
+    { icon: "", label: "Ps", bg: "#001e36", fg: "#31a8ff", size: 60, bgt: "" },
+    { icon: "figma", label: "Figma", bg: "#1e1e1e", fg: "#ffffff", size: 60, bgt: "" },
+    { icon: "canva", label: "Canva", bg: "#0e1726", fg: "#7ed3f7", size: 60, bgt: "" },
+    { icon: "sketch", label: "Sketch", bg: "#2b1f0e", fg: "#fdb300", size: 60, bgt: "" },
+    { icon: "framer", label: "Framer", bg: "#111111", fg: "#ffffff", size: 60, bgt: "" }
   ];
+
+  function tbCount() {
+    var v = parseInt(state.settings["hero_tool_count"], 10);
+    if (!v || isNaN(v) || v < 1) v = 3;
+    if (v > TB_MAX) v = TB_MAX;
+    return v;
+  }
+  function tbSlots() {
+    var a = [], c = tbCount();
+    for (var i = 1; i <= c; i++) a.push(i);
+    return a;
+  }
+  function tbDef(n) { return TB_DEF[n - 1] || TB_DEF[0]; }
 
   function tbGet(n, k) {
     var v = state.settings["hero_tool_" + n + "_" + k];
-    if (v === undefined || v === null) v = TB_DEF[n - 1][k];
+    if (v === undefined || v === null) v = tbDef(n)[k];
     /* TB_DEF-এ key না থাকলে "undefined" স্ট্রিং ফেরাবে না */
     return String(v === undefined || v === null ? "" : v);
   }
@@ -1109,7 +1126,7 @@
   function tbBrand(n) {
     var ico = tbGet(n, "icon").trim().toLowerCase();
     /* upload মোডে ছবি এখনো দেওয়া হয়নি → স্লটের ডিফল্ট লোগো দেখাও */
-    if (ico === "upload" && !tbImg(n)) ico = String(TB_DEF[n - 1].icon || "").toLowerCase();
+    if (ico === "upload" && !tbImg(n)) ico = String(tbDef(n).icon || "").toLowerCase();
     if (!ico || ico === "upload" || !window.ICONS || !ICONS.brand) return "";
     return ICONS.brand(ico, 26);
   }
@@ -1119,13 +1136,15 @@
     return (!v || isNaN(v) || v < 34 || v > 110) ? 60 : v;
   }
   function tbImg(n) { return tbGet(n, "img").trim(); }
+  function tbTrans(n) { return tbGet(n, "bgt").trim() === "1"; }
 
   function tbCls(n) {
     var ico = tbGet(n, "icon").trim().toLowerCase();
     var lab = tbGet(n, "label").trim();
-    if (ico === "upload" && tbImg(n)) return "tool-badge tool-" + n + " tool-img";
-    if (!tbBrand(n) && lab) return "tool-badge tool-" + n + " tool-text";
-    return "tool-badge tool-" + n;
+    var base = "tool-badge p" + (((n - 1) % 6) + 1) + (tbTrans(n) ? " tool-transparent" : "");
+    if (ico === "upload" && tbImg(n)) return base + " tool-img";
+    if (!tbBrand(n) && lab) return base + " tool-text";
+    return base;
   }
 
   function tbInner(n) {
@@ -1149,23 +1168,27 @@
     var host = $("#tool-badge-grid");
     if (!host) return;
     var opts = (window.ICONS && ICONS.brandList) ? ICONS.brandList() : ["figma"];
+    var slots = tbSlots(), c = slots.length;
 
-    host.innerHTML = TB_SLOTS.map(function (n) {
-      var ico = tbGet(n, "icon").trim().toLowerCase();
-      var lab = tbGet(n, "label").trim();
-      var bg  = tbGet(n, "bg").trim();
-      var fg  = tbGet(n, "fg").trim();
-      var sz  = tbSize(n);
-      var img = tbImg(n);
+    host.innerHTML = slots.map(function (n) {
+      var ico  = tbGet(n, "icon").trim().toLowerCase();
+      var lab  = tbGet(n, "label").trim();
+      var bg   = tbGet(n, "bg").trim();
+      var fg   = tbGet(n, "fg").trim();
+      var sz   = tbSize(n);
+      var img  = tbImg(n);
+      var tran = tbTrans(n);
       var isUp = ico === "upload";
 
       return '<div class="tb-card" data-tbcard="' + n + '" style="border:1px solid var(--line);border-radius:12px;padding:16px;background:var(--bg-soft)">' +
         '<div style="display:flex;align-items:center;gap:14px;margin-bottom:14px">' +
-          '<span class="' + tbCls(n) + ' preview-badge" style="background:' + esc(bg) + ";color:" + esc(fg) +
+          '<span class="' + tbCls(n) + ' preview-badge" style="background:' + (tran ? "transparent" : esc(bg)) + ";color:" + esc(fg) +
             ";width:" + sz + "px;height:" + sz + "px;border-radius:" + Math.round(sz * 0.26) +
-            "px;font-size:" + Math.round(sz * 0.27) + 'px;position:static;animation:none;flex:0 0 auto">' + tbInner(n) + "</span>" +
-          "<div style=\"min-width:0\"><strong>Badge " + n + '</strong><br/><small class="tb-meta" style="color:var(--muted)">' +
+            "px;font-size:" + Math.round(sz * 0.27) + 'px;position:static;animation:none;flex:0 0 auto;box-shadow:' +
+            (tran ? "none" : "0 8px 20px rgba(14,23,48,.16)") + '">' + tbInner(n) + "</span>" +
+          '<div style="min-width:0;flex:1"><strong>Badge ' + n + '</strong><br/><small class="tb-meta" style="color:var(--muted)">' +
             esc(tbMeta(n)) + "</small></div>" +
+          (c > 1 ? '<button type="button" class="btn-mini danger" data-tbrem="' + n + '" title="এই badge-টা সরে যাবে">Remove</button>' : "") +
         "</div>" +
 
         '<div class="field"><label>Icon</label><select data-tb="' + n + '" data-tbk="icon">' +
@@ -1191,13 +1214,26 @@
           '<input type="range" min="34" max="110" step="2" value="' + sz + '" data-tb="' + n + '" data-tbk="size" style="width:100%" /></div>' +
 
         '<div style="display:flex;gap:12px">' +
-          '<div class="field" style="flex:1"><label>Background</label><input type="color" data-tb="' + n + '" data-tbk="bg" value="' + esc(bg) + '" /></div>' +
+          '<div class="field" style="flex:1"><label>Background</label><input type="color" data-tb="' + n + '" data-tbk="bg" value="' +
+            esc(bg) + '"' + (tran ? " disabled title=\"transparent — রং ব্যবহৃত হবে না\"" : "") + " /></div>" +
           '<div class="field" style="flex:1"><label>Text / logo</label><input type="color" data-tb="' + n + '" data-tbk="fg" value="' + esc(fg) + '" /></div>' +
         "</div>" +
 
+        '<label class="tb-tran" style="display:flex;align-items:flex-start;gap:8px;margin-top:12px;font-size:.85rem;cursor:pointer;line-height:1.5">' +
+          '<input type="checkbox" data-tb="' + n + '" data-tbk="bgt" style="width:auto;height:auto;margin-top:2px;accent-color:var(--primary)"' +
+          (tran ? " checked" : "") + " />" +
+          "<span><strong>Transparent background</strong><br/><span style=\"color:var(--muted);font-size:.78rem\">শুধু icon / লেখাটা দেখাবে, রঙিন বক্স নয়</span></span>" +
+        "</label>" +
+
         '<input type="file" accept="image/*" hidden data-tbfile="' + n + '" />' +
       "</div>";
-    }).join("");
+    }).join("") +
+    '<div style="grid-column:1/-1;display:flex;gap:12px;align-items:center;flex-wrap:wrap;padding-top:4px">' +
+      '<button type="button" class="btn btn-primary" id="tb-add"' + (c >= TB_MAX ? " disabled" : "") + ">" +
+        ((window.ICONS && ICONS.has("plus")) ? ICONS.svg("plus", 16) : "") + " Add badge</button>" +
+      '<button type="button" class="btn" id="tb-reset">Reset to 3</button>' +
+      '<small style="color:var(--muted)">' + c + " / " + TB_MAX + " badge — সবগুলো একসাথে avatar-এর চারপাশে দেখাবে</small>" +
+    "</div>";
   }
 
   /* preview লাইভ আপডেট — re-render না করে (focus হারানো যাবে না) */
@@ -1207,7 +1243,8 @@
     var sz = tbSize(n);
     var badge = card.querySelector(".preview-badge");
     badge.className = tbCls(n) + " preview-badge";
-    badge.style.background = tbGet(n, "bg").trim() || "#1e1e1e";
+    badge.style.background = tbTrans(n) ? "transparent" : (tbGet(n, "bg").trim() || "#1e1e1e");
+    badge.style.boxShadow = tbTrans(n) ? "none" : "0 8px 20px rgba(14,23,48,.16)";
     badge.style.color = tbGet(n, "fg").trim() || "#ffffff";
     badge.style.width = sz + "px";
     badge.style.height = sz + "px";
@@ -1226,10 +1263,78 @@
     if (!el) return;
     var n = Number(el.getAttribute("data-tb")), k = el.getAttribute("data-tbk");
     if (!n || !k) return;
-    tbSet(n, k, el.value);
+    /* checkbox-এর জন্য checked, বাকিদের জন্য value */
+    tbSet(n, k, el.type === "checkbox" ? (el.checked ? "1" : "") : el.value);
     updateTbPreview(n);
-    /* Icon বদলালে Label ↔ Image-upload UI বদলাতে হয় */
-    if (k === "icon") renderToolBadges();
+    /* Icon / transparent বদলালে UI পুনর্নির্মাণ লাগে (Label ↔ upload, colour enable/disable) */
+    if (k === "icon" || k === "bgt") renderToolBadges();
+  });
+
+  /* ---- badge add / remove (সরালে পরেরগুলো এগিয়ে আসে, key গুলো re-index হয়) ---- */
+  function tbWriteKeys(body, n) {
+    TB_KEYS.forEach(function (k) {
+      var v = tbGet(n, k);
+      state.settings["hero_tool_" + n + "_" + k] = v;
+      body.push({ key: "hero_tool_" + n + "_" + k, value: v });
+    });
+  }
+
+  function tbSave(body, okMsg) {
+    body.push({ key: "hero_tool_count", value: String(tbCount()) });
+    SB.table("settings?on_conflict=key", { method: "POST", prefer: "resolution=merge-duplicates", body: body })
+      .then(function () {
+        setStatus("#status-toobadges", okMsg, true);
+        refreshCounts();
+      })
+      .catch(function (err) { setStatus("#status-toobadges", "❌ " + err.message, false); });
+  }
+
+  document.addEventListener("click", function (e) {
+    var add = e.target.closest("#tb-add");
+    if (add) {
+      if (tbCount() >= TB_MAX) { showAlert("সর্বোচ্চ " + TB_MAX + "টা badge রাখা যায়।", "info"); return; }
+      state.settings["hero_tool_count"] = String(tbCount() + 1);
+      renderToolBadges();
+      tbSave([], "✅ নতুন badge যোগ হয়েছে — নিচে সেটিংস করে Save badges চাপুন।");
+      showAlert("Badge added. Set its icon, colour and size below.", "info");
+      return;
+    }
+
+    var reset = e.target.closest("#tb-reset");
+    if (reset) {
+      if (tbCount() === 3) { setStatus("#status-toobadges", "আগে থেকেই ৩টা badge আছে।", true); return; }
+      state.settings["hero_tool_count"] = "3";
+      renderToolBadges();
+      tbSave([], "✅ ৩টা badge-তে ফিরিয়ে নেওয়া হয়েছে।");
+      return;
+    }
+
+    var rem = e.target.closest("[data-tbrem]");
+    if (rem) {
+      var rn = Number(rem.getAttribute("data-tbrem"));
+      var c = tbCount();
+      if (c <= 1) { showAlert("অন্তত ১টা badge থাকতে হবে।", "info"); return; }
+
+      var body = [];
+      /* পরের badge-গুলো এক ধাপ সরিয়ে আগে আনাও */
+      for (var i = rn; i < c; i++) {
+        TB_KEYS.forEach(function (k) {
+          var v = tbGet(i + 1, k);
+          state.settings["hero_tool_" + i + "_" + k] = v;
+          body.push({ key: "hero_tool_" + i + "_" + k, value: v });
+        });
+      }
+      /* সবচেয়ে শেষ স্লট খালি করাও */
+      TB_KEYS.forEach(function (k) {
+        state.settings["hero_tool_" + c + "_" + k] = "";
+        body.push({ key: "hero_tool_" + c + "_" + k, value: "" });
+      });
+      state.settings["hero_tool_count"] = String(c - 1);
+      renderToolBadges();
+      tbSave(body, "✅ Badge removed — live site reload করলেই দেখা যাবে।");
+      showAlert("Badge removed.", "info");
+      return;
+    }
   });
 
   function saveTbImage(n) {
@@ -1289,11 +1394,8 @@
   $("#save-toobadges").addEventListener("click", function () {
     setStatus("#status-toobadges", "Saving…", true);
     var body = [];
-    TB_SLOTS.forEach(function (n) {
-      TB_KEYS.forEach(function (k) {
-        body.push({ key: "hero_tool_" + n + "_" + k, value: tbGet(n, k) });
-      });
-    });
+    tbSlots().forEach(function (n) { tbWriteKeys(body, n); });
+    body.push({ key: "hero_tool_count", value: String(tbCount()) });
     SB.table("settings?on_conflict=key", {
       method: "POST", prefer: "resolution=merge-duplicates", body: body
     }).then(function () {

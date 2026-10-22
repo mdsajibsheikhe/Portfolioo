@@ -132,67 +132,80 @@
       }
     }
 
-    /* ---- hero avatar-এর ৩টা tool badge (admin থেকে লোগো/লেখা + রং বদলানো যায়) ---- */
+    /* ---- hero avatar-এর tool badges ----
+       সংখ্যা (add/delete), লোগো/লেখা, রং, সাইজ, background transparent —
+       সবই admin থেকে পরিবর্তনযোগ্য। count key না থাকলে ডিফল্ট ৩টা। */
     var host = document.getElementById("hero-tools");
     if (host) {
-      var T_KEYS = ["icon", "label", "bg", "fg", "size", "img"];
-      var T_DEF = [
-        { icon: "", label: "Ai", bg: "#332211", fg: "#ff9a00", size: 60 },
-        { icon: "", label: "Ps", bg: "#001e36", fg: "#31a8ff", size: 60 },
-        { icon: "figma", label: "Figma", bg: "#1e1e1e", fg: "#ffffff", size: 60 }
-      ];
       var T_SET = "hero_tool_";
-      var touched = false;
-      for (var ti = 1; ti <= 3 && !touched; ti++) {
-        for (var tf = 0; tf < T_KEYS.length; tf++) {
-          if (SET[T_SET + ti + "_" + T_KEYS[tf]] !== undefined) { touched = true; break; }
-        }
-      }
-      if (touched) {
-        var th = "";
-        for (var tn = 1; tn <= 3; tn++) {
-          var td = T_DEF[tn - 1];
-          var get = function (key, fallback) {
-            var v = SET[T_SET + tn + "_" + key];
-            return String(v === undefined || v === null ? fallback : v).trim();
-          };
-          var bIco = get("icon", td.icon).toLowerCase();
-          var bLab = get("label", td.label);
-          var bBg  = get("bg", td.bg);
-          var bFg  = get("fg", td.fg);
-          var bImg = get("img", "");
-          var bSz  = parseInt(get("size", td.size), 10);
-          if (!bSz || isNaN(bSz) || bSz < 34 || bSz > 110) bSz = 60;
+      var T_KEYS = ["icon", "label", "bg", "fg", "size", "img", "bgt"];
+      var T_DEF = [
+        { icon: "", label: "Ai", bg: "#332211", fg: "#ff9a00", size: 60, bgt: "" },
+        { icon: "", label: "Ps", bg: "#001e36", fg: "#31a8ff", size: 60, bgt: "" },
+        { icon: "figma", label: "Figma", bg: "#1e1e1e", fg: "#ffffff", size: 60, bgt: "" },
+        { icon: "canva", label: "Canva", bg: "#0e1726", fg: "#7ed3f7", size: 60, bgt: "" },
+        { icon: "sketch", label: "Sketch", bg: "#2b1f0e", fg: "#fdb300", size: 60, bgt: "" },
+        { icon: "framer", label: "Framer", bg: "#111111", fg: "#ffffff", size: 60, bgt: "" }
+      ];
+      var MAXB = T_DEF.length;
 
-          var inner, cls = "tool-icon tool-badge tool-" + tn;
-          var isImg = (bIco === "upload" && /^(https?:|\/|\.\/|data:image)/i.test(bImg));
-
-          if (isImg) {                                        /* নিজের upload করা icon */
-            /* loading="lazy" রাখা হয় না — badge সবসময় hero-র দৃশ্যমান অংশে বসে,
-               lazy হলে কিছু ব্রাউজারে ছবি আসলেই লোড হতে দেরি/ব্যর্থ হয় */
-            inner = '<img src="' + esc(bImg) + '" alt="" />';
-            cls += " tool-img";
-          } else {
-            /* upload মোড বাছা আছে কিন্তু ছবি এখনো দেওয়া হয়নি → ফাঁকা না দেখিয়ে
-               স্লটের ডিফল্ট লোগো (Ai/Ps/Figma) দেখাও */
-            var bIco2 = (bIco === "upload") ? td.icon : bIco;
-            var brand = (bIco2 && window.ICONS && ICONS.brand)
-              ? ICONS.brand(bIco2, Math.round(bSz * 0.44)) : "";
-            if (brand) inner = brand;                          /* আসল vector লোগো */
-            else if (bLab) {                                   /* টেক্সট (Ai, Ps, Canva …) */
-              inner = esc(bLab);
-              cls += " tool-text";
-            } else continue;                                   /* কিছু নেই → লুকাও */
+      var cnt = parseInt(SET[T_SET + "count"], 10);
+      if (!cnt || isNaN(cnt) || cnt < 1) {
+        cnt = 0;
+        for (var ci = 1; ci <= MAXB; ci++) {
+          for (var ck = 0; ck < T_KEYS.length; ck++) {
+            if (SET[T_SET + ci + "_" + T_KEYS[ck]] !== undefined) { cnt = ci; break; }
           }
-
-          th += '<span class="' + cls + '" style="background:' + esc(bBg || "#1e1e1e") +
-                ";color:" + esc(bFg || "#ffffff") +
-                ";width:" + bSz + "px;height:" + bSz + "px" +
-                ";border-radius:" + Math.round(bSz * 0.26) + "px" +
-                ";font-size:" + Math.round(bSz * 0.27) + "px\"'>" + inner + "</span>";
         }
-        host.innerHTML = th;
+        if (!cnt) cnt = 3;                 /* ডিফল্ট: ৩টা badge */
       }
+      if (cnt > MAXB) cnt = MAXB;
+
+      var th = "";
+      for (var tn = 1; tn <= cnt; tn++) {
+        var td = T_DEF[tn - 1] || T_DEF[0];
+        var get = function (key, fallback) {
+          var v = SET[T_SET + tn + "_" + key];
+          return String(v === undefined || v === null ? fallback : v).trim();
+        };
+        var bIco  = get("icon", td.icon).toLowerCase();
+        var bLab  = get("label", td.label);
+        var bBg   = get("bg", td.bg);
+        var bFg   = get("fg", td.fg);
+        var bImg  = get("img", "");
+        var bTran = get("bgt", td.bgt) === "1";        /* transparent background */
+        var bSz   = parseInt(get("size", td.size), 10);
+        if (!bSz || isNaN(bSz) || bSz < 34 || bSz > 110) bSz = 60;
+
+        var inner, cls = "tool-icon tool-badge p" + (((tn - 1) % 6) + 1);
+        var isImg = (bIco === "upload" && /^(https?:|\/|\.\/|data:image)/i.test(bImg));
+
+        if (isImg) {                                    /* নিজের upload করা icon */
+          /* loading="lazy" রাখা হয় না — badge সবসময় hero-র দৃশ্যমান অংশে বসে,
+             lazy হলে কিছু ব্রাউজারে ছবি আসলেই লোড হতে দেরি/ব্যর্থ হয় */
+          inner = '<img src="' + esc(bImg) + '" alt="" />';
+          cls += " tool-img";
+        } else {
+          /* upload মোড বাছা আছে কিন্তু ছবি এখনো দেওয়া হয়নি → ফাঁকা না দেখিয়ে
+             স্লটের ডিফল্ট লোগো দেখাও */
+          var bIco2 = (bIco === "upload") ? td.icon : bIco;
+          var brand = (bIco2 && window.ICONS && ICONS.brand)
+            ? ICONS.brand(bIco2, Math.round(bSz * 0.44)) : "";
+          if (brand) inner = brand;                      /* আসল vector লোগো */
+          else if (bLab) {                               /* টেক্সট (Ai, Ps, Canva …) */
+            inner = esc(bLab);
+            cls += " tool-text";
+          } else continue;                               /* কিছু নেই → লুকাও */
+        }
+
+        if (bTran) cls += " tool-transparent";           /* transparent bg */
+        th += '<span class="' + cls + '" style="background:' + (bTran ? "transparent" : esc(bBg || "#1e1e1e")) +
+              ";color:" + esc(bFg || "#ffffff") +
+              ";width:" + bSz + "px;height:" + bSz + "px" +
+              ";border-radius:" + Math.round(bSz * 0.26) + "px" +
+              ";font-size:" + Math.round(bSz * 0.27) + "px\"'>" + inner + "</span>";
+      }
+      host.innerHTML = th;
     }
 
     /* ---- avatar image (hero + about) ---- */
