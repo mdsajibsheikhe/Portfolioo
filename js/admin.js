@@ -918,7 +918,7 @@
   function renderSeoPreview() {
     var host = $("#seo-preview");
     if (!host) return;
-    var t = state.settings.site_title || "Md Sajib Sheikh | Graphic Designer";
+    var t = state.settings.site_title || "SajibAdmin | Graphic Designer";
     var d = state.settings.seo_description || "Graphic Designer with 5+ years experience…";
     var img = state.settings.og_image || "";
     var url = "mdsajibsheikh.vercel.app";
