@@ -184,7 +184,7 @@
                 ";color:" + esc(bFg || "#ffffff") +
                 ";width:" + bSz + "px;height:" + bSz + "px" +
                 ";border-radius:" + Math.round(bSz * 0.26) + "px" +
-                ";font-size:" + Math.round(bSz * 0.27) + "px">' + inner + "</span>";
+                ";font-size:" + Math.round(bSz * 0.27) + "px\"'>" + inner + "</span>";
         }
         host.innerHTML = th;
       }
