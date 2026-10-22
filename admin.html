@@ -170,7 +170,7 @@
             </div>
             <div class="social-card sc-live">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg>
-              <div class="sc-stats"><div><strong id="cnt-all">—</strong><span>Items</span></div><div><strong>2</strong><span>Live sites</span></div></div>
+              <div class="sc-stats"><div><strong id="cnt-all">—</strong><span>Items</span></div><div><strong id="cur-theme">—</strong><span>Theme</span></div></div>
             </div>
             <div class="social-card sc-live">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></svg>
@@ -183,8 +183,7 @@
           </div>
 
           <div class="panel">
-            <div class="panel-head"><h2>Site status &amp; quick links</h2></div>
-            <div class="site-status" id="site-status"></div>
+            <div class="panel-head"><h2>Quick actions</h2></div>
             <div class="quick-grid" id="quick-grid">
               <button class="quick-btn" data-tab="profile"><span data-sico="pen"></span> Edit home / hero</button>
               <button class="quick-btn" data-tab="theme"><span data-sico="palette"></span> Change color theme</button>
@@ -205,6 +204,22 @@
             </div>
             <div class="form-grid" id="form-profile"></div>
             <p class="save-status" id="status-profile"></p>
+          </div>
+
+          <!-- ===== hero tool badges (avatar চারপাশের ৩টা icon) ===== -->
+          <div class="panel">
+            <div class="panel-head">
+              <h2>Hero tool badges <small>(avatar চারপাশের ৩টা ছোট icon)</small></h2>
+              <button class="btn btn-primary" id="save-toobadges">Save badges</button>
+            </div>
+            <p class="panel-note" style="margin:0 0 14px;color:var(--muted);font-size:.85rem;line-height:1.6">
+              লোগো বা নিজের লেখা — দুটোর যেকোনো একটা ব্যবহার করুন।
+              <strong>Icon</strong> থেকে বাছলে আসল brand লোগো দেখাবে, <strong>Custom text</strong> বাছলে
+              <strong>Label</strong>-এ লেখাটা বসবে (যেমন <code>Ai</code>, <code>Ps</code>, <code>Canva</code>)।
+              কোনো একটা বাদ দিতে <strong>Icon</strong> = None এবং <strong>Label</strong> খালি রাখুন।
+            </p>
+            <div id="tool-badge-grid" class="form-grid"></div>
+            <p class="save-status" id="status-toobadges"></p>
           </div>
         </section>
 

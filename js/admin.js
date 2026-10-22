@@ -321,9 +321,12 @@
   $$("[data-tab-jump]").forEach(function (b) {
     b.addEventListener("click", function () { switchTab(b.dataset.tabJump); });
   });
-  $("#quick-grid").addEventListener("click", function (e) {
-    var b = e.target.closest("[data-tab]");
-    if (b) switchTab(b.dataset.tab);
+  /* dashboard-এর সব quick button এক document handler দিয়ে —
+     আগে শুধু #quick-grid bind হতো, তাই greet-card-এর
+     "Manage work" / "Theme & images" বাটন কাজ করত না। */
+  document.addEventListener("click", function (e) {
+    var b = e.target.closest(".quick-btn[data-tab]");
+    if (b) switchTab(b.getAttribute("data-tab"));
   });
 
   /* ============ SIDEBAR (mobile) ============ */
@@ -967,6 +970,13 @@
       state.projects.length + state.experience.length + state.testimonials.length;
     if ($("#cnt-all")) $("#cnt-all").textContent = sections || 0;
 
+    /* বর্তমান color theme */
+    if ($("#cur-theme")) {
+      var tid = document.documentElement.getAttribute("data-color") || "emerald";
+      var trec = THEMES.filter(function (t) { return t.id === tid; })[0];
+      $("#cur-theme").textContent = trec ? trec.n : tid.charAt(0).toUpperCase() + tid.slice(1);
+    }
+
     var s = state.settings;
     var seoDone = ["site_title", "seo_description", "seo_keywords", "og_image"]
       .filter(function (k) { return String(s[k] || "").trim(); }).length;
@@ -1078,6 +1088,122 @@
       body: LOGO_SLOTS.map(function (k) { return { key: k, value: String(state.settings[k] || "") }; })
     });
   }
+
+  /* ============ HERO TOOL BADGES (avatar চারপাশের ৩টা icon) ============ */
+  var TB_SLOTS = [1, 2, 3];
+  var TB_KEYS = ["icon", "label", "bg", "fg"];
+  var TB_DEF = [
+    { icon: "", label: "Ai", bg: "#332211", fg: "#ff9a00" },
+    { icon: "", label: "Ps", bg: "#001e36", fg: "#31a8ff" },
+    { icon: "figma", label: "Figma", bg: "#1e1e1e", fg: "#ffffff" }
+  ];
+
+  function tbGet(n, k) {
+    var v = state.settings["hero_tool_" + n + "_" + k];
+    return String(v === undefined || v === null ? TB_DEF[n - 1][k] : v);
+  }
+  function tbSet(n, k, val) { state.settings["hero_tool_" + n + "_" + k] = String(val); }
+
+  function tbBrand(n) {
+    var ico = tbGet(n, "icon").trim().toLowerCase();
+    if (!ico || !window.ICONS || !ICONS.brand) return "";
+    return ICONS.brand(ico, 26);
+  }
+
+  function renderToolBadges() {
+    var host = $("#tool-badge-grid");
+    if (!host) return;
+    var opts = (window.ICONS && ICONS.brandList) ? ICONS.brandList() : ["figma"];
+
+    host.innerHTML = TB_SLOTS.map(function (n) {
+      var ico = tbGet(n, "icon").trim().toLowerCase();
+      var lab = tbGet(n, "label").trim();
+      var bg  = tbGet(n, "bg").trim();
+      var fg  = tbGet(n, "fg").trim();
+
+      var brand = tbBrand(n);
+      var prev  = brand || (lab ? esc(lab) : '<span style="opacity:.4;font-size:.72rem">Hidden</span>');
+      var cls   = "tool-icon tool-badge tool-" + n + " preview-badge" + (!brand && lab ? " tool-text" + (lab.length > 2 ? " tool-long" : "") : "");
+
+      return '<div class="tb-card" data-tbcard="' + n + '" style="border:1px solid var(--line);border-radius:12px;padding:16px;background:var(--bg-soft)">' +
+        '<div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">' +
+          '<span class="' + cls + '" style="background:' + esc(bg) + ";color:" + esc(fg) + ';position:static;animation:none;flex:0 0 auto">' + prev + "</span>" +
+          "<div><strong>Badge " + n + '</strong><br/><small class="tb-meta" style="color:var(--muted)">' +
+            esc(ico || (lab ? "text: " + lab : "লুকানো")) + "</small></div>" +
+        "</div>" +
+        '<div class="field"><label>Icon</label><select data-tb="' + n + '" data-tbk="icon">' +
+          '<option value=""' + (ico ? "" : " selected") + ">Custom text</option>" +
+          opts.map(function (b) {
+            return '<option value="' + b + '"' + (ico === b ? " selected" : "") + ">" +
+              b.charAt(0).toUpperCase() + b.slice(1) + "</option>";
+          }).join("") +
+        "</select></div>" +
+        '<div class="field"><label>Label</label><input type="text" data-tb="' + n + '" data-tbk="label" value="' +
+          esc(lab) + '" placeholder="Ai, Ps, Canva…" /></div>' +
+        '<div style="display:flex;gap:12px">' +
+          '<div class="field" style="flex:1"><label>Background</label><input type="color" data-tb="' + n + '" data-tbk="bg" value="' + esc(bg) + '" /></div>' +
+          '<div class="field" style="flex:1"><label>Text / logo</label><input type="color" data-tb="' + n + '" data-tbk="fg" value="' + esc(fg) + '" /></div>' +
+        "</div>" +
+      "</div>";
+    }).join("");
+  }
+
+  /* preview লাইভ আপডেট — re-render না করে (focus হারানো যাবে না) */
+  function updateTbPreview(n) {
+    var card = document.querySelector('[data-tbcard="' + n + '"]');
+    if (!card) return;
+    var ico = tbGet(n, "icon").trim().toLowerCase();
+    var lab = tbGet(n, "label").trim();
+    var bg  = tbGet(n, "bg").trim();
+    var fg  = tbGet(n, "fg").trim();
+
+    var badge = card.querySelector(".preview-badge");
+    badge.style.background = bg || "#1e1e1e";
+    badge.style.color = fg || "#ffffff";
+
+    var brand = tbBrand(n);
+    if (brand) {
+      badge.innerHTML = brand;
+      badge.classList.remove("tool-text", "tool-long");
+    } else if (lab) {
+      badge.textContent = lab;
+      badge.classList.add("tool-text");
+      badge.classList.toggle("tool-long", lab.length > 2);
+    } else {
+      badge.innerHTML = '<span style="opacity:.4;font-size:.72rem">Hidden</span>';
+      badge.classList.remove("tool-text", "tool-long");
+    }
+    var meta = card.querySelector(".tb-meta");
+    if (meta) meta.textContent = ico || (lab ? "text: " + lab : "লুকানো");
+  }
+
+  document.addEventListener("input", function (e) {
+    var el = e.target.closest("[data-tb]");
+    if (!el) return;
+    var n = Number(el.getAttribute("data-tb")), k = el.getAttribute("data-tbk");
+    if (!n || !k) return;
+    tbSet(n, k, el.value);
+    updateTbPreview(n);
+  });
+
+  $("#save-toobadges").addEventListener("click", function () {
+    setStatus("#status-toobadges", "Saving…", true);
+    var body = [];
+    TB_SLOTS.forEach(function (n) {
+      TB_KEYS.forEach(function (k) {
+        body.push({ key: "hero_tool_" + n + "_" + k, value: tbGet(n, k) });
+      });
+    });
+    SB.table("settings?on_conflict=key", {
+      method: "POST", prefer: "resolution=merge-duplicates", body: body
+    }).then(function () {
+      setStatus("#status-toobadges", "✅ Badges saved — live site reload করলেই দেখা যাবে।", true);
+      showAlert("Hero tool badges updated.", "info");
+      refreshCounts();
+    }).catch(function (err) {
+      setStatus("#status-toobadges", "❌ " + err.message, false);
+    });
+  });
 
   document.addEventListener("click", function (e) {
     var up = e.target.closest("[data-logoup]");

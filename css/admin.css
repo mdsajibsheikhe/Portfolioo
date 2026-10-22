@@ -295,7 +295,8 @@ a { color: inherit; }
   height: 40px;
   border-radius: 50%;
   background: var(--red);
-  display: grid;
+  /* শুধু মোবাইলে — desktop-এ sidebar নিজেই থাকে, তাই hamburger লাগে না */
+  display: none;
   place-items: center;
   gap: 3px;
   padding: 11px 10px;
@@ -742,6 +743,7 @@ a { color: inherit; }
 }
 
 @media (max-width: 900px) {
+  .hamburger { display: grid; }
   .sidebar { transform: translateX(-100%); }
   .sidebar.open { transform: translateX(0); }
   .side-overlay.show { display: block; }

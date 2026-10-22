@@ -75,5 +75,36 @@ window.ICONS = (function () {
     return v; // emoji / লেখা
   }
 
-  return { svg: svg, resolve: resolve, has: function (n) { return !!P[n]; }, list: Object.keys(P) };
+  /* ============================================================
+     HERO TOOL BADGES — brand logos (admin থেকে বাছাইযোগ্য)
+     Adobe-র লোগো আসলেই "Ai"/"Ps" টেক্সট — তাই ওগুলো টেক্সট হিসেবেই
+     দেখানো হয়; এখানে শুধু যেগুলোর আসল vector লোগো আছে সেগুলো দেওয়া।
+     ============================================================ */
+  var BRANDS = {
+    figma: '<path d="M8.5 24a4 4 0 0 0 4-4v-4h-4a4 4 0 0 0 0 8Z"/><path d="M4.5 12a4 4 0 0 1 4-4h4v8h-4a4 4 0 0 1-4-4Z" opacity=".8"/><path d="M4.5 4a4 4 0 0 1 4-4h4v8h-4a4 4 0 0 1-4-4Z" opacity=".6"/><path d="M12.5 0h4a4 4 0 0 1 0 8h-4V0Z" opacity=".9"/><path d="M20.5 12a4 4 0 1 1-8 0 4 4 0 0 1 8 0Z" opacity=".7"/>',
+    canva: '<path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20Zm4.8 12.6a4.4 4.4 0 1 1 0-5.2"/><path d="M16.8 9.4a4.4 4.4 0 1 0 0 5.2" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/>',
+    sketch: '<path d="M12 2 3 9l9 13 9-13-9-7Z"/><path d="M3 9h18M12 22V9M7.5 9 12 22 16.5 9"/>',
+    framer: '<path d="M5 2h14v6.7h-7l7 6.6v6.7L5 15.3V2Z" opacity=".95"/><path d="M5 15.3h7L5 22v-6.7Z" opacity=".65"/>',
+    blender: '<circle cx="12" cy="13.5" r="6.5" opacity=".85"/><path d="M4 11.5 12 6l6 3.5-6 3.5-8-1.5Z"/><path d="M14.5 6.5 19 3.5v5l-4.5-2Z"/>',
+    xd: '<rect x="2" y="2" width="20" height="20" rx="5" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M6 8h2.4M9.4 8 7 15.5M7.5 13h3.6M13.5 8h2.2a2 2 0 0 1 0 4h-2.2V8Zm0 0v7.5M13.5 12h1.4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>',
+    canva_round: null
+  };
+  delete BRANDS.canva_round; // placeholder সরানো
+
+  function brand(name, size) {
+    var body = BRANDS[String(name || "").toLowerCase()];
+    if (!body) return "";
+    var s = size || 24;
+    return '<svg viewBox="0 0 24 24" width="' + s + '" height="' + s + '" fill="currentColor" ' +
+      'aria-hidden="true" focusable="false">' + body + "</svg>";
+  }
+
+  return {
+    svg: svg,
+    resolve: resolve,
+    brand: brand,
+    brandList: function () { return Object.keys(BRANDS); },
+    has: function (n) { return !!P[n]; },
+    list: Object.keys(P)
+  };
 })();

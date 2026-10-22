@@ -320,7 +320,16 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   font-family: "Space Grotesk", sans-serif; font-weight: 700; font-size: 1.5rem;
   box-shadow: 0 12px 30px rgba(14, 23, 48, 0.18);
 }
-.tool-icon svg { width: 24px; height: 24px; }
+.tool-icon svg { width: 26px; height: 26px; }
+
+/* ---- ৩টা hero tool badge — admin থেকে content ও রং পরিবর্তনযোগ্য ----
+   background/color inline হিসেবে বসানো হয় (js/content.js applyHeroTools) */
+.tool-badge { position: absolute; z-index: 3; }
+.tool-badge.tool-1 { top: 4%; left: 30%; animation: float 5s ease-in-out infinite; }
+.tool-badge.tool-2 { top: 32%; right: 0%; animation: float 5s ease-in-out 0.8s infinite; }
+.tool-badge.tool-3 { bottom: 18%; left: -2%; animation: float 5s ease-in-out 1.6s infinite; }
+.tool-badge.tool-text { font-family: "Space Grotesk", sans-serif; font-weight: 700; font-size: 1.15rem; }
+.tool-badge.tool-text.tool-long { font-size: 0.95rem; letter-spacing: -0.02em; padding: 0 8px; }
 .tool-ai { top: 4%; left: 30%; background: #332211; color: #ff9a00; animation: float 5s ease-in-out infinite; }
 .tool-ps { top: 32%; right: 0%; background: #001e36; color: #31a8ff; animation: float 5s ease-in-out 0.8s infinite; }
 .tool-fig { bottom: 18%; left: -2%; background: #1e1e1e; color: #fff; animation: float 5s ease-in-out 1.6s infinite; }

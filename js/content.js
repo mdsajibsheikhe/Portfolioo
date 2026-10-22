@@ -132,6 +132,50 @@
       }
     }
 
+    /* ---- hero avatar-এর ৩টা tool badge (admin থেকে লোগো/লেখা + রং বদলানো যায়) ---- */
+    var host = document.getElementById("hero-tools");
+    if (host) {
+      var T_KEYS = ["icon", "label", "bg", "fg"];
+      var T_DEF = [
+        { icon: "", label: "Ai", bg: "#332211", fg: "#ff9a00" },
+        { icon: "", label: "Ps", bg: "#001e36", fg: "#31a8ff" },
+        { icon: "figma", label: "Figma", bg: "#1e1e1e", fg: "#ffffff" }
+      ];
+      var T_SET = "hero_tool_";
+      var touched = false;
+      for (var ti = 1; ti <= 3 && !touched; ti++) {
+        for (var tf = 0; tf < T_KEYS.length; tf++) {
+          if (SET[T_SET + ti + "_" + T_KEYS[tf]] !== undefined) { touched = true; break; }
+        }
+      }
+      if (touched) {
+        var th = "";
+        for (var tn = 1; tn <= 3; tn++) {
+          var td = T_DEF[tn - 1];
+          var get = function (key, fallback) {
+            var v = SET[T_SET + tn + "_" + key];
+            return String(v === undefined || v === null ? fallback : v).trim();
+          };
+          var bIco = get("icon", td.icon).toLowerCase();
+          var bLab = get("label", td.label);
+          var bBg  = get("bg", td.bg);
+          var bFg  = get("fg", td.fg);
+
+          var brand = (bIco && window.ICONS && ICONS.brand) ? ICONS.brand(bIco, 26) : "";
+          var inner, cls = "tool-icon tool-badge tool-" + tn;
+          if (brand) inner = brand;                       /* আসল vector লোগো */
+          else if (bLab) {                                 /* টেক্সট (Ai, Ps, Canva …) */
+            inner = esc(bLab);
+            cls += " tool-text" + (bLab.length > 2 ? " tool-long" : "");
+          } else continue;                                 /* দুটোই খালি → লুকাও */
+
+          th += '<span class="' + cls + '" style="background:' + esc(bBg || "#1e1e1e") +
+                ";color:" + esc(bFg || "#ffffff") + '">' + inner + "</span>";
+        }
+        host.innerHTML = th;
+      }
+    }
+
     /* ---- avatar image (hero + about) ---- */
     if (SET.avatar_image) {
       D.querySelectorAll(".hero-avatar, .about-avatar").forEach(function (el) {
