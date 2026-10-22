@@ -1108,6 +1108,8 @@
 
   function tbBrand(n) {
     var ico = tbGet(n, "icon").trim().toLowerCase();
+    /* upload মোডে ছবি এখনো দেওয়া হয়নি → স্লটের ডিফল্ট লোগো দেখাও */
+    if (ico === "upload" && !tbImg(n)) ico = String(TB_DEF[n - 1].icon || "").toLowerCase();
     if (!ico || ico === "upload" || !window.ICONS || !ICONS.brand) return "";
     return ICONS.brand(ico, 26);
   }

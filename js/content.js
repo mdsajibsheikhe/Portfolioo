@@ -173,8 +173,11 @@
             inner = '<img src="' + esc(bImg) + '" alt="" />';
             cls += " tool-img";
           } else {
-            var brand = (bIco && bIco !== "upload" && window.ICONS && ICONS.brand)
-              ? ICONS.brand(bIco, Math.round(bSz * 0.44)) : "";
+            /* upload মোড বাছা আছে কিন্তু ছবি এখনো দেওয়া হয়নি → ফাঁকা না দেখিয়ে
+               স্লটের ডিফল্ট লোগো (Ai/Ps/Figma) দেখাও */
+            var bIco2 = (bIco === "upload") ? td.icon : bIco;
+            var brand = (bIco2 && window.ICONS && ICONS.brand)
+              ? ICONS.brand(bIco2, Math.round(bSz * 0.44)) : "";
             if (brand) inner = brand;                          /* আসল vector লোগো */
             else if (bLab) {                                   /* টেক্সট (Ai, Ps, Canva …) */
               inner = esc(bLab);
