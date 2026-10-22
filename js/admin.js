@@ -29,7 +29,7 @@
       fields: [
         { k: "site_title", l: "Browser tab title" },
         { k: "hello", l: "Hero greeting (Hello)" },
-        { k: "name", l: "Your full name" },
+        { k: "name", l: "Your full name", h: "এই নামটুকুই সাইটের সব জায়গায় বসে — header লোগো, browser tab, About-এর নাম, footer ও Google description। এখানে নাম বদলালে বাকি সব নিজে থেকেই মিলিয়ে যায়।" },
         { k: "profession", l: "Hero profession (last word = green)" },
         { k: "hero_desc", l: "Hero description", t: "textarea", wide: true },
         { k: "avatar", l: "Avatar initials (e.g. MS)" },
@@ -380,7 +380,8 @@
     } else {
       input = '<input type="' + (f.t === "number" ? "number" : "text") + '" data-k="' + f.k + '" value="' + esc(v) + '" />';
     }
-    return '<div class="field' + wide + '"><label>' + esc(f.l) + "</label>" + input + "</div>";
+    return '<div class="field' + wide + '"><label>' + esc(f.l) + "</label>" + input +
+      (f.h ? '<p class="field-hint">' + esc(f.h) + "</p>" : "") + "</div>";
   }
 
   function renderForm(name) {
@@ -393,16 +394,77 @@
     };
   }
 
+  /* ============================================================
+     "Your Full Name" = MASTER NAME
+     ------------------------------------------------------------
+     Home / Hero ট্যাবের "Your full name" ফিল্ডটাই সাইটের নামের
+     একমাত্র উৎস। এটা বদলালে nav logo, browser tab title,
+     About-এর নাম, footer ও Google description — সব জায়গায়
+     একই নাম বসিয়ে দেওয়া হয়।
+     শর্ত: কোনো ফিল্ড আপনি নিজে আলাদাভাবে কাস্টম করে থাকলে
+     (অর্থাৎ তাতে পুরনো নামটা নেই) সেটা ছেড়ে দেওয়া হয়।
+     ============================================================ */
+  var ORIGINAL_NAME = "";
+
+  function nameDerived(nm) {
+    return {
+      nav_logo: nm.toUpperCase(),
+      site_title: nm + " | Graphic Designer",
+      about_name: nm,
+      footer_text: nm + ". All rights reserved.",
+      seo_description:
+        nm + " — Graphic Designer with 5+ years experience in social media design, YouTube thumbnails, packaging design and branding."
+    };
+  }
+
+  /* আপনি নিজে কাস্টম করেছেন কিনা — খালি / আগের derived মান /
+     পুরনো নাম দিয়ে শুরু হলেই মানে নামের সাথে যুক্ত, বদলানো যায় */
+  function canFollow(s, derived, oldName) {
+    s = String(s === null || s === undefined ? "" : s).trim();
+    if (!s) return true;
+    if (s === derived) return true;
+    if (oldName && s.indexOf(oldName) === 0) return true;
+    return false;
+  }
+
+  function syncNameEverywhere() {
+    var nm = String(state.profile.name || "").trim();
+    if (!nm) return [];
+    var d = nameDerived(nm), body = [];
+    Object.keys(d).forEach(function (k) {
+      if (!canFollow(state.settings[k], d[k], ORIGINAL_NAME)) return;
+      state.settings[k] = d[k];
+      body.push({ key: k, value: d[k] });
+    });
+    /* profile টেবিলের নিজের কলামগুলোও মিলিয়ে দাও */
+    if (canFollow(state.profile.about_name, d.about_name, ORIGINAL_NAME)) state.profile.about_name = d.about_name;
+    if (canFollow(state.profile.footer_text, d.footer_text, ORIGINAL_NAME)) state.profile.footer_text = d.footer_text;
+    if (canFollow(state.profile.site_title, d.site_title, ORIGINAL_NAME)) state.profile.site_title = d.site_title;
+    ORIGINAL_NAME = nm;
+    return body;
+  }
+
   async function saveForm(name) {
     var cfg = FORMS[name];
     setStatus(cfg.status, "Saving…", true);
     try {
       state.profile.updated_at = new Date().toISOString();
+      /* নাম বদলালে সব জায়গায় একই নাম বসাও */
+      var nameSync = name === "profile" ? syncNameEverywhere() : [];
       await SB.table(cfg.table + "?on_conflict=id", {
         method: "POST",
         body: state.profile,
         prefer: "resolution=merge-duplicates"
       });
+      if (nameSync.length) {
+        await SB.table("settings?on_conflict=key", {
+          method: "POST",
+          body: nameSync,
+          prefer: "resolution=merge-duplicates"
+        });
+        renderImgSettings();
+        renderSeoForm();
+      }
       setStatus(cfg.status, "✅ Saved — live site-এ reload করলেই দেখা যাবে।", true);
       showAlert("Profile updated. Open the live site to see changes.", "info");
     } catch (err) {
@@ -513,8 +575,9 @@
     }
   });
 
-  /* ---- Images panel (logo + profile photo) ---- */
+  /* ---- Images panel (logo + profile photo + favicon) ---- */
   var IMG_SETTINGS = [
+    { k: "favicon", l: "Browser tab icon (favicon)", h: "খালি রাখলে \"Your Full Name\"-এর প্রথম অক্ষর দিয়ে নিজে নামের মতো icon বানাবে। নিজের ছবি দিতে Upload চাপুন — 64×64 PNG বা SVG সব চলবে।" },
     { k: "logo_image", l: "Header logo (image)", h: "খালি রাখলে নাম লেখা দেখাবে। Brand logo strip-এর জন্য উপরের Logo Manager ব্যবহার করুন।" },
     { k: "avatar_image", l: "Profile photo (hero + about)", h: "খালি রাখলে initials \"MS\" দেখাবে" }
   ];
@@ -1472,6 +1535,7 @@
       var res = await Promise.all([profileP, settingsP, statsP, servicesP, toolsP, projectsP, expP, testiP, msgP]);
 
       state.profile = res[0] && res[0][0] ? res[0][0] : { id: 1 };
+      ORIGINAL_NAME = String(state.profile.name || "").trim();
       (res[1] || []).forEach(function (s) { state.settings[s.key] = s.value; });
       state.stats = res[2] || [];
       state.services = res[3] || [];

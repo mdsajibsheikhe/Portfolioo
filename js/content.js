@@ -230,6 +230,69 @@
     });
   }
 
+  /* ---------- নাম ও favicon ("Your Full Name" থেকে) ----------
+     সাইটের সব জায়গায় একই নাম বসে এবং favicon-ও সেই নাম থেকেই আসে। */
+  function applyBrandName(nm) {
+    nm = String(nm || "").trim();
+
+    function setMeta(sel, attr, val) {
+      if (!val) return;
+      var el = D.querySelector(sel);
+      if (el) el.setAttribute(attr, val);
+    }
+
+    if (nm) {
+      setMeta('meta[property="og:site_name"]', "content", nm);
+      setMeta('meta[name="author"]', "content", nm);
+      var ld = D.getElementById("ld-person");
+      if (ld) {
+        try {
+          var obj = JSON.parse(ld.textContent);
+          if (obj && typeof obj === "object") {
+            obj.name = nm;
+            ld.textContent = JSON.stringify(obj);
+          }
+        } catch (e) { /* ignore */ }
+      }
+    }
+
+    /* favicon: নিজে আপলোড করা ছবি থাকলে সেটা,
+       নাহলে নামের প্রথম অক্ষর দিয়ে theme রঙে icon বানাও */
+    var custom = String(SET.favicon || "").trim();
+    var href = custom, type = "";
+
+    if (!custom && nm) {
+      var parts = nm.split(/\s+/).filter(Boolean);
+      var ini = (parts.length >= 2 ? parts[0].charAt(0) + parts[1].charAt(0) : nm.slice(0, 2)).toUpperCase();
+      var bg = "#059669";
+      try {
+        var cs = getComputedStyle(D.documentElement).getPropertyValue("--c1").trim();
+        if (cs) bg = cs;
+      } catch (e) { /* keep default */ }
+      var svg =
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">' +
+        '<rect width="64" height="64" rx="14" fill="' + bg + '"/>' +
+        '<text x="32" y="43" text-anchor="middle" ' +
+        'font-family="Segoe UI, Arial, Helvetica, sans-serif" font-size="28" font-weight="700" ' +
+        'fill="#ffffff">' + ini + "</text></svg>";
+      href = "data:image/svg+xml," + encodeURIComponent(svg);
+      type = "image/svg+xml";
+    }
+
+    if (!href) return;
+    var links = D.querySelectorAll('link[rel="icon"], link[rel="shortcut icon"]');
+    if (!links.length) {
+      var l = D.createElement("link");
+      l.rel = "icon";
+      D.head.appendChild(l);
+      links = [l];
+    }
+    for (var i = 0; i < links.length; i++) {
+      links[i].setAttribute("href", href);
+      if (type) links[i].setAttribute("type", type);
+    }
+  }
+
   /* ---------- profile: data-c targets ---------- */
   function applyProfile(p) {
     if (!p) return;
@@ -677,6 +740,7 @@
     applyIcons();            // প্রথমে premium icons
     applySettings();          // তারপর labels
     applyProfile(r[0][0]);
+    applyBrandName(r[0][0] && r[0][0].name);   // নাম + favicon
     renderStats(r[2]);
     renderServices(r[3]);
     renderTools(r[4]);
