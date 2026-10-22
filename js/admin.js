@@ -418,12 +418,15 @@
   }
 
   /* আপনি নিজে কাস্টম করেছেন কিনা — খালি / আগের derived মান /
-     পুরনো নাম দিয়ে শুরু হলেই মানে নামের সাথে যুক্ত, বদলানো যায় */
+     পুরনো নাম দিয়ে শুরু হলেই মানে নামের সাথে যুক্ত, বদলানো যায়।
+     nav_logo uppercase-এ থাকে বলে তুলনা case-insensitive করা হয়েছে। */
   function canFollow(s, derived, oldName) {
     s = String(s === null || s === undefined ? "" : s).trim();
     if (!s) return true;
     if (s === derived) return true;
-    if (oldName && s.indexOf(oldName) === 0) return true;
+    var ls = s.toLowerCase();
+    if (ls === String(derived).toLowerCase()) return true;
+    if (oldName && ls.indexOf(String(oldName).toLowerCase()) === 0) return true;
     return false;
   }
 
