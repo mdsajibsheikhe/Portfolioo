@@ -135,11 +135,11 @@
     /* ---- hero avatar-এর ৩টা tool badge (admin থেকে লোগো/লেখা + রং বদলানো যায়) ---- */
     var host = document.getElementById("hero-tools");
     if (host) {
-      var T_KEYS = ["icon", "label", "bg", "fg"];
+      var T_KEYS = ["icon", "label", "bg", "fg", "size", "img"];
       var T_DEF = [
-        { icon: "", label: "Ai", bg: "#332211", fg: "#ff9a00" },
-        { icon: "", label: "Ps", bg: "#001e36", fg: "#31a8ff" },
-        { icon: "figma", label: "Figma", bg: "#1e1e1e", fg: "#ffffff" }
+        { icon: "", label: "Ai", bg: "#332211", fg: "#ff9a00", size: 60 },
+        { icon: "", label: "Ps", bg: "#001e36", fg: "#31a8ff", size: 60 },
+        { icon: "figma", label: "Figma", bg: "#1e1e1e", fg: "#ffffff", size: 60 }
       ];
       var T_SET = "hero_tool_";
       var touched = false;
@@ -160,17 +160,31 @@
           var bLab = get("label", td.label);
           var bBg  = get("bg", td.bg);
           var bFg  = get("fg", td.fg);
+          var bImg = get("img", "");
+          var bSz  = parseInt(get("size", td.size), 10);
+          if (!bSz || isNaN(bSz) || bSz < 34 || bSz > 110) bSz = 60;
 
-          var brand = (bIco && window.ICONS && ICONS.brand) ? ICONS.brand(bIco, 26) : "";
           var inner, cls = "tool-icon tool-badge tool-" + tn;
-          if (brand) inner = brand;                       /* আসল vector লোগো */
-          else if (bLab) {                                 /* টেক্সট (Ai, Ps, Canva …) */
-            inner = esc(bLab);
-            cls += " tool-text" + (bLab.length > 2 ? " tool-long" : "");
-          } else continue;                                 /* দুটোই খালি → লুকাও */
+          var isImg = (bIco === "upload" && /^(https?:|\/|\.\/|data:image)/i.test(bImg));
+
+          if (isImg) {                                        /* নিজের upload করা icon */
+            inner = '<img src="' + esc(bImg) + '" alt="" loading="lazy" />';
+            cls += " tool-img";
+          } else {
+            var brand = (bIco && bIco !== "upload" && window.ICONS && ICONS.brand)
+              ? ICONS.brand(bIco, Math.round(bSz * 0.44)) : "";
+            if (brand) inner = brand;                          /* আসল vector লোগো */
+            else if (bLab) {                                   /* টেক্সট (Ai, Ps, Canva …) */
+              inner = esc(bLab);
+              cls += " tool-text";
+            } else continue;                                   /* কিছু নেই → লুকাও */
+          }
 
           th += '<span class="' + cls + '" style="background:' + esc(bBg || "#1e1e1e") +
-                ";color:" + esc(bFg || "#ffffff") + '">' + inner + "</span>";
+                ";color:" + esc(bFg || "#ffffff") +
+                ";width:" + bSz + "px;height:" + bSz + "px" +
+                ";border-radius:" + Math.round(bSz * 0.26) + "px" +
+                ";font-size:" + Math.round(bSz * 0.27) + "px">' + inner + "</span>";
         }
         host.innerHTML = th;
       }

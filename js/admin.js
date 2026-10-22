@@ -1091,7 +1091,7 @@
 
   /* ============ HERO TOOL BADGES (avatar চারপাশের ৩টা icon) ============ */
   var TB_SLOTS = [1, 2, 3];
-  var TB_KEYS = ["icon", "label", "bg", "fg"];
+  var TB_KEYS = ["icon", "label", "bg", "fg", "size", "img"];
   var TB_DEF = [
     { icon: "", label: "Ai", bg: "#332211", fg: "#ff9a00" },
     { icon: "", label: "Ps", bg: "#001e36", fg: "#31a8ff" },
@@ -1106,8 +1106,39 @@
 
   function tbBrand(n) {
     var ico = tbGet(n, "icon").trim().toLowerCase();
-    if (!ico || !window.ICONS || !ICONS.brand) return "";
+    if (!ico || ico === "upload" || !window.ICONS || !ICONS.brand) return "";
     return ICONS.brand(ico, 26);
+  }
+
+  function tbSize(n) {
+    var v = parseInt(tbGet(n, "size"), 10);
+    return (!v || isNaN(v) || v < 34 || v > 110) ? 60 : v;
+  }
+  function tbImg(n) { return tbGet(n, "img").trim(); }
+
+  function tbCls(n) {
+    var ico = tbGet(n, "icon").trim().toLowerCase();
+    var lab = tbGet(n, "label").trim();
+    if (ico === "upload" && tbImg(n)) return "tool-badge tool-" + n + " tool-img";
+    if (!tbBrand(n) && lab) return "tool-badge tool-" + n + " tool-text";
+    return "tool-badge tool-" + n;
+  }
+
+  function tbInner(n) {
+    var ico = tbGet(n, "icon").trim().toLowerCase();
+    var lab = tbGet(n, "label").trim();
+    if (ico === "upload" && tbImg(n)) return '<img src="' + esc(tbImg(n)) + '" alt="" />';
+    var b = tbBrand(n);
+    if (b) return b;
+    if (lab) return esc(lab);
+    return '<span style="opacity:.4;font-size:.7rem">Hidden</span>';
+  }
+
+  function tbMeta(n) {
+    var ico = tbGet(n, "icon").trim().toLowerCase();
+    var lab = tbGet(n, "label").trim();
+    if (ico === "upload") return tbImg(n) ? "own image" : "no image yet";
+    return ico || (lab ? "text: " + lab : "লুকানো");
   }
 
   function renderToolBadges() {
@@ -1120,30 +1151,47 @@
       var lab = tbGet(n, "label").trim();
       var bg  = tbGet(n, "bg").trim();
       var fg  = tbGet(n, "fg").trim();
-
-      var brand = tbBrand(n);
-      var prev  = brand || (lab ? esc(lab) : '<span style="opacity:.4;font-size:.72rem">Hidden</span>');
-      var cls   = "tool-icon tool-badge tool-" + n + " preview-badge" + (!brand && lab ? " tool-text" + (lab.length > 2 ? " tool-long" : "") : "");
+      var sz  = tbSize(n);
+      var img = tbImg(n);
+      var isUp = ico === "upload";
 
       return '<div class="tb-card" data-tbcard="' + n + '" style="border:1px solid var(--line);border-radius:12px;padding:16px;background:var(--bg-soft)">' +
-        '<div style="display:flex;align-items:center;gap:12px;margin-bottom:14px">' +
-          '<span class="' + cls + '" style="background:' + esc(bg) + ";color:" + esc(fg) + ';position:static;animation:none;flex:0 0 auto">' + prev + "</span>" +
-          "<div><strong>Badge " + n + '</strong><br/><small class="tb-meta" style="color:var(--muted)">' +
-            esc(ico || (lab ? "text: " + lab : "লুকানো")) + "</small></div>" +
+        '<div style="display:flex;align-items:center;gap:14px;margin-bottom:14px">' +
+          '<span class="' + tbCls(n) + ' preview-badge" style="background:' + esc(bg) + ";color:" + esc(fg) +
+            ";width:" + sz + "px;height:" + sz + "px;border-radius:" + Math.round(sz * 0.26) +
+            "px;font-size:" + Math.round(sz * 0.27) + 'px;position:static;animation:none;flex:0 0 auto">' + tbInner(n) + "</span>" +
+          "<div style=\"min-width:0\"><strong>Badge " + n + '</strong><br/><small class="tb-meta" style="color:var(--muted)">' +
+            esc(tbMeta(n)) + "</small></div>" +
         "</div>" +
+
         '<div class="field"><label>Icon</label><select data-tb="' + n + '" data-tbk="icon">' +
           '<option value=""' + (ico ? "" : " selected") + ">Custom text</option>" +
+          '<option value="upload"' + (isUp ? " selected" : "") + ">Upload my own image</option>" +
           opts.map(function (b) {
             return '<option value="' + b + '"' + (ico === b ? " selected" : "") + ">" +
               b.charAt(0).toUpperCase() + b.slice(1) + "</option>";
           }).join("") +
         "</select></div>" +
-        '<div class="field"><label>Label</label><input type="text" data-tb="' + n + '" data-tbk="label" value="' +
-          esc(lab) + '" placeholder="Ai, Ps, Canva…" /></div>' +
+
+        (isUp
+          ? '<div class="field"><label>Icon image</label>' +
+              '<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">' +
+                '<button class="btn-mini" data-tbup="' + n + '">' + (img ? "Replace image" : "Upload image") + "</button>" +
+                (img ? '<button class="btn-mini danger" data-tbdel="' + n + '">Delete</button>' : "") +
+                (img ? '<img src="' + esc(img) + '" alt="" style="width:36px;height:36px;object-fit:contain;border-radius:9px;background:var(--bg);border:1px solid var(--line)" />' : "") +
+              "</div></div>"
+          : '<div class="field"><label>Label</label><input type="text" data-tb="' + n + '" data-tbk="label" value="' +
+              esc(lab) + '" placeholder="Ai, Ps, Canva…" /></div>') +
+
+        '<div class="field"><label>Size <b class="tb-szval" style="color:var(--accent)">' + sz + 'px</b></label>' +
+          '<input type="range" min="34" max="110" step="2" value="' + sz + '" data-tb="' + n + '" data-tbk="size" style="width:100%" /></div>' +
+
         '<div style="display:flex;gap:12px">' +
           '<div class="field" style="flex:1"><label>Background</label><input type="color" data-tb="' + n + '" data-tbk="bg" value="' + esc(bg) + '" /></div>' +
           '<div class="field" style="flex:1"><label>Text / logo</label><input type="color" data-tb="' + n + '" data-tbk="fg" value="' + esc(fg) + '" /></div>' +
         "</div>" +
+
+        '<input type="file" accept="image/*" hidden data-tbfile="' + n + '" />' +
       "</div>";
     }).join("");
   }
@@ -1152,29 +1200,21 @@
   function updateTbPreview(n) {
     var card = document.querySelector('[data-tbcard="' + n + '"]');
     if (!card) return;
-    var ico = tbGet(n, "icon").trim().toLowerCase();
-    var lab = tbGet(n, "label").trim();
-    var bg  = tbGet(n, "bg").trim();
-    var fg  = tbGet(n, "fg").trim();
-
+    var sz = tbSize(n);
     var badge = card.querySelector(".preview-badge");
-    badge.style.background = bg || "#1e1e1e";
-    badge.style.color = fg || "#ffffff";
+    badge.className = tbCls(n) + " preview-badge";
+    badge.style.background = tbGet(n, "bg").trim() || "#1e1e1e";
+    badge.style.color = tbGet(n, "fg").trim() || "#ffffff";
+    badge.style.width = sz + "px";
+    badge.style.height = sz + "px";
+    badge.style.borderRadius = Math.round(sz * 0.26) + "px";
+    badge.style.fontSize = Math.round(sz * 0.27) + "px";
+    badge.innerHTML = tbInner(n);
 
-    var brand = tbBrand(n);
-    if (brand) {
-      badge.innerHTML = brand;
-      badge.classList.remove("tool-text", "tool-long");
-    } else if (lab) {
-      badge.textContent = lab;
-      badge.classList.add("tool-text");
-      badge.classList.toggle("tool-long", lab.length > 2);
-    } else {
-      badge.innerHTML = '<span style="opacity:.4;font-size:.72rem">Hidden</span>';
-      badge.classList.remove("tool-text", "tool-long");
-    }
     var meta = card.querySelector(".tb-meta");
-    if (meta) meta.textContent = ico || (lab ? "text: " + lab : "লুকানো");
+    if (meta) meta.textContent = tbMeta(n);
+    var sv = card.querySelector(".tb-szval");
+    if (sv) sv.textContent = sz + "px";
   }
 
   document.addEventListener("input", function (e) {
@@ -1184,6 +1224,62 @@
     if (!n || !k) return;
     tbSet(n, k, el.value);
     updateTbPreview(n);
+    /* Icon বদলালে Label ↔ Image-upload UI বদলাতে হয় */
+    if (k === "icon") renderToolBadges();
+  });
+
+  function saveTbImage(n) {
+    return SB.table("settings?on_conflict=key", {
+      method: "POST", prefer: "resolution=merge-duplicates",
+      body: [
+        { key: "hero_tool_" + n + "_img", value: tbGet(n, "img") },
+        { key: "hero_tool_" + n + "_icon", value: tbGet(n, "icon") }
+      ]
+    });
+  }
+
+  document.addEventListener("click", function (e) {
+    var up = e.target.closest("[data-tbup]");
+    if (up) {
+      var fi = document.querySelector('[data-tbfile="' + up.getAttribute("data-tbup") + '"]');
+      if (fi) { fi.value = ""; fi.click(); }
+      return;
+    }
+    var del = e.target.closest("[data-tbdel]");
+    if (!del) return;
+    var dn = del.getAttribute("data-tbdel");
+    tbSet(dn, "img", "");
+    renderToolBadges();
+    setStatus("#status-toobadges", "Removing…", true);
+    saveTbImage(dn).then(function () {
+      setStatus("#status-toobadges", "✅ Badge image deleted.", true);
+      showAlert("Badge image removed.", "info");
+      refreshCounts();
+    }).catch(function (err) {
+      setStatus("#status-toobadges", "❌ " + err.message, false);
+    });
+  });
+
+  document.addEventListener("change", function (e) {
+    var fi = e.target.closest("[data-tbfile]");
+    if (!fi || !fi.files || !fi.files[0]) return;
+    var n = fi.getAttribute("data-tbfile"), file = fi.files[0];
+    if (file.type && file.type.indexOf("image/") !== 0) { showAlert("Image file নির্বাচন করুন।", "info"); return; }
+    if (file.size > 2 * 1024 * 1024) { showAlert("সর্বোচ্চ ২ MB ছবি হবে।", "info"); return; }
+    setStatus("#status-toobadges", "Uploading…", true);
+    var clean = String(file.name || "badge").replace(/[^a-z0-9.\-_]/gi, "_").toLowerCase();
+    SB.upload("assets/tool-badge/" + Date.now() + "_" + clean, file).then(function (url) {
+      tbSet(n, "icon", "upload");
+      tbSet(n, "img", url);
+      renderToolBadges();
+      return saveTbImage(n);
+    }).then(function () {
+      setStatus("#status-toobadges", "✅ Badge icon uploaded — live site reload করলেই দেখা যাবে।", true);
+      showAlert("Badge icon uploaded.", "info");
+      refreshCounts();
+    }).catch(function (err) {
+      setStatus("#status-toobadges", "❌ " + err.message, false);
+    });
   });
 
   $("#save-toobadges").addEventListener("click", function () {
