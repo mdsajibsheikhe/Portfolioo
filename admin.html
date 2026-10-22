@@ -421,6 +421,19 @@
     </div>
   </div>
 
+  <!-- ===== Save confirmation popup ===== -->
+  <div class="save-overlay" id="save-popup" hidden>
+    <div class="save-card" role="dialog" aria-modal="true" aria-labelledby="save-title">
+      <span class="save-ico"><span data-sico="checkCircle" data-sico-size="46"></span></span>
+      <h3 class="save-title" id="save-title">Changes saved</h3>
+      <p class="save-text" id="save-text">Your changes are saved. Reload the live site to see them.</p>
+      <div class="save-actions">
+        <a class="btn btn-primary" id="save-view" href="index.html" target="_blank" rel="noopener">Open live site</a>
+        <button type="button" class="btn btn-ghost" id="save-close">Done</button>
+      </div>
+    </div>
+  </div>
+
   <script src="js/sb.js"></script>
   <script src="js/icons.js"></script>
   <script src="js/admin.js"></script>

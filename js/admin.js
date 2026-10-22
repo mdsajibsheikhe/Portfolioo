@@ -266,6 +266,38 @@
     el.className = "save-status " + (ok ? "ok" : "err");
   }
 
+  /* ============ SAVE CONFIRMATION POPUP ============
+     যেকোনো Save বাটন সফল হলে মাঝখানে popup দেখায়।
+     Esc / Done / বাইরে ক্লিক করলে বন্ধ, ৮ সেকেন্ড পর নিজে থেকেই লুকায়। */
+  var savePopup = $("#save-popup");
+  var savePopupTimer = null;
+
+  function hideSavedPopup() {
+    if (savePopup) savePopup.hidden = true;
+    clearTimeout(savePopupTimer);
+  }
+
+  function showSavedPopup(title, msg) {
+    if (!savePopup) return;
+    if (title) $("#save-title").textContent = title;
+    $("#save-text").textContent = msg || "Your changes are saved. Reload the live site to see them.";
+    savePopup.hidden = false;
+    if (window.ICONS && !savePopup.querySelector(".save-ico svg")) applyPanelIcons();
+    var ok = $("#save-close");
+    if (ok) ok.focus();
+    clearTimeout(savePopupTimer);
+    savePopupTimer = setTimeout(hideSavedPopup, 8000);
+  }
+
+  var saveCloseBtn = $("#save-close");
+  if (saveCloseBtn) saveCloseBtn.addEventListener("click", hideSavedPopup);
+  if (savePopup) {
+    savePopup.addEventListener("click", function (e) { if (e.target === savePopup) hideSavedPopup(); });
+  }
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape" && savePopup && !savePopup.hidden) hideSavedPopup();
+  });
+
   /* ============ LOGIN / APP ============ */
   var loginWrap = $("#login-wrap");
   var app = $("#app");
@@ -469,7 +501,7 @@
         renderSeoForm();
       }
       setStatus(cfg.status, "✅ Saved — live site-এ reload করলেই দেখা যাবে।", true);
-      showAlert("Profile updated. Open the live site to see changes.", "info");
+      showSavedPopup("Changes saved", "Your profile is saved. Reload the live site to see the changes.");
     } catch (err) {
       setStatus(cfg.status, "❌ " + err.message, false);
     }
@@ -572,7 +604,7 @@
         prefer: "resolution=merge-duplicates"
       });
       setStatus(st, "✅ Theme saved — live site reload করলেই দেখা যাবে।", true);
-      showAlert("Color theme updated. Reload the live site to see it.", "info");
+      showSavedPopup("Theme saved", "Your colour theme is saved. Reload the live site to see it.");
     } catch (err) {
       setStatus(st, "❌ " + err.message, false);
     }
@@ -606,7 +638,7 @@
         prefer: "resolution=merge-duplicates"
       });
       setStatus(st, "✅ Images saved — live site reload করলেই দেখা যাবে।", true);
-      showAlert("Images updated. Reload the live site to see changes.", "info");
+      showSavedPopup("Images saved", "Your images are saved. Reload the live site to see the changes.");
     } catch (err) {
       setStatus(st, "❌ " + err.message, false);
     }
@@ -653,7 +685,7 @@
         });
       }
       setStatus(st, "✅ " + payload.length + " label(s) saved — live site reload করলেই দেখা যাবে।", true);
-      showAlert("Text & labels updated. Reload the live site to see changes.", "info");
+      showSavedPopup("Text saved", "Your text & labels are saved. Reload the live site to see the changes.");
     } catch (err) {
       setStatus(st, "❌ " + err.message, false);
     }
@@ -868,7 +900,7 @@
 
       renderList(name);
       setStatus(cfg.status, "✅ " + payload.length + " item(s) saved.", true);
-      showAlert(TITLES[name] + " updated successfully.", "info");
+      showSavedPopup(TITLES[name] + " saved", payload.length + " item(s) saved. Reload the live site to see the changes.");
       refreshCounts();
     } catch (err) {
       setStatus(cfg.status, "❌ " + err.message, false);
@@ -1014,7 +1046,7 @@
         prefer: "resolution=merge-duplicates"
       });
       setStatus(st, "✅ SEO saved — Google-এ প্রভাব দেখতে কয়েক দিন লাগে।", true);
-      showAlert("SEO updated. Reload the live site to see changes.", "info");
+      showSavedPopup("SEO saved", "Your page title & description are saved. Reload the live site to see the changes.");
       refreshCounts();
     } catch (err) {
       setStatus(st, "❌ " + err.message, false);
@@ -1466,7 +1498,7 @@
       method: "POST", prefer: "resolution=merge-duplicates", body: body
     }).then(function () {
       setStatus("#status-toobadges", "✅ Badges saved — live site reload করলেই দেখা যাবে।", true);
-      showAlert("Hero tool badges updated.", "info");
+      showSavedPopup("Badges saved", "Your hero tool badges are saved. Reload the live site to see the changes.");
       refreshCounts();
     }).catch(function (err) {
       setStatus("#status-toobadges", "❌ " + err.message, false);

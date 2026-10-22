@@ -1204,3 +1204,72 @@ a { color: inherit; }
   background: #fff;
 }
 .tb-szval { margin-left: 6px; font-weight: 700; }
+
+/* ============ SAVE CONFIRMATION POPUP ============ */
+.save-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(3px);
+  animation: saveFade 0.18s ease-out;
+}
+.save-overlay[hidden] { display: none; }
+
+.save-card {
+  width: min(420px, 100%);
+  background: #fff;
+  border-radius: 18px;
+  padding: 30px 26px 24px;
+  text-align: center;
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.28);
+  animation: savePop 0.22s cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+
+.save-ico {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 76px;
+  height: 76px;
+  border-radius: 50%;
+  background: rgba(5, 150, 105, 0.12);
+  color: var(--primary, #059669);
+  margin-bottom: 16px;
+}
+.save-ico svg { width: 46px; height: 46px; }
+
+.save-title {
+  margin: 0 0 8px;
+  font-size: 21px;
+  font-weight: 700;
+  color: #1f2937;
+}
+.save-text {
+  margin: 0 0 22px;
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: #6b7280;
+}
+
+.save-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.save-actions .btn { min-width: 132px; }
+
+@keyframes saveFade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes savePop {
+  from { opacity: 0; transform: translateY(10px) scale(0.94); }
+  to { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .save-overlay, .save-card { animation: none; }
+}
