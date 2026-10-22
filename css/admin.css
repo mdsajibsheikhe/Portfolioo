@@ -1275,7 +1275,21 @@ a { color: inherit; }
   background: rgba(220, 38, 38, 0.1);
   color: #dc2626;
 }
-.confirm-card .btn-danger { min-width: 116px; }
+/* Destructive action in the confirm popup reads as solid red, not the soft outline */
+.confirm-card .btn-danger {
+  min-width: 116px;
+  background: #dc2626;
+  color: #fff;
+  border-color: #dc2626;
+  box-shadow: 0 8px 20px rgba(220, 38, 38, 0.3);
+}
+.confirm-card .btn-danger:hover {
+  background: #b91c1c;
+  border-color: #b91c1c;
+  color: #fff;
+  transform: translateY(-2px);
+  box-shadow: 0 12px 26px rgba(220, 38, 38, 0.42);
+}
 
 @media (prefers-reduced-motion: reduce) {
   .save-overlay, .save-card { animation: none; }
