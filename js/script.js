@@ -246,35 +246,11 @@ window.PortfolioUI = {
   }
 };
 
-// ---------- Contact form (Supabase-এ message save) ----------
-const contactForm = document.getElementById("contact-form");
-const formStatus = document.getElementById("form-status");
-
-if (contactForm) {
-  contactForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const payload = {
-      name: contactForm.querySelector("#name").value.trim(),
-      email: contactForm.querySelector("#email").value.trim(),
-      subject: contactForm.querySelector("#subject").value.trim(),
-      message: contactForm.querySelector("#message").value.trim()
-    };
-
-    try {
-      if (!window.SB) throw new Error("offline");
-      await SB.table("messages", { method: "POST", body: payload });
-      formStatus.textContent = "✅ Message sent! I'll get back to you soon.";
-      contactForm.reset();
-    } catch (err) {
-      console.warn("Message not saved:", err.message);
-      formStatus.textContent = "⚠️ Could not send — please email me directly.";
-    }
-
-    setTimeout(() => {
-      formStatus.textContent = "";
-    }, 4000);
-  });
-}
+// ---------- Contact form ----------
+// Handled entirely by js/content.js (bindContactForm): it saves the message to
+// Supabase, calls /api/contact for the email notification and shows the popup.
+// An earlier copy of that handler lived here too, which made every submission
+// insert the message TWICE into the admin Messages list. Do not re-add one.
 
 // ---------- Footer year ----------
 const yearEl = document.getElementById("year");

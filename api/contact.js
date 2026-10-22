@@ -45,15 +45,51 @@ module.exports = async function handler(req, res) {
   }
 
   var key = process.env.RESEND_API_KEY;
-  var to = process.env.NOTIFY_EMAIL || "mdsajibsheikh103@gmail.com";
   var from = process.env.MAIL_FROM || "Portfolio <onboarding@resend.dev>";
 
-  if (!key) {
-    console.warn("[contact] RESEND_API_KEY সেট করা হয়নি — message DB-তে আছে, email যায়নি।");
-    return res.status(200).json({ ok: true, delivered: false, reason: "email_not_configured" });
+  /* ---------------------------------------------------------------
+     Who gets the notification?
+     The "Info: Email" you type in the admin (About tab) is the single
+     source of truth. If that is empty it falls back to the Contact
+     tab's email, then the Vercel NOTIFY_EMAIL variable, then a default.
+     The browser already publishes the anon key (js/sb.js), so reading
+     it from the server exposes nothing new.
+     --------------------------------------------------------------- */
+  var SUPA_URL = "https://bhhrhatiipaqqyecalzj.supabase.co";
+  var SUPA_ANON = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJoaHJoYXRpaXBhcXF5ZWNhbHpqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI1NDc5MzUsImV4cCI6MjEwODEyMzkzNX0.uXyJFkr8BFijglOVwMW7GXX7HD226DepliR0xUZY-lI";
+  var DEFAULT_TO = "mdsajibsheikh103@gmail.com";
+  var VALID = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  async function resolveRecipient() {
+    try {
+      var r = await fetch(
+        SUPA_URL + "/rest/v1/settings?select=key,value&key=in.(about_email,contact_email)",
+        { headers: { apikey: SUPA_ANON, Authorization: "Bearer " + SUPA_ANON } }
+      );
+      if (r.ok) {
+        var rows = await r.json();
+        var map = {};
+        rows.forEach(function (x) { map[x.key] = String(x.value || "").trim(); });
+        var picked = map.about_email || map.contact_email || "";
+        if (VALID.test(picked)) return picked;
+      } else {
+        console.warn("[contact] settings lookup failed:", r.status);
+      }
+    } catch (e) {
+      console.warn("[contact] settings lookup exception:", e && e.message);
+    }
+    return process.env.NOTIFY_EMAIL || DEFAULT_TO;
   }
 
-  var mailSubject = "📩 New contact: " + (subject || "Portfolio enquiry") + " — " + name;
+  var to = await resolveRecipient();
+
+  if (!key) {
+    console.warn("[contact] RESEND_API_KEY is not set — the message is saved in Supabase, no email was sent. Notification would have gone to: " + to);
+    return res.status(200).json({ ok: true, delivered: false, reason: "email_not_configured", notified: to });
+  }
+
+  var mailSubject = "New contact: " + (subject || "Portfolio enquiry") + " — " + name;
+  console.log("[contact] notifying:", to, "| from settings about_email/contact_email, else env");
 
   var html =
     '<div style="font-family:Segoe UI,Roboto,Arial,sans-serif;background:#f1f5f4;padding:28px">' +
