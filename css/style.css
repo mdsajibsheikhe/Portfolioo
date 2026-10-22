@@ -428,13 +428,54 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   display: flex; flex-direction: column;
 }
 .project-card:hover { transform: translateY(-12px); box-shadow: var(--shadow-lg); }
-.project-image { height: 190px; background: var(--gradient); display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
-.project-image::before { content: ""; position: absolute; width: 180px; height: 180px; border-radius: 50%; background: rgba(255,255,255,0.15); top: -60px; right: -40px; }
+.project-image { position: relative; aspect-ratio: 4 / 3; background: var(--gradient); display: flex; align-items: center; justify-content: center; overflow: hidden; }
+.project-image::before { content: ""; position: absolute; width: 180px; height: 180px; border-radius: 50%; background: rgba(255,255,255,0.15); top: -60px; right: -40px; z-index: 0; }
 .project-image.alt-1 { background: linear-gradient(135deg, #0d9488, #2dd4bf); }
 .project-image.alt-2 { background: linear-gradient(135deg, #65a30d, #a3e635); }
 .project-image.alt-3 { background: linear-gradient(135deg, #0891b2, #67e8f9); }
-.project-emoji { font-size: 4.2rem; position: relative; z-index: 1; filter: drop-shadow(0 6px 10px rgba(0,0,0,0.2)); transition: transform var(--transition); }
-.project-card:hover .project-emoji { transform: scale(1.15) rotate(-6deg); }
+.project-image.has-img { background: var(--bg-soft); }
+.project-image.has-img::before { display: none; }
+
+/* SVG mark shown when no cover image is uploaded yet */
+.project-ico {
+  position: relative; z-index: 1;
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 96px; height: 96px; border-radius: 28px;
+  background: rgba(255, 255, 255, 0.18);
+  color: #fff;
+  transition: transform var(--transition), background var(--transition);
+}
+.project-ico svg { width: 46px; height: 46px; }
+.project-card:hover .project-ico { transform: scale(1.08) rotate(-4deg); background: rgba(255, 255, 255, 0.28); }
+
+/* Dark gradient that fades in on hover so the arrow stays readable on any photo */
+.project-veil {
+  position: absolute; inset: 0; z-index: 2; pointer-events: none;
+  background: linear-gradient(to top, rgba(4, 20, 15, 0.80) 0%, rgba(4, 20, 15, 0.20) 46%, transparent 72%);
+  opacity: 0; transition: opacity var(--transition);
+}
+.project-card:hover .project-veil { opacity: 1; }
+
+.project-arrow {
+  position: absolute; right: 16px; bottom: 16px; z-index: 3;
+  width: 44px; height: 44px; border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  background: #fff; color: var(--primary, #059669);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.28);
+  opacity: 0; transform: translate(10px, 10px) scale(0.7);
+  transition: opacity var(--transition), transform var(--transition);
+}
+.project-arrow svg { width: 19px; height: 19px; }
+.project-card:hover .project-arrow { opacity: 1; transform: none; }
+
+/* Category chip, top-left over the artwork */
+.project-cat {
+  position: absolute; left: 14px; top: 14px; z-index: 3;
+  background: rgba(255, 255, 255, 0.92); color: #0f172a;
+  font-size: 0.7rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase;
+  padding: 0.3rem 0.75rem; border-radius: 50px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.16);
+}
 .project-content { padding: 1.6rem; display: flex; flex-direction: column; flex: 1; }
 .project-content h3 { margin-bottom: 0.5rem; font-size: 1.25rem; }
 .project-content p { color: var(--text-light); font-size: 0.92rem; margin-bottom: 1.1rem; flex: 1; }
@@ -591,7 +632,7 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
 /* --- project card image --- */
 .project-image { position: relative; }
 .project-image.has-img { padding: 0; overflow: hidden; }
-.project-image.has-img .project-emoji { display: none; }
+.project-image.has-img .project-ico { display: none; }
 .project-img {
   position: absolute;
   inset: 0;
@@ -599,13 +640,51 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
   height: 100%;
   object-fit: cover;
   display: block;
-  transition: transform 0.45s ease;
+  z-index: 1;
+  transition: transform 0.6s cubic-bezier(0.22, 0.61, 0.36, 1);
 }
-.project-card:hover .project-img { transform: scale(1.06); }
+.project-card:hover .project-img { transform: scale(1.08); }
 
-/* --- service group icon image --- */
+/* --- service card: banner image + icon tile --- */
+.skills-group { overflow: hidden; }
 .skills-group-icon { display: flex; align-items: center; justify-content: center; }
-.skills-group-img { width: 30px; height: 30px; object-fit: contain; display: block; border-radius: 7px; }
+
+/* Photo banner across the top of a service card. Negative margins bleed it to
+   the card edges, so the static HTML fallback needs no extra wrapper. */
+.skills-media {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  background: var(--bg-soft);
+  margin: -2rem -2rem 1.5rem;
+}
+.skills-media-img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.65s cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+.skills-media-veil {
+  position: absolute; inset: 0;
+  background: linear-gradient(to bottom, rgba(4, 20, 15, 0) 55%, rgba(4, 20, 15, 0.28) 100%);
+  transition: opacity var(--transition);
+}
+.skills-group:hover .skills-media-img { transform: scale(1.07); }
+.skills-group:hover .skills-media-veil { opacity: 0.55; }
+
+/* Icon tile: premium gradient, lifts on hover */
+.skills-group-icon {
+  width: 54px; height: 54px; flex: none;
+  border-radius: 16px;
+  background: linear-gradient(135deg, rgba(var(--primary-rgb), 0.14), rgba(var(--primary-rgb), 0.05));
+  color: var(--primary);
+  transition: transform var(--transition), box-shadow var(--transition);
+}
+.skills-group-icon svg { width: 26px; height: 26px; }
+.skills-group:hover .skills-group-icon {
+  transform: translateY(-3px) scale(1.05);
+  box-shadow: 0 12px 24px rgba(var(--primary-rgb), 0.28);
+}
 
 /* ============================================================
    Premium inline icons
@@ -861,8 +940,6 @@ button { font-family: inherit; cursor: pointer; border: none; background: none; 
    Project icon (premium SVG instead of emoji)
    ============================================================ */
 .project-image { display: flex; align-items: center; justify-content: center; }
-.project-emoji { display: inline-flex; align-items: center; justify-content: center; }
-.project-emoji svg { width: 54px; height: 54px; }
 
 /* ============================================================
    CV button hidden when no CV url

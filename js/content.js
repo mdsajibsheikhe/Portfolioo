@@ -385,11 +385,17 @@
   function renderServices(list) {
     var wrap = q(".skills-container");
     if (!wrap || !list.length) return;
-    wrap.innerHTML = list.map(function (s) {
+    wrap.innerHTML = list.map(function (s, i) {
       var tags = (s.tags || []).map(function (t) { return '<span class="skill-tag">' + esc(t) + "</span>"; }).join("");
-      var media = s.image
-        ? '<img class="skills-group-img" src="' + esc(s.image) + '" alt="" loading="lazy" />'
-        : (window.ICONS ? ICONS.resolve(s.icon, "palette", 22) : esc(s.icon || "🎨"));
+      var ico = window.ICONS ? ICONS.resolve(s.icon, "palette", 26) : esc(s.icon || "");
+      /* Real uploaded photo becomes a banner across the top of the card.
+         Without one, the card stays clean — icon tile + title. */
+      var banner = s.image
+        ? '<div class="skills-media">' +
+            '<img class="skills-media-img" src="' + esc(s.image) + '" alt="' + esc(s.title) + '" loading="lazy" />' +
+            '<span class="skills-media-veil"></span>' +
+          "</div>"
+        : "";
       var tl = Array.isArray(s.tools) ? s.tools : [];
       var tools = tl.filter(function (x) { return String(x || "").trim(); })
         .map(function (t) { return '<span class="tool-mini">' + esc(t) + "</span>"; }).join("");
@@ -398,9 +404,12 @@
           (window.ICONS ? ICONS.svg("zap", 13) : "") + esc(SET.tools_used_label || "Tools used") +
           "</span>" + tools + "</div>"
         : "";
-      return '<div class="skills-group"><div class="skills-group-head"><span class="skills-group-icon">' +
-        media + "</span><h3>" + esc(s.title) + "</h3></div>" +
-        '<div class="skills-list">' + tags + "</div>" + toolsRow + "</div>";
+      return '<article class="skills-group' + (s.image ? " has-media" : "") + '" style="--i:' + i + '">' +
+        banner +
+        '<div class="skills-body">' +
+          '<div class="skills-group-head"><span class="skills-group-icon">' + ico + "</span><h3>" + esc(s.title) + "</h3></div>" +
+          '<div class="skills-list">' + tags + "</div>" + toolsRow +
+        "</div></article>";
     }).join("");
   }
 
@@ -429,17 +438,22 @@
     };
     wrap.innerHTML = list.map(function (p) {
       var v = Number(p.variant) || 0;
-      var tags = (p.tags || []).map(function (t) { return "<span>" + esc(t) + "</span>"; }).join("");
+      var tagArr = (p.tags || []).filter(function (x) { return String(x || "").trim(); });
+      var tags = tagArr.map(function (t) { return "<span>" + esc(t) + "</span>"; }).join("");
+      var cat = tagArr.length ? '<span class="project-cat">' + esc(tagArr[0]) + "</span>" : "";
+
+      /* Prefer the proper icon column; fall back to the legacy emoji field,
+         which is mapped to a real glyph — an emoji is never drawn. */
       var raw = String(p.emoji || "").trim();
-      var ico = EMOJI_ICO[raw] || (/^[a-zA-Z][a-zA-Z0-9_]*$/.test(raw) ? raw : "");
-      /* নামটা icon set-এ না থাকলে layers দাও — নাহলে সরাসরি text বসে যেত */
+      var ico = p.icon || EMOJI_ICO[raw] || (/^[a-zA-Z][a-zA-Z0-9_]*$/.test(raw) ? raw : "");
       if (ico && window.ICONS && !ICONS.has(ico)) ico = "layers";
+      if (!ico) ico = "layers";
+
       var media = p.image
         ? '<img class="project-img" src="' + esc(p.image) + '" alt="' + esc(p.title) + '" loading="lazy" />'
-        : '<span class="project-emoji">' + (window.ICONS && ico ? ICONS.resolve(ico, "layers", 54) : (raw ? esc(raw) : "")) + "</span>";
-      var boxCls = p.image
-        ? "project-image has-img"
-        : "project-image" + (v > 0 ? " alt-" + v : "");
+        : '<span class="project-ico">' + (window.ICONS ? ICONS.resolve(ico, "layers", 58) : "") + "</span>";
+
+      var boxCls = "project-image" + (p.image ? " has-img" : (v > 0 ? " alt-" + v : ""));
       var links = "";
       if (live(p.view_url)) {
         links += '<a href="' + esc(p.view_url) + '" class="btn btn-small" target="_blank" rel="noopener">' + esc(btnView) + "</a>";
@@ -448,8 +462,14 @@
         links += '<a href="' + esc(p.case_url) + '" class="btn btn-small btn-outline" target="_blank" rel="noopener">' + esc(btnCase) + "</a>";
       }
       var linksRow = links ? '<div class="project-links">' + links + "</div>" : "";
+
+      /* Hover veil + arrow appear over the artwork; the title stays below either way. */
+      var veil = '<span class="project-veil"></span><span class="project-arrow" aria-hidden="true">' +
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">' +
+        '<path d="M7 17 17 7"/><path d="M8 7h9v9"/></svg></span>';
+
       return '<article class="project-card">' +
-        '<div class="' + boxCls + '">' + media + "</div>" +
+        '<div class="' + boxCls + '">' + media + veil + cat + "</div>" +
         '<div class="project-content"><h3>' + esc(p.title) + "</h3><p>" + esc(p.description) + "</p>" +
         '<div class="project-tags">' + tags + "</div>" +
         linksRow + "</div></article>";

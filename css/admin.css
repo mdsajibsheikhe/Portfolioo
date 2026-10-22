@@ -1270,6 +1270,13 @@ a { color: inherit; }
   to { opacity: 1; transform: none; }
 }
 
+/* ---- delete confirmation variant ---- */
+.confirm-ico {
+  background: rgba(220, 38, 38, 0.1);
+  color: #dc2626;
+}
+.confirm-card .btn-danger { min-width: 116px; }
+
 @media (prefers-reduced-motion: reduce) {
   .save-overlay, .save-card { animation: none; }
 }

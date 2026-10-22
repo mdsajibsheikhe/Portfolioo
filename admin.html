@@ -434,6 +434,19 @@
     </div>
   </div>
 
+  <!-- ===== Delete confirmation popup ===== -->
+  <div class="save-overlay" id="confirm-popup" hidden>
+    <div class="save-card confirm-card" role="alertdialog" aria-modal="true" aria-labelledby="confirm-title">
+      <span class="save-ico confirm-ico"><span data-sico="alert" data-sico-size="44"></span></span>
+      <h3 class="save-title" id="confirm-title">Are you sure?</h3>
+      <p class="save-text" id="confirm-text">This action cannot be undone.</p>
+      <div class="save-actions">
+        <button type="button" class="btn btn-ghost" id="confirm-cancel">Cancel</button>
+        <button type="button" class="btn btn-danger" id="confirm-ok">Delete</button>
+      </div>
+    </div>
+  </div>
+
   <script src="js/sb.js"></script>
   <script src="js/icons.js"></script>
   <script src="js/admin.js"></script>

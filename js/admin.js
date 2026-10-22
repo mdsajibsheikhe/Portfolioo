@@ -68,6 +68,13 @@
     }
   };
 
+  /* All SVG icon names the site can render — used by the "Icon (SVG)" picker.
+     Generic icons come first, brand marks after. Never emoji. */
+  var ICON_OPTIONS = (window.ICONS
+    ? ICONS.list.concat(ICONS.brandList())
+    : ["layers", "palette", "package", "video", "pen", "trending", "image", "type", "zap", "target", "brush", "heart"]
+  ).slice();
+
   var LISTS = {
     stats: {
       table: "stats", el: "#list-stats", status: "#status-stats",
@@ -81,11 +88,11 @@
     services: {
       table: "services", el: "#list-services", status: "#status-services",
       fields: [
-        { k: "icon", l: "Icon — icon name লিখুন (palette, layers, video, package, brush, image, type, zap, award, briefcase…) অথবা emoji" },
+        { k: "icon", l: "Icon (SVG)", t: "select", options: ICON_OPTIONS },
         { k: "title", l: "Title" },
-        { k: "image", l: "Image icon (optional — icon/emoji-এর বদলে নিজের ছবি)", t: "image", wide: true },
+        { k: "image", l: "Service image (recommended — shown as a banner)", t: "image", wide: true },
         { k: "tags", l: "Skill tags (comma separated)", t: "tags", wide: true },
-        { k: "tools", l: "Tools used (comma separated — admin থেকে যেকোনো সময় বদলান)", t: "tags", wide: true },
+        { k: "tools", l: "Tools used (comma separated)", t: "tags", wide: true },
         { k: "sort", l: "Order", t: "number" }
       ],
       blank: { icon: "palette", title: "", image: "", tags: "", tools: "", sort: 0 }
@@ -101,9 +108,9 @@
     projects: {
       table: "projects", el: "#list-projects", status: "#status-projects",
       fields: [
-        { k: "emoji", l: "Emoji" },
+        { k: "icon", l: "Icon (SVG) — shown when there is no cover image", t: "select", options: ICON_OPTIONS },
         { k: "title", l: "Title" },
-        { k: "image", l: "Cover image (optional — emoji-এর বদলে)", t: "image", wide: true },
+        { k: "image", l: "Cover image (recommended)", t: "image", wide: true },
         { k: "description", l: "Description", t: "textarea", wide: true },
         { k: "tags", l: "Tags (comma separated)", t: "tags", wide: true },
         { k: "view_url", l: "View link" },
@@ -111,7 +118,7 @@
         { k: "variant", l: "Card color (0-3)", t: "number" },
         { k: "sort", l: "Order", t: "number" }
       ],
-      blank: { emoji: "🎨", title: "", image: "", description: "", tags: "", view_url: "#", case_url: "#", variant: 0, sort: 0 }
+      blank: { icon: "layers", title: "", image: "", description: "", tags: "", view_url: "#", case_url: "#", variant: 0, sort: 0 }
     },
     experience: {
       table: "experience", el: "#list-experience", status: "#status-experience",
@@ -296,6 +303,46 @@
   }
   document.addEventListener("keydown", function (e) {
     if (e.key === "Escape" && savePopup && !savePopup.hidden) hideSavedPopup();
+  });
+
+  /* ============ DELETE CONFIRMATION POPUP ============
+     যেকোনো Remove / Delete চাপলে আগে জিজ্ঞেস করে।
+     confirmAction(...) একটা Promise<boolean> ফেরায় —
+     await করে true হলেই মুছে ফেলুন। */
+  var confirmBox = $("#confirm-popup");
+  var confirmResolve = null;
+
+  function settleConfirm(answer) {
+    if (confirmBox) confirmBox.hidden = true;
+    var fn = confirmResolve;
+    confirmResolve = null;
+    if (fn) fn(answer);
+  }
+
+  function confirmAction(title, text, okLabel) {
+    return new Promise(function (resolve) {
+      if (!confirmBox) { resolve(window.confirm(text || "Are you sure?")); return; }
+      if (confirmResolve) settleConfirm(false);   /* আগেরটা বাতিল */
+      if (title) $("#confirm-title").textContent = title;
+      $("#confirm-text").textContent = text || "This action cannot be undone.";
+      if (okLabel) $("#confirm-ok").textContent = okLabel;
+      confirmResolve = resolve;
+      confirmBox.hidden = false;
+      if (window.ICONS && !confirmBox.querySelector(".confirm-ico svg")) applyPanelIcons();
+      var cancel = $("#confirm-cancel");
+      if (cancel) cancel.focus();                 /* ভুলে মুছে ফেলা এড়াতে Cancel-এ focus */
+      clearTimeout(savePopupTimer);
+    });
+  }
+
+  var cOk = $("#confirm-ok"), cNo = $("#confirm-cancel");
+  if (cOk) cOk.addEventListener("click", function () { settleConfirm(true); });
+  if (cNo) cNo.addEventListener("click", function () { settleConfirm(false); });
+  if (confirmBox) {
+    confirmBox.addEventListener("click", function (e) { if (e.target === confirmBox) settleConfirm(false); });
+  }
+  document.addEventListener("keydown", function (e) {
+    if (e.key === "Escape" && confirmBox && !confirmBox.hidden) settleConfirm(false);
   });
 
   /* ============ LOGIN / APP ============ */
@@ -772,7 +819,7 @@
     }
   }
 
-  document.addEventListener("click", function (e) {
+  document.addEventListener("click", async function (e) {
     var up = e.target.closest("[data-imgup]");
     if (up) {
       var fi = document.querySelector('[data-imgfile="' + up.getAttribute("data-imgup") + '"]');
@@ -782,6 +829,18 @@
     var clr = e.target.closest("[data-imgclr]");
     if (clr) {
       var p = clr.getAttribute("data-imgclr");
+      var bits = p.split(".");
+      var friendly = bits[0] === "set"
+        ? "this image"
+        : (state[bits[1]] && state[bits[1]][+bits[2]]
+            ? ((state[bits[1]][+bits[2]].title || bits[1]) + " — " + bits[3].replace(/_/g, " "))
+            : "this image");
+      var okClr = await confirmAction(
+        "Remove this image?",
+        "The picture for “" + friendly + "” will be removed. You can upload a new one any time.",
+        "Remove"
+      );
+      if (!okClr) return;
       setImgValue(p, "");
       var t = document.querySelector('[data-imgtext="' + p + '"]');
       if (t) t.value = "";
@@ -840,11 +899,19 @@
       if (i === undefined || !k) return;
       state[name][+i][k] = e.target.value;
     });
-    $(cfg.el).addEventListener("click", function (e) {
+    $(cfg.el).addEventListener("click", async function (e) {
       var del = e.target.closest("[data-del]");
       var move = e.target.closest("[data-move]");
       if (del) {
         var idx = +del.dataset.del;
+        var row = state[name][idx];
+        var label = (row && (row.title || row.name || row.label)) || "this item";
+        var ok = await confirmAction(
+          TITLES[name] + " — remove?",
+          "“" + label + "” will be taken off the list. Click Save changes to apply it on the live site.",
+          "Remove"
+        );
+        if (!ok) return;
         state[name].splice(idx, 1);
         renderList(name);
       } else if (move) {
@@ -960,6 +1027,14 @@
   $("#list-messages").addEventListener("click", async function (e) {
     var b = e.target.closest("[data-msg-del]");
     if (!b) return;
+    var msg = state.messages.filter(function (m) { return m.id === b.dataset.msgDel; })[0];
+    var who = (msg && (msg.name || msg.email)) || "this message";
+    var ok = await confirmAction(
+      "Delete message?",
+      "The message from " + who + " will be permanently deleted. This cannot be undone.",
+      "Delete"
+    );
+    if (!ok) return;
     try {
       await SB.table("messages?id=eq." + b.dataset.msgDel, { method: "DELETE" });
       state.messages = state.messages.filter(function (m) { return m.id !== b.dataset.msgDel; });
@@ -1387,7 +1462,7 @@
       .catch(function (err) { setStatus("#status-toobadges", "❌ " + err.message, false); });
   }
 
-  document.addEventListener("click", function (e) {
+  document.addEventListener("click", async function (e) {
     var add = e.target.closest("#tb-add");
     if (add) {
       if (tbCount() >= TB_MAX) { showAlert("সর্বোচ্চ " + TB_MAX + "টা badge রাখা যায়।", "info"); return; }
@@ -1412,6 +1487,13 @@
       var rn = Number(rem.getAttribute("data-tbrem"));
       var c = tbCount();
       if (c <= 1) { showAlert("অন্তত ১টা badge থাকতে হবে।", "info"); return; }
+
+      var okRem = await confirmAction(
+        "Remove this badge?",
+        "Badge " + rn + " will be taken off the hero. The badges after it move up one place.",
+        "Remove"
+      );
+      if (!okRem) return;
 
       var body = [];
       /* পরের badge-গুলো এক ধাপ সরিয়ে আগে আনাও */
@@ -1445,7 +1527,7 @@
     });
   }
 
-  document.addEventListener("click", function (e) {
+  document.addEventListener("click", async function (e) {
     var up = e.target.closest("[data-tbup]");
     if (up) {
       var fi = document.querySelector('[data-tbfile="' + up.getAttribute("data-tbup") + '"]');
@@ -1455,6 +1537,12 @@
     var del = e.target.closest("[data-tbdel]");
     if (!del) return;
     var dn = del.getAttribute("data-tbdel");
+    var okImg = await confirmAction(
+      "Remove this image?",
+      "The picture on badge " + dn + " will be removed. You can upload a new one any time.",
+      "Remove image"
+    );
+    if (!okImg) return;
     tbSet(dn, "img", "");
     renderToolBadges();
     setStatus("#status-toobadges", "Removing…", true);
@@ -1505,7 +1593,7 @@
     });
   });
 
-  document.addEventListener("click", function (e) {
+  document.addEventListener("click", async function (e) {
     var up = e.target.closest("[data-logoup]");
     if (up) {
       var fi = document.querySelector('[data-logofile="' + up.getAttribute("data-logoup") + '"]');
@@ -1515,6 +1603,12 @@
     var del = e.target.closest("[data-logodel]");
     if (!del) return;
     var key = del.getAttribute("data-logodel");
+    var okLogo = await confirmAction(
+      "Delete this logo?",
+      "The uploaded logo will be removed from the site header. You can upload it again any time.",
+      "Delete logo"
+    );
+    if (!okLogo) return;
     state.settings[key] = "";
     renderLogoManager();
     saveLogoKeys().then(function () {
