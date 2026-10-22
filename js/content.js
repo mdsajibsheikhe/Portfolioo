@@ -168,7 +168,9 @@
           var isImg = (bIco === "upload" && /^(https?:|\/|\.\/|data:image)/i.test(bImg));
 
           if (isImg) {                                        /* নিজের upload করা icon */
-            inner = '<img src="' + esc(bImg) + '" alt="" loading="lazy" />';
+            /* loading="lazy" রাখা হয় না — badge সবসময় hero-র দৃশ্যমান অংশে বসে,
+               lazy হলে কিছু ব্রাউজারে ছবি আসলেই লোড হতে দেরি/ব্যর্থ হয় */
+            inner = '<img src="' + esc(bImg) + '" alt="" />';
             cls += " tool-img";
           } else {
             var brand = (bIco && bIco !== "upload" && window.ICONS && ICONS.brand)
