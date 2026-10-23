@@ -82,14 +82,46 @@ module.exports = async function handler(req, res) {
   }
 
   var to = await resolveRecipient();
+  var mailSubject = "New contact: " + (subject || "Portfolio enquiry") + " — " + name;
+  console.log("[contact] notifying:", to, "| read from settings about_email / contact_email");
 
+  /* ---------------------------------------------------------------
+     Path 1 — FormSubmit.co (free, unlimited, NO API key needed).
+     Runs whenever RESEND_API_KEY is missing, so the portfolio sends
+     email notifications out of the box with zero configuration.
+     One-time step: the first submission makes FormSubmit email you a
+     confirmation link — click it once and every message after that
+     arrives automatically.
+     --------------------------------------------------------------- */
   if (!key) {
-    console.warn("[contact] RESEND_API_KEY is not set — the message is saved in Supabase, no email was sent. Notification would have gone to: " + to);
+    try {
+      var fs = await fetch("https://formsubmit.co/ajax/" + encodeURIComponent(to), {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify({
+          _subject: mailSubject,
+          _captcha: "false",
+          _template: "table",
+          Name: name,
+          "Sender email": email,
+          Subject: subject || "—",
+          Message: message
+        })
+      });
+      var fj = {};
+      try { fj = await fs.json(); } catch (e) { fj = {}; }
+      if (fs.ok) {
+        console.log("[contact] sent via FormSubmit to", to, "|", JSON.stringify(fj).slice(0, 160));
+        return res.status(200).json({ ok: true, delivered: true, via: "formsubmit", notified: to });
+      }
+      console.error("[contact] FormSubmit error:", fs.status, JSON.stringify(fj).slice(0, 200));
+    } catch (e) {
+      console.error("[contact] FormSubmit exception:", e && e.message);
+    }
     return res.status(200).json({ ok: true, delivered: false, reason: "email_not_configured", notified: to });
   }
 
-  var mailSubject = "New contact: " + (subject || "Portfolio enquiry") + " — " + name;
-  console.log("[contact] notifying:", to, "| from settings about_email/contact_email, else env");
+  /* ---- Path 2 — Resend (used automatically once RESEND_API_KEY is set) ---- */
 
   var html =
     '<div style="font-family:Segoe UI,Roboto,Arial,sans-serif;background:#f1f5f4;padding:28px">' +
@@ -139,7 +171,7 @@ module.exports = async function handler(req, res) {
       return res.status(200).json({ ok: true, delivered: false, reason: "resend_error" });
     }
 
-    return res.status(200).json({ ok: true, delivered: true, id: out.id || null });
+    return res.status(200).json({ ok: true, delivered: true, via: "resend", id: out.id || null, notified: to });
   } catch (err) {
     console.error("[contact] exception:", err && err.message);
     return res.status(200).json({ ok: true, delivered: false, reason: "exception" });
