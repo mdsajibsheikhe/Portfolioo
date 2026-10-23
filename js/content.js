@@ -740,9 +740,16 @@
 
   /* ---------- save message to DB (always) ---------- */
   function saveMessage(data) {
+    /* SB.table returns a promise, so a try/catch here would not see the
+       failure — log it instead. Losing a visitor's message silently is
+       how the RLS bug below stayed invisible. */
     try {
-      SB.table("messages", { method: "POST", body: data });
-    } catch (e) { /* silent */ }
+      SB.table("messages", { method: "POST", body: data }).catch(function (err) {
+        console.error("[contact] message was NOT saved to Supabase:", err && err.message);
+      });
+    } catch (e) {
+      console.error("[contact] message was NOT saved to Supabase:", e && e.message);
+    }
   }
 
   /* ---------- email notification (zero setup) ----------

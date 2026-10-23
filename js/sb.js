@@ -35,8 +35,20 @@ window.SB = (function () {
     if (opts && opts.body !== undefined && opts.body !== null) {
       h["Content-Type"] = "application/json";
     }
+    /* Prefer whatever the caller asked for. Otherwise POST explicitly asks
+       for return=minimal.
+
+       It used to default to "return=representation", which made PostgREST
+       wrap the insert in a RETURNING clause. Returning a row needs a SELECT,
+       and the messages table only lets authenticated users read it — so the
+       public contact form got 401 "new row violates row-level security
+       policy" and the insert was rolled back. Every visitor message was
+       silently lost while the form still said "Message sent".
+
+       Nothing reads the body of a POST response (the admin rebuilds from its
+       own state), so returning nothing is both correct and safe. */
     if (opts && opts.prefer) h.Prefer = opts.prefer;
-    else if (opts && opts.method === "POST") h.Prefer = "return=representation";
+    else if (opts && opts.method === "POST") h.Prefer = "return=minimal";
     return h;
   }
 
