@@ -708,6 +708,7 @@
 
       // সবসময় DB-তে সংরক্ষণ (admin panel-এ দেখাবে)
       saveMessage(data);
+      sendEmailNote(data);
 
       try {
         var r = await fetch("/api/contact", {
@@ -741,6 +742,38 @@
   function saveMessage(data) {
     try {
       SB.table("messages", { method: "POST", body: data });
+    } catch (e) { /* silent */ }
+  }
+
+  /* ---------- email notification (zero setup) ----------
+     FormSubmit forwards the submission straight to your inbox. It is free,
+     unlimited, and needs no API key — but it only accepts requests that come
+     from a real browser. The same call made by the serverless function is
+     rejected with 403, so it has to happen here.
+
+     The recipient is the public "Info: Email" from the About page, so no
+     secret is exposed by calling it from the client.
+
+     One-time step: the first submission makes FormSubmit email you an
+     "Activate Form" link. Click it once and every message after that
+     arrives automatically. */
+  function sendEmailNote(data) {
+    var to = String(SET.about_email || SET.contact_email || "").trim();
+    if (!to || to.indexOf("@") < 0 || to.indexOf(".") < 0) return;
+    try {
+      fetch("https://formsubmit.co/ajax/" + encodeURIComponent(to), {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify({
+          _subject: "New contact: " + (data.subject || "Portfolio enquiry") + " — " + data.name,
+          _captcha: "false",
+          _template: "table",
+          Name: data.name,
+          "Sender email": data.email,
+          Subject: data.subject || "—",
+          Message: data.message
+        })
+      }).catch(function () { /* a notification failure must never break the form */ });
     } catch (e) { /* silent */ }
   }
 

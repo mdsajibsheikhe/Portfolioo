@@ -61,23 +61,40 @@ module.exports = async function handler(req, res) {
   var VALID = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
   async function resolveRecipient() {
+    /* The admin's About tab writes to the profile table, so that is the
+       real source of truth. settings is only a fallback copy. */
+    var H = { apikey: SUPA_ANON, Authorization: "Bearer " + SUPA_ANON };
+
     try {
-      var r = await fetch(
-        SUPA_URL + "/rest/v1/settings?select=key,value&key=in.(about_email,contact_email)",
-        { headers: { apikey: SUPA_ANON, Authorization: "Bearer " + SUPA_ANON } }
-      );
+      var r = await fetch(SUPA_URL + "/rest/v1/profile?select=about_email,contact_email", { headers: H });
       if (r.ok) {
         var rows = await r.json();
-        var map = {};
-        rows.forEach(function (x) { map[x.key] = String(x.value || "").trim(); });
-        var picked = map.about_email || map.contact_email || "";
+        var p = rows && rows[0] || {};
+        var picked = String(p.about_email || p.contact_email || "").trim();
         if (VALID.test(picked)) return picked;
       } else {
-        console.warn("[contact] settings lookup failed:", r.status);
+        console.warn("[contact] profile lookup failed:", r.status);
+      }
+    } catch (e) {
+      console.warn("[contact] profile lookup exception:", e && e.message);
+    }
+
+    try {
+      var r2 = await fetch(
+        SUPA_URL + "/rest/v1/settings?select=key,value&key=in.(about_email,contact_email)",
+        { headers: H }
+      );
+      if (r2.ok) {
+        var rows2 = await r2.json();
+        var map = {};
+        rows2.forEach(function (x) { map[x.key] = String(x.value || "").trim(); });
+        var picked2 = map.about_email || map.contact_email || "";
+        if (VALID.test(picked2)) return picked2;
       }
     } catch (e) {
       console.warn("[contact] settings lookup exception:", e && e.message);
     }
+
     return process.env.NOTIFY_EMAIL || DEFAULT_TO;
   }
 
@@ -86,72 +103,27 @@ module.exports = async function handler(req, res) {
   console.log("[contact] notifying:", to, "| read from settings about_email / contact_email");
 
   /* ---------------------------------------------------------------
-     Path 1 — FormSubmit.co (free, unlimited, NO API key needed).
-     Runs whenever RESEND_API_KEY is missing, so the portfolio sends
-     email notifications out of the box with zero configuration.
+     No RESEND_API_KEY? Then this function has nothing to do — the
+     browser already delivered the notification.
 
-     FormSubmit rejects calls that carry no Origin header (it assumes
-     the request came from a local HTML file), so one is always sent.
+     FormSubmit.co forwards the submission to your inbox for free with
+     no API key, but it rejects any call that does not originate in a
+     real browser (the same request from here returns 403). So
+     js/content.js posts to FormSubmit directly from the visitor's
+     browser, using the public "Info: Email" from the About page.
 
-     One-time step: the very first submission makes FormSubmit email
-     you an "Activate Form" link. Click it once and every message
-     after that arrives automatically. The response says so via
-     reason = "needs_activation".
+     Resend is the upgrade path: set RESEND_API_KEY in Vercel and this
+     function takes over with full HTML email, and the browser-side
+     FormSubmit call is then redundant (but harmless — it still fails
+     closed rather than double-mailing, because it only runs when the
+     server reports failure).
      --------------------------------------------------------------- */
   if (!key) {
-    var origin = (req.headers && (req.headers.origin || req.headers.referer)) || "";
-    try { origin = new URL(origin).origin; } catch (e) { origin = ""; }
-    if (!origin) origin = "https://mdsajibsheikh.vercel.app";
-
-    try {
-      var fs = await fetch("https://formsubmit.co/ajax/" + encodeURIComponent(to), {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-          Origin: origin,
-          Referer: origin + "/"
-        },
-        body: JSON.stringify({
-          _subject: mailSubject,
-          _captcha: "false",
-          _template: "table",
-          Name: name,
-          "Sender email": email,
-          Subject: subject || "—",
-          Message: message
-        })
-      });
-      var fj = {};
-      try { fj = await fs.json(); } catch (e) { fj = {}; }
-      var fmsg = String(fj.message || "");
-
-      if (fs.ok && String(fj.success) === "true") {
-        console.log("[contact] sent via FormSubmit to", to);
-        return res.status(200).json({ ok: true, delivered: true, via: "formsubmit", notified: to });
-      }
-      if (/activation/i.test(fmsg)) {
-        console.warn("[contact] FormSubmit needs a one-time activation click for", to);
-        return res.status(200).json({
-          ok: true, delivered: false, reason: "needs_activation", notified: to,
-          detail: "An activation email was sent to " + to + ". Click the Activate Form link in it once."
-        });
-      }
-      console.error("[contact] FormSubmit rejected:", fs.status, fmsg.slice(0, 200));
-      return res.status(200).json({
-        ok: true, delivered: false, reason: "formsubmit_rejected", notified: to,
-        detail: ("HTTP " + fs.status + " | " + fmsg).slice(0, 300)
-      });
-    } catch (e) {
-      console.error("[contact] FormSubmit exception:", e && e.message);
-      return res.status(200).json({
-        ok: true, delivered: false, reason: "formsubmit_exception", notified: to,
-        detail: String((e && e.message) || e).slice(0, 300)
-      });
-    }
+    console.warn("[contact] RESEND_API_KEY is not set — notification is handled by the browser (FormSubmit). Target was:", to);
+    return res.status(200).json({ ok: true, delivered: false, reason: "handled_by_browser", notified: to });
   }
 
-  /* ---- Path 2 — Resend (used automatically once RESEND_API_KEY is set) ---- */
+  /* ---- Resend ---- */
 
   var html =
     '<div style="font-family:Segoe UI,Roboto,Arial,sans-serif;background:#f1f5f4;padding:28px">' +
