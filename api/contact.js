@@ -89,15 +89,29 @@ module.exports = async function handler(req, res) {
      Path 1 — FormSubmit.co (free, unlimited, NO API key needed).
      Runs whenever RESEND_API_KEY is missing, so the portfolio sends
      email notifications out of the box with zero configuration.
-     One-time step: the first submission makes FormSubmit email you a
-     confirmation link — click it once and every message after that
-     arrives automatically.
+
+     FormSubmit rejects calls that carry no Origin header (it assumes
+     the request came from a local HTML file), so one is always sent.
+
+     One-time step: the very first submission makes FormSubmit email
+     you an "Activate Form" link. Click it once and every message
+     after that arrives automatically. The response says so via
+     reason = "needs_activation".
      --------------------------------------------------------------- */
   if (!key) {
+    var origin = (req.headers && (req.headers.origin || req.headers.referer)) || "";
+    try { origin = new URL(origin).origin; } catch (e) { origin = ""; }
+    if (!origin) origin = "https://mdsajibsheikh.vercel.app";
+
     try {
       var fs = await fetch("https://formsubmit.co/ajax/" + encodeURIComponent(to), {
         method: "POST",
-        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          Origin: origin,
+          Referer: origin + "/"
+        },
         body: JSON.stringify({
           _subject: mailSubject,
           _captcha: "false",
@@ -110,11 +124,20 @@ module.exports = async function handler(req, res) {
       });
       var fj = {};
       try { fj = await fs.json(); } catch (e) { fj = {}; }
-      if (fs.ok) {
-        console.log("[contact] sent via FormSubmit to", to, "|", JSON.stringify(fj).slice(0, 160));
+      var fmsg = String(fj.message || "");
+
+      if (fs.ok && String(fj.success) === "true") {
+        console.log("[contact] sent via FormSubmit to", to);
         return res.status(200).json({ ok: true, delivered: true, via: "formsubmit", notified: to });
       }
-      console.error("[contact] FormSubmit error:", fs.status, JSON.stringify(fj).slice(0, 200));
+      if (/activation/i.test(fmsg)) {
+        console.warn("[contact] FormSubmit needs a one-time activation click for", to);
+        return res.status(200).json({
+          ok: true, delivered: false, reason: "needs_activation", notified: to,
+          detail: "An activation email was sent to " + to + ". Click the Activate Form link in it once."
+        });
+      }
+      console.error("[contact] FormSubmit rejected:", fs.status, fmsg.slice(0, 200));
     } catch (e) {
       console.error("[contact] FormSubmit exception:", e && e.message);
     }
