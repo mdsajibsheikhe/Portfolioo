@@ -138,10 +138,17 @@ module.exports = async function handler(req, res) {
         });
       }
       console.error("[contact] FormSubmit rejected:", fs.status, fmsg.slice(0, 200));
+      return res.status(200).json({
+        ok: true, delivered: false, reason: "formsubmit_rejected", notified: to,
+        detail: ("HTTP " + fs.status + " | " + fmsg).slice(0, 300)
+      });
     } catch (e) {
       console.error("[contact] FormSubmit exception:", e && e.message);
+      return res.status(200).json({
+        ok: true, delivered: false, reason: "formsubmit_exception", notified: to,
+        detail: String((e && e.message) || e).slice(0, 300)
+      });
     }
-    return res.status(200).json({ ok: true, delivered: false, reason: "email_not_configured", notified: to });
   }
 
   /* ---- Path 2 — Resend (used automatically once RESEND_API_KEY is set) ---- */
